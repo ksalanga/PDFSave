@@ -16,4 +16,4 @@ Chrome extension with various features for the Chrome/Brave PDF viewer.
 
 *Run*
 
-> 1. yarn start
+1. `yarn start`
