@@ -39,6 +39,24 @@
   justify-content: center;
   align-items: center;
   text-align: center;
+  height: 83.25%;
+  width: 100%;
+  background-color: white;
+}
+
+.pdf-view {
+  box-sizing: border-box;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 283px;
+  width: 472px;
+  border-radius: 25px;
+  border-style: solid;
+  border-color: #EB3A3A;
+  background-color: white;
+}
 
 .list-view {
   background-color: white;
