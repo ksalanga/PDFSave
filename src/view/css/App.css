@@ -90,6 +90,10 @@
   border-color: #988787;
   border-left-width: 0;
   background-color: #E7D3D3;
+
+.pdf-item-bar-open {
+  background-color: #EB3A3A;
+  opacity: 0.72;
 }
 
 .pdf-item-bar-right {
