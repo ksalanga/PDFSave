@@ -98,7 +98,9 @@
 
 .pdf-item-bar-right {
   display: flex;
-  white-space: nowrap;
+  padding-right: 7%;
+  margin-left: auto; 
+  margin-right: 0;
   justify-content: center;
   overflow: hidden;
   text-overflow: "-";
