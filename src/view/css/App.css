@@ -61,16 +61,15 @@
 .list-view {
   background-color: white;
   height: 231px;
-  overflow-y: auto;
+  overflow-y: overlay;
   width: 100%;
 }
 
 .pdf-item {
   box-sizing: border-box;
+  width:97%;
   height: 77px;
-  width: 100%;
   border-style: solid;
-  border-bottom-width: 0px;
 }
 
 .App-link {
