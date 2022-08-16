@@ -81,7 +81,7 @@
 .pdf-item-bar, .pdf-item-bar-open {
   display: grid;
   box-sizing: border-box;
-  grid-template-columns: 90% 10%;
+  grid-template-columns: 80% 20%;
   align-items: center;
   padding-left: 3%;
   text-align: left;
