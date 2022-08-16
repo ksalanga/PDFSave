@@ -74,7 +74,11 @@
   height: 77px;
 }
 
-.pdf-item-bar {
+.bookmark-item {
+  height: 38px;
+}
+
+.pdf-item-bar, .pdf-item-bar-open {
   display: grid;
   box-sizing: border-box;
   grid-template-columns: 90% 10%;

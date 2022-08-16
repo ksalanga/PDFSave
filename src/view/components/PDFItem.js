@@ -22,7 +22,13 @@ export function PDFItemBar(props){
 export function Icon(props) {
     return (
         <div>
-            <img src={`/images/${props.imgFilename}`} height={props.height ? props.height : "24px"} width={props.width ? props.width : "24px"}></img>
+
+export function BookmarkItem(props) {
+    return (
+        <div className="bookmark-item">
+            <PDFItemBar rightSideText={props.rightSideText}/>
+            <Icon imgFilename="editing.png" height="20px" width="20px"/>
+            <Icon imgFilename="trash.png" height="20px" width="20px"/>
         </div>
     )
 }
