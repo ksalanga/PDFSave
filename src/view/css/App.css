@@ -91,6 +91,7 @@
   border-left-width: 0;
   background-color: #E7D3D3;
 
+  /* TODO(Kenny): check overflow of left side grid in item bar (Priority: Low)*/
   /* Prevent overflow */
   text-overflow: ellipsis;
   white-space: nowrap;
