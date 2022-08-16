@@ -22,6 +22,14 @@ export function PDFItemBar(props){
 export function Icon(props) {
     return (
         <div>
+            <img 
+                src={`/images/${props.imgFilename}`}
+                height={props.height ? props.height : "24px"}
+                width={props.width ? props.width : "24px"}
+            />
+        </div>
+    )
+}
 
 export function BookmarkItem(props) {
     return (
