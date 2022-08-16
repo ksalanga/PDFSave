@@ -66,7 +66,9 @@
 }
 
 .pdf-item {
-  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 76% 8% 8% 8%;
+  align-items: center;
   width:97%;
   height: 77px;
 }
