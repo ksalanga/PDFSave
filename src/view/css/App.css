@@ -91,6 +91,12 @@
   border-left-width: 0;
   background-color: #E7D3D3;
 
+  /* Prevent overflow */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .pdf-item-bar-open {
   background-color: #EB3A3A;
   opacity: 0.72;
@@ -102,8 +108,6 @@
   margin-left: auto; 
   margin-right: 0;
   justify-content: center;
-  overflow: hidden;
-  text-overflow: "-";
 }
 
 .App-link {
