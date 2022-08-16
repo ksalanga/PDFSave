@@ -1,4 +1,9 @@
 export function PDFItemBar(props){
+
+    let rightSideText
+
+    if (props.rightSideText) {
+        rightSideText = props.rightSideText
     } else {
         rightSideText = 
         <img 
@@ -12,7 +17,7 @@ export function PDFItemBar(props){
         <div className={props.open ? "pdf-item-bar-open" : "pdf-item-bar"}>
             {props.text ? props.text : "Book"}
             <div className="pdf-item-bar-right">
-                <img src="/images/down-arrow.png" height="24px" width="24px" alt="down-arrow" />
+                {rightSideText}
             </div>
         </div>
     )
