@@ -69,7 +69,25 @@
   box-sizing: border-box;
   width:97%;
   height: 77px;
-  border-style: solid;
+}
+
+.pdf-item-bar {
+  display: grid;
+  grid-template-columns: 94% 6%;
+  align-items: center;
+  padding-left: 3%;
+  text-align: left;
+  height: 38px;
+  border: solid;
+  border-color: #988787;
+  border-left-width: 0;
+  background-color: #E7D3D3;
+}
+
+.pdf-item-bar-right {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: "-";
 }
 
 .App-link {
