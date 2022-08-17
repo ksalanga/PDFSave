@@ -64,7 +64,10 @@ function PDFItem(props) {
             </div>
             {props.open ? 
             <>
-                <BookmarkItem rightSideText="p. 121231212312312123123123"/>
+            {/* map bookmarks */}
+            {props.bookmarks.map(bookmark => {
+                return <BookmarkItem key={bookmark.id} id={bookmark.id} name={bookmark.name} rightSideText={bookmark.page}/>
+            })}
             </>
             : null}
         </>
