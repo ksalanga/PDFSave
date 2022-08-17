@@ -54,6 +54,7 @@ var dummyPDFs = [
 ]
 
 // TODO(Kenny): work on PDFView State Management (Priority: High)
+// TODO(Kenny): work onMount and onUnmount for PDFView component (Priority: High)
 function PDFView() {
 
     const handleSelect = (id, open) => {
