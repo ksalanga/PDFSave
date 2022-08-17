@@ -4,6 +4,7 @@ import './index.css';
 import App from './view/App';
 import reportWebVitals from './reportWebVitals';
 
+// TODO: fix slow image loading
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
