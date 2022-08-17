@@ -9,7 +9,7 @@ export function PDFItemBar(props){
     let rightSideText
 
     if (props.rightSideText) {
-        rightSideText = props.rightSideText
+        rightSideText = "p. " + props.rightSideText
     } else {
         rightSideText = 
         <img 
