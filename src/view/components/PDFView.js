@@ -174,7 +174,7 @@ function PDFView() {
 
     return (
         <div className="pdf-view">
-            <ListView />
+            <ListView list={listViewState.items} selection={listViewState.selection.id} open={listViewState.selection.open} onSelect={handleSelect} onPDFChange={handlePDFChange}/>
         </div>
     )
 }
