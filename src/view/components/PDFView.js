@@ -85,6 +85,76 @@ function PDFView() {
     }
 
     // Refer to src\view\components\Views.js for changeValues object structure.
+    const handlePDFChange = (id, changeType, changeValues) => {
+
+
+        // TODO(Kenny): work on Update Bookmarks, Delete Bookmarks, and Delete PDF for PDFView (Priority: High)
+        // update pdf in list if pdf is not null
+        if (changeType === ChangeTypes.Update && !Object.keys(changeValues).includes('bookmark')) {
+            setListViewState({
+                ...listViewState,
+                items: listViewState.items.map(item => {
+                    if (item.id === id) {
+                        return {
+                            ...item,
+                            ...changeValues
+                        }
+                    }
+                    return item;
+                })
+            })  
+        }
+
+        // update bookmark in list if pdf is not null
+        if (changeType === ChangeTypes.Update && Object.keys(changeValues).includes('bookmark')) {
+            setListViewState({
+                ...listViewState,
+                items: listViewState.items.map(item => {
+                    if (item.id === id) {
+                        return {
+                            ...item,
+                            bookmarks: item.bookmarks.map(bookmark => {
+                                if (bookmark.id === changeValues.bookmark.id) {
+                                    return {
+                                        ...bookmark,
+                                        ...changeValues.bookmark
+                                    }
+                                }
+                                return bookmark;
+                            })
+                        }
+                    }
+                    return item;
+                })
+            })
+        }
+
+
+        // delete pdf from list if pdf is not null
+        if (changeType === ChangeTypes.Delete && changeValues === {}) {
+            setListViewState({
+                ...listViewState,
+                items: listViewState.items.filter(pdf => pdf.id !== id)
+            })
+        }
+
+        // delete bookmark from pdf if pdf is not null
+        if (changeType === ChangeTypes.Delete && changeValues !== {}) {
+            setListViewState({
+                ...listViewState,
+                items: listViewState.items.map(pdf => {
+                    if (pdf.id === id) {
+                        pdf.bookmarks = pdf.bookmarks.filter(bookmark => bookmark.id !== changeValues.bookmark.id)
+                    }
+                    return pdf
+                })
+            })
+        }
+
+
+    }
+
+
     return (
         <div className="pdf-view">
             <ListView />
