@@ -20,8 +20,8 @@ export function PDFItemBar(props){
     }
     
     return (
-        <div className={props.open ? "pdf-item-bar-open" : "pdf-item-bar"}>
-            {props.text ? props.text : "Book"}
+        <div className={props.open ? "pdf-item-bar-open" : "pdf-item-bar"} onClick={handleSelect}>
+            {props.name ? props.name : "Book"}
             <div className="pdf-item-bar-right">
                 {rightSideText}
             </div>
