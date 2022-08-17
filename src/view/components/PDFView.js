@@ -68,6 +68,9 @@ function PDFView() {
     })
 
     const handleEditChange = (pdf) => {
+        // TODO edit pdf in list if pdf is not null
+        setCurrentView(ViewTypes.List)
+    }
 
     const handleSelect = (id, open) => {
         // If a PDF has been opened in our listview state, pass down the only opened PDF item to the ListView items key.
