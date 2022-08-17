@@ -56,6 +56,16 @@ var dummyPDFs = [
 // TODO(Kenny): work on PDFView State Management (Priority: High)
 // TODO(Kenny): work onMount and onUnmount for PDFView component (Priority: High)
 function PDFView() {
+    const [currentView, setCurrentView] = useState(ViewTypes.List)
+    const [listViewState, setListViewState] = useState({
+        selection: {
+            open: false,
+            id: null
+        },
+        items: dummyPDFs
+    })
+
+    const handleEditChange = (pdf) => {
 
     const handleSelect = (id, open) => {
         // If a PDF has been opened in our listview state, pass down the only opened PDF item to the ListView items key.
