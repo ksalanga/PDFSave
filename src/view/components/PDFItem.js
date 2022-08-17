@@ -1,5 +1,11 @@
 export function PDFItemBar(props){
 
+    const handleSelect = () => {
+        if (props.onSelect) {
+            props.onSelect(props.id, !props.open);
+        }
+    }
+    
     let rightSideText
 
     if (props.rightSideText) {
