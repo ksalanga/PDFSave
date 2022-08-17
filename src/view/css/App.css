@@ -78,7 +78,7 @@
   height: 38px;
 }
 
-.pdf-item-bar, .pdf-item-bar-open {
+/* TODO Do not allow highlighting for item bar */
   display: grid;
   box-sizing: border-box;
   grid-template-columns: 80% 20%;
