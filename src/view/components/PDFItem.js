@@ -58,10 +58,11 @@ function PDFItem(props) {
         <>
             <div className="pdf-item">
                 <PDFItemBar id={props.id} name={props.name} open={props.open} onSelect={props.onSelect}/>
-                <Icon imgFilename="book.png"/>
+                {!props.open && <Icon imgFilename="book.png"/>}
                 <Icon imgFilename="editing.png" height="20px" width="20px"/>
                 <Icon imgFilename="trash.png" height="20px" width="20px"/>
             </div>
+
             {props.open ? 
             <>
             {/* map bookmarks */}
