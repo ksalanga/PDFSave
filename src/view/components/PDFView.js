@@ -1,5 +1,58 @@
 import ListView from "./ListView";
 
+// TODO (Kenny): Delete dummy PDF array later
+var dummyPDFs = [
+    {
+        id: 1,
+        name: 'PDF 1',
+        bookmarks: [
+            {
+                id: 1,
+                name: 'Bookmark 1',
+                page: 1
+            },
+            {
+                id: 2,
+                name: 'Bookmark 2',
+                page: 2
+            }
+        ],
+        progressNotification: false,
+        autoSavePage: true
+    },
+    {
+        id: 2,
+        name: 'PDF 2',
+        bookmarks: [
+            {
+                id: 1,
+                name: 'Bookmark 1',
+                page: 1
+            },
+            {
+                id: 2,
+                name: 'Bookmark 2',
+                page: 2
+            }
+        ],
+        progressNotification: false,
+        autoSavePage: true
+    },
+    {
+        id: 3,
+        name: 'PDF 3',
+        bookmarks: [
+            {
+                id: 1,
+                name: 'Bookmark 1',
+                page: 1
+            },
+        ],
+        progressNotification: false,
+        autoSavePage: true
+    }
+]
+
 // TODO(Kenny): work on PDFView State Management (Priority: High)
 function PDFView() {
 
