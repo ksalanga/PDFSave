@@ -1,4 +1,6 @@
 import ListView from "./ListView";
+import { ChangeTypes, ViewTypes } from "./Utils";
+import { useState } from "react";
 
 // TODO (Kenny): Delete dummy PDF array later
 var dummyPDFs = [
