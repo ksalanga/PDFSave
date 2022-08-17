@@ -9,3 +9,15 @@ export const ChangeTypes = {
     Delete: 'delete'
 }
 
+// ChangeValues for PDFView:
+// {
+//     name: String
+//     bookmark: {
+//         id: number
+//         name: String
+//         page: number
+//     }
+//     progressNotification: boolean
+//     autoSavePage: boolean
+// }
+    
