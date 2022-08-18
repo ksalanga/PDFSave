@@ -140,6 +140,12 @@ export function BookmarkItem(props) {
     )
 }
 
+export function AddBookmarkItem(props) {
+    return (
+        <div className="bookmark-item">
+        </div>
+    )
+}
 
 function PDFItem(props) {
     const handleEdit = () => {
@@ -177,6 +183,7 @@ function PDFItem(props) {
             <>
             {/* map bookmarks */}
             {/* TODO: add create bookmark itembar */}
+            <AddBookmarkItem />
             {props.bookmarks.map(bookmark => {
                 return <BookmarkItem 
                     key={bookmark.id}
