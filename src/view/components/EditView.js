@@ -1,7 +1,8 @@
 function EditView(props) {
     return (
         <div className="edit-view">
-        Edit View
+        {props.pdf.name}
+        <button></button>
         </div>
     )
 }

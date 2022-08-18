@@ -70,8 +70,22 @@ function PDFView() {
 
     const borderStyle = currentView === ViewTypes.List ? {"border-style": "solid"} : {}
 
-    const handleEditChange = (pdf) => {
+    const handleEdit = (changeValues) => {
+        let id = changeValues.id
+
         // TODO edit pdf in list if pdf is not null
+        setListViewState({
+            ...listViewState,
+            items: listViewState.items.map(item => {
+                if (item.id === id) {
+                    return {
+                        ...item,
+                        ...changeValues
+                    }
+                }
+                return item;
+            })
+        })
         setCurrentView(ViewTypes.List)
     }
 
@@ -112,20 +126,16 @@ function PDFView() {
         }
 
         // TODO(Kenny): update pdf in list if pdf is not null (Priority: High)
-        // update pdf in list if pdf is not null
         if (changeType === ChangeTypes.Update && !Object.keys(changeValues).includes('bookmark')) {
+            // change ListView to EditView
             setListViewState({
                 ...listViewState,
-                items: listViewState.items.map(item => {
-                    if (item.id === id) {
-                        return {
-                            ...item,
-                            ...changeValues
-                        }
-                    }
-                    return item;
-                })
-            })  
+                selection: {
+                    ...listViewState.selection,
+                    id: id
+                }
+            })
+            setCurrentView(ViewTypes.Edit)
         }
 
         // update bookmark in list if pdf is not null
@@ -182,13 +192,27 @@ function PDFView() {
 
     return (
         <div className="pdf-view" style={borderStyle}>
-            <EditView></EditView>
-            {/* <ListView list={listViewState.items}
-            selection={listViewState.selection.id}
-            open={listViewState.selection.open}
-            onSelect={handleSelect}
-            onPDFChange={handlePDFChange}
-            /> */}
+            <>
+            {
+                currentView === ViewTypes.List 
+                &&
+                <ListView list={listViewState.items}
+                selection={listViewState.selection.id}
+                open={listViewState.selection.open}
+                onSelect={handleSelect}
+                onPDFChange={handlePDFChange}
+                />
+            }
+            {
+                currentView === ViewTypes.Edit
+                &&
+                <EditView 
+                    pdf={listViewState.items.find(pdf => pdf.id === listViewState.selection.id)}
+                    onEdit={handleEdit}
+
+                />
+            }
+            </>
         </div>
     )
 }
