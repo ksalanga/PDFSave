@@ -1,18 +1,14 @@
-export function PDFItemBar(props){
+import { ItemBarTypes, ChangeTypes } from "./Utils";
 
-    const handleSelect = () => {
-        if (props.onSelect) {
-            props.onSelect(props.id, !props.open);
-        }
-    }
+export function ItemBar(props){
     
     let rightSideText
 
-    if (props.rightSideText) {
-        rightSideText = "p. " + props.rightSideText
-    } else {
-        rightSideText = 
-        <img 
+
+    let leftElement = props.name ? props.name : "Book"
+    let rightElement
+
+
             src={`/images/${props.open ? "up" : "down"}-arrow.png`} 
             height="24px" width="24px" 
             alt={`${props.open ? "up" : "down"}-arrow`} 

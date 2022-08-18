@@ -79,6 +79,7 @@
 }
 
 /* TODO Do not allow highlighting for item bar */
+.item-bar-closed, .item-bar-open {
   display: grid;
   box-sizing: border-box;
   grid-template-columns: 80% 20%;
@@ -99,12 +100,12 @@
   overflow: hidden;
 }
 
-.pdf-item-bar-open {
+.item-bar-open {
   background-color: #EB3A3A;
   opacity: 0.72;
 }
 
-.pdf-item-bar-right {
+.item-bar-right {
   display: flex;
   padding-right: 7%;
   margin-left: auto; 
