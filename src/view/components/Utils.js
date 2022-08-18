@@ -9,8 +9,10 @@ export const ChangeTypes = {
     Delete: 'delete'
 }
 
-// ChangeValues for PDFView:
+
+// ChangeValues for onPDFChange(changeType, changeValues) function in PDFView:
 // {
+//     id: id,
 //     name: String
 //     bookmark: {
 //         id: number
