@@ -18,7 +18,22 @@ var dummyPDFs = [
                 id: 2,
                 name: 'Bookmark 2',
                 page: 2
-            }
+            },
+            {
+                id: 3,
+                name: 'Bookmark 3',
+                page: 3
+            },
+            {
+                id: 4,
+                name: 'Bookmark 4',
+                page: 4
+            },
+            {
+                id: 5,
+                name: 'Bookmark 5',
+                page: 5
+            },
         ],
         progressNotification: false,
         autoSavePage: true
@@ -108,7 +123,7 @@ function PDFView() {
         let id = changeValues.id
         delete changeValues.id
 
-        // TODO(Kenny): create pdf in list if pdf is not null 
+        // TODO(Kenny): create pdf in list if pdf is not null (Priority: High)
         // PDFView will not be responsible for creating pdf
         // The content scripts will be responsible for creating pdf
         if (changeType === ChangeTypes.Create && !Object.keys(changeValues).includes('bookmark')) {
@@ -118,7 +133,7 @@ function PDFView() {
             })
         }
 
-        // TODO(Kenny): create bookmark in list if pdf is not null
+        // TODO(Kenny): create bookmark in list if pdf is not null (Priority: High)
         // PDFView will not be responsible for creating pdf
         // The content scripts will be responsible for creating pdf
         if (changeType === ChangeTypes.Create && Object.keys(changeValues).includes('bookmark')) {
