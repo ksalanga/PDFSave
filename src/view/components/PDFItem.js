@@ -1,4 +1,4 @@
-import { ItemBarTypes, ChangeTypes } from "./Utils";
+import { ItemBarTypes, ChangeTypes, IconTypes } from "./Utils";
 import { useState } from "react";
 
 export function ItemBar(props){
@@ -112,9 +112,9 @@ export function BookmarkItem(props) {
                 !editing &&
                 <div className="bookmark-item">
                     <ItemBar type={ItemBarTypes.Bookmark} name={props.name} page={props.page}/>
-                    <Icon imgFilename="book.png"/>
-                    <Icon imgFilename="editing.png" height="20px" width="20px" onClick={handleEdit}/>
-                    <Icon imgFilename="trash.png" height="20px" width="20px"/>
+                    <Icon imgFilename={IconTypes.Read}/>
+                    <Icon imgFilename={IconTypes.Edit} height="20px" width="20px" onClick={handleEdit}/>
+                    <Icon imgFilename={IconTypes.Delete} height="20px" width="20px"/>
                 </div>
             }
             {
@@ -127,8 +127,8 @@ export function BookmarkItem(props) {
                         onNameChange={handleNameChange}
                         onPageChange={handlePageChange}
                     />
-                    <Icon imgFilename="confirm.png" onClick={updateBookmark}/>
-                    <Icon imgFilename="cancel.png" height="20px" width="20px" onClick={handleEdit}/>
+                    <Icon imgFilename={IconTypes.Confirm} onClick={updateBookmark}/>
+                    <Icon imgFilename={IconTypes.Cancel} height="20px" width="20px" onClick={handleEdit}/>
                 </div>
             }
         </>
@@ -157,9 +157,9 @@ function PDFItem(props) {
         <>
             <div className="pdf-item">
                 <ItemBar type={ItemBarTypes.PDF} id={props.id} name={props.name} open={props.open} onSelect={props.onSelect}/>
-                <Icon imgFilename="book.png"/>
-                <Icon imgFilename="editing.png" height="20px" width="20px"/>
-                <Icon imgFilename="trash.png" height="20px" width="20px"/>
+                <Icon imgFilename={IconTypes.Read}/>
+                <Icon imgFilename={IconTypes.Edit} height="20px" width="20px"/>
+                <Icon imgFilename={IconTypes.Delete} height="20px" width="20px"/>
             </div>
 
             {props.open ? 

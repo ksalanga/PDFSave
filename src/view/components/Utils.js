@@ -15,6 +15,14 @@ export const ItemBarTypes = {
     PDF: 'pdf'
 }
 
+export const IconTypes = {
+    Read: 'book.png',
+    Edit: 'editing.png',
+    Delete: 'trash.png',
+    Confirm: 'confirm.png',
+    Cancel: 'cancel.png'
+}
+
 // ChangeValues for onPDFChange(changeType, changeValues) function in PDFView:
 // {
 //     id: id,
