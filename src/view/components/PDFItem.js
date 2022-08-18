@@ -39,7 +39,7 @@ export function ItemBar(props){
 
         return (
             <form>
-                <div className="item-bar-closed">
+                <div className="item-bar-closed" style={props.style}>
                     {leftElement}
                     <div className="item-bar-right">
                     p.
@@ -143,6 +143,14 @@ export function BookmarkItem(props) {
 export function AddBookmarkItem(props) {
     return (
         <div className="bookmark-item">
+            <ItemBar
+                type={ItemBarTypes.BookmarkEdit}
+                name={props.name}
+                page={props.page}
+                style={
+                    {"backgroundColor": "#4D9217", "borderColor": "#4D9217"}
+                }   
+            />
             <Icon imgFilename={IconTypes.Add} onClick={props.onAddBookmark} height="20px" width="20px"/>
         </div>
     )
