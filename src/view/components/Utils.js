@@ -18,6 +18,7 @@ export const ItemBarTypes = {
 
 export const IconTypes = {
     Read: 'book.png',
+    Add: 'add.png',
     Edit: 'editing.png',
     Delete: 'trash.png',
     Confirm: 'confirm.png',

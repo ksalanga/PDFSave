@@ -143,6 +143,7 @@ export function BookmarkItem(props) {
 export function AddBookmarkItem(props) {
     return (
         <div className="bookmark-item">
+            <Icon imgFilename={IconTypes.Add} onClick={props.onAddBookmark} height="20px" width="20px"/>
         </div>
     )
 }
