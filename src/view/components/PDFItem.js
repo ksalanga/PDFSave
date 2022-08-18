@@ -1,18 +1,35 @@
 import { ItemBarTypes, ChangeTypes } from "./Utils";
 
 export function ItemBar(props){
+    let isPDF = props.type === ItemBarTypes.PDF
+    let isBookmark = props.type === ItemBarTypes.Bookmark
+    let isBookmarkEdit = props.type === ItemBarTypes.BookmarkEdit
     
     let rightSideText
 
+    if (isPDF){
+        handleSelect = () => {
+            if (props.onSelect) {
+                props.onSelect(props.id, !props.open);
+            }
+        }
+    }
 
     let leftElement = props.name ? props.name : "Book"
     let rightElement
 
 
+    if (isPDF) {
+        rightElement = 
+        <img
             src={`/images/${props.open ? "up" : "down"}-arrow.png`} 
-            height="24px" width="24px" 
+            height="24px" width="24px"
             alt={`${props.open ? "up" : "down"}-arrow`} 
         />
+    }
+
+    if (isBookmark) {
+        rightElement = "p. " + props.page
     }
     
     return (
@@ -25,6 +42,16 @@ export function ItemBar(props){
     )
 }
 
+
+    return (
+        <div className={props.open ? "item-bar-open" : "item-bar-closed"} onClick={handleSelect} style={cursor}>
+            {leftElement}
+            <div className="item-bar-right">
+                {rightElement}
+            </div>
+        </div>
+    )
+}
 
 export function Icon(props) {
     return (

@@ -9,6 +9,11 @@ export const ChangeTypes = {
     Delete: 'delete'
 }
 
+export const ItemBarTypes = {
+    Bookmark: 'bookmark',
+    BookmarkEdit: 'bookmark-edit',
+    PDF: 'pdf'
+}
 
 // ChangeValues for onPDFChange(changeType, changeValues) function in PDFView:
 // {
