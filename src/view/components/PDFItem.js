@@ -165,6 +165,7 @@ function PDFItem(props) {
             {props.open ? 
             <>
             {/* map bookmarks */}
+            {/* TODO: add create bookmark itembar */}
             {props.bookmarks.map(bookmark => {
                 return <BookmarkItem 
                     key={bookmark.id}
