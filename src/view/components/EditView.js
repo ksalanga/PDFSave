@@ -26,25 +26,30 @@ function EditView(props) {
 
     return (
         <div className="edit-view">
-        
-            <h1>Edit {props.pdf.name}</h1>
-            <div className="edit-view-input-container">
-                <input type="text" value={editName} onChange={(e) => setName(e.target.value)} />
+            <div className="edit-view-header">
+                <h2>Edit {props.pdf.name}</h2>
             </div>
+            <div className="edit-view-body">
+                <form>
+                    <div className="edit-view-input-container">
+                        <input type="text" value={editName} onChange={(e) => setName(e.target.value)} />
+                    </div>
 
-            <div className="edit-view-input-container">
-                <input type="checkbox" checked={editProgressNotification} onChange={(e) => setProgressNotification(e.target.checked)} />
-                <label>Progress Notification</label>
+                    <div className="edit-view-input-container">
+                        <input type="checkbox" checked={editProgressNotification} onChange={(e) => setProgressNotification(e.target.checked)} />
+                        <label>Progress Notification</label>
+                    </div>
+
+                    <div className="edit-view-input-container">
+                        <input type="checkbox" checked={editAutoSavePage} onChange={(e) => setAutoSavePage(e.target.checked)} />
+                        <label>Auto Save Page</label>
+                    </div>
+
+                    <br></br>
+                    <button onClick={confirmEdit}>confirm</button>
+                    <button onClick={cancelEdit}>back</button>
+            </form>
             </div>
-
-            <div className="edit-view-input-container">
-                <input type="checkbox" checked={editAutoSavePage} onChange={(e) => setAutoSavePage(e.target.checked)} />
-                <label>Auto Save Page</label>
-            </div>
-
-            <br></br>
-            <button onClick={confirmEdit}>confirm</button>
-            <button onClick={cancelEdit}>back</button>
         </div>
     )
 }
