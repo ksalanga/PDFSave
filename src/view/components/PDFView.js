@@ -1,6 +1,7 @@
 import ListView from "./ListView";
 import { ChangeTypes, ViewTypes } from "./Utils";
 import { useState } from "react";
+import EditView from "./EditView";
 
 // TODO (Kenny): Delete dummy PDF array later
 var dummyPDFs = [
@@ -66,6 +67,8 @@ function PDFView() {
         },
         items: dummyPDFs
     })
+
+    const borderStyle = currentView === ViewTypes.List ? {"border-style": "solid"} : {}
 
     const handleEditChange = (pdf) => {
         // TODO edit pdf in list if pdf is not null
@@ -178,6 +181,7 @@ function PDFView() {
 
 
     return (
+        <div className="pdf-view" style={borderStyle}>
             <EditView></EditView>
             {/* <ListView list={listViewState.items}
             selection={listViewState.selection.id}
