@@ -68,24 +68,26 @@ function PDFView() {
         items: dummyPDFs
     })
 
-    const borderStyle = currentView === ViewTypes.List ? {"border-style": "solid"} : {}
+    const borderStyle = currentView === ViewTypes.List ? {"borderStyle": "solid"} : {}
 
-    const handleEdit = (changeValues) => {
+    const handleEdit = (changeType, changeValues) => {
         let id = changeValues.id
-
-        // TODO edit pdf in list if pdf is not null
-        setListViewState({
-            ...listViewState,
-            items: listViewState.items.map(item => {
-                if (item.id === id) {
-                    return {
-                        ...item,
-                        ...changeValues
+        
+        if (changeType === ChangeTypes.Update) {
+            setListViewState({
+                ...listViewState,
+                items: listViewState.items.map(item => {
+                    if (item.id === id) {
+                        return {
+                            ...item,
+                            ...changeValues
+                        }
                     }
-                }
-                return item;
+                    return item;
+                })
             })
-        })
+        }
+
         setCurrentView(ViewTypes.List)
     }
 
@@ -127,7 +129,6 @@ function PDFView() {
 
         // TODO(Kenny): update pdf in list if pdf is not null (Priority: High)
         if (changeType === ChangeTypes.Update && !Object.keys(changeValues).includes('bookmark')) {
-            // change ListView to EditView
             setListViewState({
                 ...listViewState,
                 selection: {
@@ -135,6 +136,7 @@ function PDFView() {
                     id: id
                 }
             })
+
             setCurrentView(ViewTypes.Edit)
         }
 
@@ -189,6 +191,10 @@ function PDFView() {
         }
     }
 
+    const duplicatePDFExists = (name) => {
+        // finds a pdf with the same name but different id
+        return listViewState.items.find(pdf => pdf.name.toLowerCase().trim() === name.toLowerCase().trim() && pdf.id !== listViewState.selection.id)
+    }
 
     return (
         <div className="pdf-view" style={borderStyle}>
@@ -209,7 +215,7 @@ function PDFView() {
                 <EditView 
                     pdf={listViewState.items.find(pdf => pdf.id === listViewState.selection.id)}
                     onEdit={handleEdit}
-
+                    duplicatePDFExists={duplicatePDFExists}
                 />
             }
             </>
