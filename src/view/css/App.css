@@ -94,7 +94,6 @@
   height: 38px;
 }
 
-/* TODO Do not allow highlighting for item bar */
 .item-bar-closed, .item-bar-open {
   display: grid;
   box-sizing: border-box;
@@ -107,6 +106,7 @@
   border-color: #988787;
   border-left-width: 0;
   background-color: #E7D3D3;
+  user-select: none;
   /* cursor: pointer; */
 
   /* TODO(Kenny): check overflow of left side grid in item bar (Priority: Low)*/
