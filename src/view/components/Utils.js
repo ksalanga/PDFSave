@@ -6,7 +6,8 @@ export const ViewTypes = {
 export const ChangeTypes = {
     Create: 'create',
     Update: 'update',
-    Delete: 'delete'
+    Delete: 'delete',
+    None: 'none'
 }
 
 export const ItemBarTypes = {
