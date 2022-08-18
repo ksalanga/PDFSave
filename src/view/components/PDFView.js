@@ -107,7 +107,6 @@ function PDFView() {
             })
         }
 
-        // TODO(Kenny): work on Update Bookmarks, Delete Bookmarks, and Delete PDF for PDFView (Priority: High)
         // update pdf in list if pdf is not null
         if (changeType === ChangeTypes.Update && !Object.keys(changeValues).includes('bookmark')) {
             setListViewState({
