@@ -105,6 +105,7 @@
   opacity: 0.72;
 }
 
+/* TODO Fix Item Bar right element exceeding itembar grid */
 .item-bar-right {
   display: flex;
   padding-right: 7%;
