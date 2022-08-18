@@ -106,6 +106,10 @@ export function BookmarkItem(props) {
         handleEdit()
     }
 
+    const deleteBookmark = () => {
+        props.onBookmarkChange(ChangeTypes.Delete, {bookmark: {id: props.id}})
+    }
+
     return (
         <>
             {
@@ -114,7 +118,7 @@ export function BookmarkItem(props) {
                     <ItemBar type={ItemBarTypes.Bookmark} name={props.name} page={props.page}/>
                     <Icon imgFilename={IconTypes.Read}/>
                     <Icon imgFilename={IconTypes.Edit} height="20px" width="20px" onClick={handleEdit}/>
-                    <Icon imgFilename={IconTypes.Delete} height="20px" width="20px"/>
+                    <Icon imgFilename={IconTypes.Delete} height="20px" width="20px" onClick={deleteBookmark}/>
                 </div>
             }
             {
