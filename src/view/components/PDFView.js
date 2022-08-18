@@ -147,7 +147,7 @@ function PDFView() {
             })
         }
 
-
+        // TODO(Kenny): work on Delete PDF for PDFView (Priority: High)
         // delete pdf from list if pdf is not null
         if (changeType === ChangeTypes.Delete && changeValues === {}) {
             setListViewState({
@@ -156,6 +156,7 @@ function PDFView() {
             })
         }
 
+        // TODO(Kenny): work on Delete Bookmarks for PDFView (Priority: High)
         // delete bookmark from pdf if pdf is not null
         if (changeType === ChangeTypes.Delete && changeValues !== {}) {
             setListViewState({
@@ -168,8 +169,6 @@ function PDFView() {
                 })
             })
         }
-
-
     }
 
 
