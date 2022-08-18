@@ -156,7 +156,7 @@ function PDFItem(props) {
     return (
         <>
             <div className="pdf-item">
-                <PDFItemBar id={props.id} name={props.name} open={props.open} onSelect={props.onSelect}/>
+                <ItemBar type={ItemBarTypes.PDF} id={props.id} name={props.name} open={props.open} onSelect={props.onSelect}/>
                 <Icon imgFilename="book.png"/>
                 <Icon imgFilename="editing.png" height="20px" width="20px"/>
                 <Icon imgFilename="trash.png" height="20px" width="20px"/>
