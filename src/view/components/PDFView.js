@@ -85,7 +85,9 @@ function PDFView() {
     }
 
     // Refer to src\view\components\Views.js for changeValues object structure.
-    const handlePDFChange = (id, changeType, changeValues) => {
+    const handlePDFChange = (changeType, changeValues) => {
+        let id = changeValues.id
+
         // TODO(Kenny): create pdf in list if pdf is not null 
         //              note: we might have to contact the database to create the pdf.
         if (changeType === ChangeTypes.Create && !Object.keys(changeValues).includes('bookmark')) {
