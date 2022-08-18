@@ -1,5 +1,6 @@
 import { ItemBarTypes, ChangeTypes, IconTypes } from "./Utils";
 import { useState } from "react";
+import uniqid from 'uniqid';
 
 export function ItemBar(props){
     let isPDF = props.type === ItemBarTypes.PDF
@@ -141,17 +142,37 @@ export function BookmarkItem(props) {
 }
 
 export function AddBookmarkItem(props) {
+    const [name, setName] = useState("")
+    const [page, setPage] = useState("")
+
+    const handleNameChange = (e) => {
+        setName(e.target.value)
+    }
+
+    const handlePageChange = (e) => {
+        setPage(e.target.value)
+    }
+
+    const addBookmark = () => {
+        if (name === "" 
+        || page === "" 
+        || page < 1 
+        || props.duplicateBookmarkExists(name, page)) {
+            return
+        }
+
+        props.onBookmarkChange(ChangeTypes.Create, {bookmark: {id: uniqid(), name: name, page: page}})
+    }
+
     return (
         <div className="bookmark-item">
             <ItemBar
                 type={ItemBarTypes.BookmarkEdit}
-                name={props.name}
-                page={props.page}
-                style={
-                    {"backgroundColor": "#4D9217", "borderColor": "#4D9217"}
-                }   
+                onNameChange={handleNameChange}
+                onPageChange={handlePageChange}
+                style={{"backgroundColor": "#4D9217", "borderColor": "#4D9217"}}
             />
-            <Icon imgFilename={IconTypes.Add} onClick={props.onAddBookmark} height="20px" width="20px"/>
+            <Icon imgFilename={IconTypes.Add} onClick={addBookmark} height="20px" width="20px"/>
         </div>
     )
 }
@@ -193,7 +214,10 @@ function PDFItem(props) {
             <>
             {/* map bookmarks */}
             {/* TODO: add create bookmark itembar */}
-            <AddBookmarkItem />
+            <AddBookmarkItem 
+                duplicateBookmarkExists={duplicateBookmarkExists}
+                onBookmarkChange={handleBookmarkChange}
+            />
 
             {/* TODO (Kenny): when Bookmarks exceed element size, add scrollbar ONLY to the list of bookmark elements; not the PDFItem or the AddBookmarkItem
             will have to create a separate div for this with the overflow hidden stuff */}

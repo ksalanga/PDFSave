@@ -133,18 +133,22 @@ function PDFView() {
             })
         }
 
-        // TODO(Kenny): create bookmark in list if pdf is not null (Priority: High)
-        // PDFView will not be responsible for creating pdf
-        // The content scripts will be responsible for creating pdf
+        // add a bookmark to the pdf with the given id
         if (changeType === ChangeTypes.Create && Object.keys(changeValues).includes('bookmark')) {
-
             setListViewState({
                 ...listViewState,
-                items: [...listViewState.items, changeValues]
+                items: listViewState.items.map(item => {
+                    if (item.id === id) {
+                        return {
+                            ...item,
+                            bookmarks: [...item.bookmarks, changeValues.bookmark]
+                        }
+                    }
+                    return item;
+                })
             })
         }
 
-        // TODO(Kenny): update pdf in list if pdf is not null (Priority: High)
         if (changeType === ChangeTypes.Update && !Object.keys(changeValues).includes('bookmark')) {
             setListViewState({
                 ...listViewState,
