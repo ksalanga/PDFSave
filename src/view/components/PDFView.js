@@ -108,6 +108,7 @@ function PDFView() {
             })
         }
 
+        // TODO(Kenny): update pdf in list if pdf is not null (Priority: High)
         // update pdf in list if pdf is not null
         if (changeType === ChangeTypes.Update && !Object.keys(changeValues).includes('bookmark')) {
             setListViewState({
