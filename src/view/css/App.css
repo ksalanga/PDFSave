@@ -91,7 +91,7 @@
   border-color: #988787;
   border-left-width: 0;
   background-color: #E7D3D3;
-  cursor: pointer;
+  /* cursor: pointer; */
 
   /* TODO(Kenny): check overflow of left side grid in item bar (Priority: Low)*/
   /* Prevent overflow */

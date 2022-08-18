@@ -42,6 +42,7 @@ export function ItemBar(props){
     )
 }
 
+    let cursor = isPDF ? {"cursor": "pointer"} : {}
 
     return (
         <div className={props.open ? "item-bar-open" : "item-bar-closed"} onClick={handleSelect} style={cursor}>
