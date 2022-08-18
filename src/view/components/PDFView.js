@@ -161,7 +161,6 @@ function PDFView() {
             })
         }
 
-        // TODO(Kenny): work on Delete Bookmarks for PDFView (Priority: High)
         // delete bookmark from pdf if pdf is not null
         if (changeType === ChangeTypes.Delete && !isEmpty) {
             setListViewState({
