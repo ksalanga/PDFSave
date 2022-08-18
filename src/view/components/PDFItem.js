@@ -168,7 +168,8 @@ function PDFItem(props) {
     const duplicateBookmarkExists = (name, page) => {
         // check for duplicate bookmark name and page
         for (let i = 0; i < props.bookmarks.length; i++) {
-            if (props.bookmarks[i].name === name && props.bookmarks[i].page === page) {
+            if (props.bookmarks[i].name.toLowerCase().trim() === name.toLowerCase().trim()
+            && props.bookmarks[i].page === page) {
                 return true
             }
         }
