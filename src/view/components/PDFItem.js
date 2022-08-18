@@ -185,6 +185,9 @@ function PDFItem(props) {
             {/* map bookmarks */}
             {/* TODO: add create bookmark itembar */}
             <AddBookmarkItem />
+
+            {/* TODO (Kenny): when Bookmarks exceed element size, add scrollbar ONLY to the list of bookmark elements; not the PDFItem or the AddBookmarkItem
+            will have to create a separate div for this with the overflow hidden stuff */}
             {props.bookmarks.map(bookmark => {
                 return <BookmarkItem 
                     key={bookmark.id}
