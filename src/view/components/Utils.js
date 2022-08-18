@@ -7,7 +7,7 @@ export const ChangeTypes = {
     Create: 'create',
     Update: 'update',
     Delete: 'delete',
-    None: 'none'
+    Cancel: 'cancel'
 }
 
 export const ItemBarTypes = {
