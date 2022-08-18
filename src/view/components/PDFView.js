@@ -109,7 +109,8 @@ function PDFView() {
         delete changeValues.id
 
         // TODO(Kenny): create pdf in list if pdf is not null 
-        //              note: we might have to contact the database to create the pdf.
+        // PDFView will not be responsible for creating pdf
+        // The content scripts will be responsible for creating pdf
         if (changeType === ChangeTypes.Create && !Object.keys(changeValues).includes('bookmark')) {
             setListViewState({
                 ...listViewState,
@@ -118,7 +119,8 @@ function PDFView() {
         }
 
         // TODO(Kenny): create bookmark in list if pdf is not null
-        //              note: we might have to contact the database to create the bookmark.
+        // PDFView will not be responsible for creating pdf
+        // The content scripts will be responsible for creating pdf
         if (changeType === ChangeTypes.Create && Object.keys(changeValues).includes('bookmark')) {
 
             setListViewState({
