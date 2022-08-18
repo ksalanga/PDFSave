@@ -87,6 +87,7 @@ function PDFView() {
     // Refer to src\view\components\Views.js for changeValues object structure.
     const handlePDFChange = (changeType, changeValues) => {
         let id = changeValues.id
+        delete changeValues.id
 
         // TODO(Kenny): create pdf in list if pdf is not null 
         //              note: we might have to contact the database to create the pdf.
@@ -147,18 +148,22 @@ function PDFView() {
             })
         }
 
-        // TODO(Kenny): work on Delete PDF for PDFView (Priority: High)
+        const isEmpty = Object.keys(changeValues).length === 0 && changeValues.constructor === Object
+
         // delete pdf from list if pdf is not null
-        if (changeType === ChangeTypes.Delete && changeValues === {}) {
+        if (changeType === ChangeTypes.Delete && isEmpty) {
             setListViewState({
-                ...listViewState,
+                selection: {
+                    open: false,
+                    id: null
+                },
                 items: listViewState.items.filter(pdf => pdf.id !== id)
             })
         }
 
         // TODO(Kenny): work on Delete Bookmarks for PDFView (Priority: High)
         // delete bookmark from pdf if pdf is not null
-        if (changeType === ChangeTypes.Delete && changeValues !== {}) {
+        if (changeType === ChangeTypes.Delete && !isEmpty) {
             setListViewState({
                 ...listViewState,
                 items: listViewState.items.map(pdf => {

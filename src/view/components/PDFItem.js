@@ -139,6 +139,10 @@ export function BookmarkItem(props) {
 
 function PDFItem(props) {
 
+    const handleDelete = () => {
+        props.onPDFChange(ChangeTypes.Delete, {id: props.id})
+    }
+
     const duplicateBookmarkExists = (name, page) => {
         // check for duplicate bookmark name and page
         for (let i = 0; i < props.bookmarks.length; i++) {
@@ -148,7 +152,7 @@ function PDFItem(props) {
         }
     }
 
-    const onBookmarkChange = (changeType, changeValues) => {
+    const handleBookmarkChange = (changeType, changeValues) => {
         changeValues = {...changeValues, id: props.id}
         props.onPDFChange(changeType, changeValues)
     }
@@ -159,7 +163,7 @@ function PDFItem(props) {
                 <ItemBar type={ItemBarTypes.PDF} id={props.id} name={props.name} open={props.open} onSelect={props.onSelect}/>
                 <Icon imgFilename={IconTypes.Read}/>
                 <Icon imgFilename={IconTypes.Edit} height="20px" width="20px"/>
-                <Icon imgFilename={IconTypes.Delete} height="20px" width="20px"/>
+                <Icon imgFilename={IconTypes.Delete} height="20px" width="20px" onClick={handleDelete}/>
             </div>
 
             {props.open ? 
@@ -173,7 +177,7 @@ function PDFItem(props) {
                     name={bookmark.name}
                     page={bookmark.page}
                     duplicateBookmarkExists={duplicateBookmarkExists}
-                    onBookmarkChange={onBookmarkChange}
+                    onBookmarkChange={handleBookmarkChange}
                 />
             })}
             </>
