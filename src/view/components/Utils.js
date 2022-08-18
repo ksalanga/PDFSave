@@ -29,11 +29,15 @@ export const IconTypes = {
 // {
 //     id: id,
 //     name: String
+// }  // bookmark key means that the change is a SINGULAR bookmark Create, Update, Delete change
 //     bookmark: {
 //         id: number
 //         name: String
 //         page: number
 //     }
+// }   // whereas bookmarks key means that the change is a bookmarks LIST change.
+//     // bookmarks will only be used when creating a new PDF
+// }   bookmarks: []
 //     progressNotification: boolean
 //     autoSavePage: boolean
 // }
