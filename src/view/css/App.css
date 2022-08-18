@@ -53,9 +53,16 @@
   height: 283px;
   width: 472px;
   border-radius: 25px;
-  border-style: solid;
   border-color: #EB3A3A;
   background-color: white;
+  overflow: hidden;
+}
+
+.edit-view {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #EB3A3A;
 }
 
 .list-view {
