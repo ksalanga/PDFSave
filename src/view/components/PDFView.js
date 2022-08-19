@@ -230,8 +230,6 @@ function PDFView() {
     }
 
     return (
-        <>
-        <button onClick={() => {handlePDFChange(ChangeTypes.Create, {name: uniqid(), file: `/pdf/${uniqid()}.pdf`})}}></button>
         <div className="pdf-view" style={borderStyle}>
             <>
             {
@@ -255,7 +253,6 @@ function PDFView() {
             }
             </>
         </div>
-        </>
     )
 }
 
