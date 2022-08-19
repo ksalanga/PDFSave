@@ -122,7 +122,8 @@ function PDFView() {
     const handlePDFChange = (changeType, changeValues) => {
         let id = changeValues.id
         delete changeValues.id
-
+        let keys = Object.keys(changeValues)
+        
         // TODO(Kenny): create pdf in list if pdf is not null (Priority: High)
         // PDFView will not be responsible for creating pdf
         // The content scripts will be responsible for creating pdf
@@ -134,7 +135,8 @@ function PDFView() {
         }
 
         // add a bookmark to the pdf with the given id
-        if (changeType === ChangeTypes.Create && Object.keys(changeValues).includes('bookmark')) {
+        if (changeType === ChangeTypes.Create
+        && keys(changeValues).includes('bookmark')) {
             setListViewState({
                 ...listViewState,
                 items: listViewState.items.map(item => {
@@ -149,7 +151,8 @@ function PDFView() {
             })
         }
 
-        if (changeType === ChangeTypes.Update && !Object.keys(changeValues).includes('bookmark')) {
+        if (changeType === ChangeTypes.Update
+        && !keys(changeValues).includes('bookmark')) {
             setListViewState({
                 ...listViewState,
                 selection: {
@@ -162,7 +165,8 @@ function PDFView() {
         }
 
         // update bookmark in list if pdf is not null
-        if (changeType === ChangeTypes.Update && Object.keys(changeValues).includes('bookmark')) {
+        if (changeType === ChangeTypes.Update
+        && keys(changeValues).includes('bookmark')) {
             setListViewState({
                 ...listViewState,
                 items: listViewState.items.map(item => {
@@ -185,7 +189,7 @@ function PDFView() {
             })
         }
 
-        const isEmpty = Object.keys(changeValues).length === 0 && changeValues.constructor === Object
+        const isEmpty = keys(changeValues).length === 0 && changeValues.constructor === Object
 
         // delete pdf from list if pdf is not null
         if (changeType === ChangeTypes.Delete && isEmpty) {
