@@ -1,4 +1,4 @@
-import { ItemBarTypes, ChangeTypes, IconTypes } from "./Utils";
+import { ItemBarTypes, ChangeTypes, IconTypes } from "../utils/Types";
 import { useState } from "react";
 import uniqid from 'uniqid';
 
