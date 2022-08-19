@@ -1,9 +1,10 @@
-import { ChangeTypes } from "./Utils";
+import { ChangeTypes } from "../utils/Types";
 import { useState } from "react";
 
 function EditView(props) {
     const id = props.pdf.id;
     const name = props.pdf.name
+    const file = props.pdf.file
     const progressNotification = props.pdf.progressNotification
     const autoSavePage = props.pdf.autoSavePage
 
@@ -28,6 +29,7 @@ function EditView(props) {
         <div className="edit-view">
             <div className="edit-view-header">
                 <h2>Edit {props.pdf.name}</h2>
+                <h4>File: <em>{file}</em></h4>
             </div>
             <div className="edit-view-body">
                 <form>
