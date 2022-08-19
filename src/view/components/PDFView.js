@@ -136,7 +136,7 @@ function PDFView() {
 
         // add a bookmark to the pdf with the given id
         if (changeType === ChangeTypes.Create
-        && keys(changeValues).includes('bookmark')) {
+        && keys.includes('bookmark')) {
             setListViewState({
                 ...listViewState,
                 items: listViewState.items.map(item => {
@@ -152,7 +152,7 @@ function PDFView() {
         }
 
         if (changeType === ChangeTypes.Update
-        && !keys(changeValues).includes('bookmark')) {
+        && !keys.includes('bookmark')) {
             setListViewState({
                 ...listViewState,
                 selection: {
@@ -166,7 +166,7 @@ function PDFView() {
 
         // update bookmark in list if pdf is not null
         if (changeType === ChangeTypes.Update
-        && keys(changeValues).includes('bookmark')) {
+        && keys.includes('bookmark')) {
             setListViewState({
                 ...listViewState,
                 items: listViewState.items.map(item => {
@@ -189,7 +189,7 @@ function PDFView() {
             })
         }
 
-        const isEmpty = keys(changeValues).length === 0 && changeValues.constructor === Object
+        const isEmpty = keys.length === 0 && changeValues.constructor === Object
 
         // delete pdf from list if pdf is not null
         if (changeType === ChangeTypes.Delete && isEmpty) {
