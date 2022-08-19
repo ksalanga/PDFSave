@@ -1,13 +1,15 @@
 import ListView from "./ListView";
-import { ChangeTypes, ViewTypes } from "./Utils";
+import { ChangeTypes, ViewTypes } from "../utils/Types";
 import { useState } from "react";
 import EditView from "./EditView";
+import uniqid from "uniqid";
 
 // TODO (Kenny): Delete dummy PDF array later
 var dummyPDFs = [
     {
         id: 1,
         name: 'PDF 1',
+        file: '/pdf/pdf1.pdf',
         bookmarks: [
             {
                 id: 1,
@@ -41,6 +43,7 @@ var dummyPDFs = [
     {
         id: 2,
         name: 'PDF 2',
+        file: '/pdf/pdf2.pdf',
         bookmarks: [
             {
                 id: 1,
@@ -59,6 +62,7 @@ var dummyPDFs = [
     {
         id: 3,
         name: 'PDF 3',
+        file: '/pdf/pdf3.pdf',
         bookmarks: [
             {
                 id: 1,
@@ -71,7 +75,6 @@ var dummyPDFs = [
     }
 ]
 
-// TODO(Kenny): work on PDFView State Management (Priority: High)
 // TODO(Kenny): work onMount and onUnmount for PDFView component (Priority: High)
 function PDFView() {
     const [currentView, setCurrentView] = useState(ViewTypes.List)
@@ -124,10 +127,15 @@ function PDFView() {
         delete changeValues.id
         let keys = Object.keys(changeValues)
         
-        // TODO(Kenny): create pdf in list if pdf is not null (Priority: High)
-        // PDFView will not be responsible for creating pdf
-        // The content scripts will be responsible for creating pdf
-        if (changeType === ChangeTypes.Create && !Object.keys(changeValues).includes('bookmark')) {
+        if (changeType === ChangeTypes.Create
+        && !keys.includes('bookmark')
+        && keys.includes('name')
+        && keys.includes('file')) {
+            changeValues.id = uniqid()
+            changeValues.bookmarks = []
+            changeValues.progressNotification = false
+            changeValues.autoSavePage = true
+
             setListViewState({
                 ...listViewState,
                 items: [...listViewState.items, changeValues]
@@ -222,6 +230,8 @@ function PDFView() {
     }
 
     return (
+        <>
+        <button onClick={() => {handlePDFChange(ChangeTypes.Create, {name: uniqid(), file: `/pdf/${uniqid()}.pdf`})}}></button>
         <div className="pdf-view" style={borderStyle}>
             <>
             {
@@ -245,6 +255,7 @@ function PDFView() {
             }
             </>
         </div>
+        </>
     )
 }
 
