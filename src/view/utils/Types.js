@@ -29,6 +29,7 @@ export const IconTypes = {
 // {
 //     id: id,
 //     name: String
+//     file: filePath String
 // }  // bookmark key means that the change is a SINGULAR bookmark Create, Update, Delete change
 //     bookmark: {
 //         id: number
