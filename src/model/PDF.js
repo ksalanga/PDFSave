@@ -74,7 +74,7 @@ export function PDF() {
     const request = window.indexedDB.open('PDFSaveProto', 1)
     
     request.onsuccess = (event) => {
-        console.log('success trying to retrieve store PDF')
+        // console.log('success trying to retrieve store PDF')
     
         const db = event.target.result
 

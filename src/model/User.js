@@ -17,50 +17,24 @@ const request = window.indexedDB.open('PDFSaveProto', 1)
 
 // This event is only implemented in recent browsers
 request.onupgradeneeded = (event) => {
-    // gotten access to the database object that we have requested
-    const db = event.target.result;
-    
-    // the reason we add 'complete' event listeners to each object store is because 
-    // if we only use the oncomplete method that this db's transaction has:
-        // ex: db.createObjecStore('store1').transaction.oncomplete((e) => {...})
-        // ex: db.createObjecStore('store2').transaction.oncomplete((e) => {...})
-    // the second object store will overwrites the oncomplete method because
-    // both object stores are referring to the same transaction (version change) 
-    // (https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction#mode_constants)
-    // so the oncomplete method will only be called once
-    
-    // so for each new object store created within the single transaction, we have to add a new event listener 
-    // that listens for when each object store has been completed
-    // more info:
-    // https://stackoverflow.com/questions/34156045/how-create-data-to-two-store-in-indexeddb-in-onupgradeneeded/34162457#34162457
+    const db = event.target.result
 
     db.createObjectStore('users', { autoIncrement: true })
-    .transaction // transaction refers to our version change transaction: 
-    .addEventListener('complete',
-        (e) => {
-            console.log("complete users")
-            const users = db.transaction('users', 'readwrite', {durability: 'strict'}).objectStore('users')
-
-            dummyUsers.forEach((user) => {
-                users.add(user)
-            })
-        }
-    )
-
-
     db.createObjectStore('pdfs', {autoIncrement: true})
-    .transaction
-    .addEventListener('complete', 
-        (e) => {
-            const pdfs = db.transaction('pdfs', 'readwrite', {durability: 'strict'}).objectStore('pdfs')
 
-            dummyPDFs.forEach((pdf) => {
-                pdfs.add(pdf)
-            })
-        }
-    )
+    const transaction = event.target.transaction
 
-    console.log(db.createObjectStore('test', {autoIncrement:true}).transaction.mode)
+    const users = transaction.objectStore('users')
+    const pdfs = transaction.objectStore('pdfs')
+
+    // initialize pdfs in upgrade (not good practice only for development purposes)
+    dummyUsers.forEach((user) => {
+        users.add(user)
+    })
+
+    dummyPDFs.forEach((pdf) => {
+        pdfs.add(pdf)
+    })
 };
 
 request.onsuccess = (event) => {
