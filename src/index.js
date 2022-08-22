@@ -4,6 +4,7 @@ import './index.css';
 import App from './view/App';
 import reportWebVitals from './reportWebVitals';
 // import * as UserModel from './model/User';
+import * as del from './model/utils/delete.js';
 
 // TODO: fix slow image loading
 const root = ReactDOM.createRoot(document.getElementById('root'));
