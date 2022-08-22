@@ -7,7 +7,7 @@ const users = [
 ]
 
 // Open the database
-const request = window.indexedDB.open('PDFSaveProto', 1)
+const request = window.indexedDB.open('TestDBUpgrade', 1)
 
 request.onsuccess = (event) => {
     db = event.target.result
@@ -18,6 +18,7 @@ request.onsuccess = (event) => {
 request.onupgradeneeded = (event) => {
     db = event.target.result;
     const objectStore = db.createObjectStore('users', {autoIncrement: true})
+    console.log('Database created successfully')
 };
 
 request.onerror = (event) => {
