@@ -77,10 +77,11 @@ export function PDF() {
         console.log('success trying to retrieve store PDF')
     
         const db = event.target.result
-        
-        // retrieve all pdfs
+
+        // read from pdfs object store
         const pdfs = db.transaction('pdfs').objectStore('pdfs')
-    
+
+        // retrieve all pdfs
         pdfs.getAll().onsuccess = (event) => {
             console.log(`Got all pdfs: ${event.target.result}`)
         }
