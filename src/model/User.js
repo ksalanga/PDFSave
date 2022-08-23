@@ -1,12 +1,18 @@
 import { openDB, PDFSaveDB } from './DB'
 
-export const dummyUsers = [
-    {
-        name: 'CoolPerson',
-        phoneNumber: '+123456789',
-        email: 'email@email.com'
-    }
-]
+export const dummyUser = 
+{
+    name: 'CoolPerson',
+    phoneNumber: '+123456789',
+    email: 'email@email.com'
+}
+
+export const defaultUser =
+{
+    name: 'user',
+    phone_number: '',
+    email: ''
+}
 
 // get user
 export async function get(key) {

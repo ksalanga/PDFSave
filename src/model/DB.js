@@ -1,5 +1,5 @@
 import { openDB as openIDB, deleteDB as deleteIDB } from "idb";
-import { dummyUsers } from './User'
+import { defaultUser, dummyUser } from './User'
 import { dummyPDF, dummyPDFs } from './PDF'
 
 const devEnvironment = process.env.REACT_APP_ENVIRONMENT === 'DEVELOPMENT'
@@ -34,15 +34,11 @@ export async function initDB() {
         const userExists = users.length > 0
         if (!userExists) {
             if (!devEnvironment) {
-                await userStore.add({
-                    name: 'user',
-                    phone_number: '',
-                    email: ''
-                })
+                await userStore.add(defaultUser)
             }
 
             if (devEnvironment) {
-                await userStore.add(dummyUsers[0])
+                await userStore.add(dummyUser)
             }
         }
 
