@@ -3,9 +3,6 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './view/App';
 import reportWebVitals from './reportWebVitals';
-import { initDB } from './model/DB';
-
-initDB()
 
 // TODO: fix slow image loading
 const root = ReactDOM.createRoot(document.getElementById('root'));
