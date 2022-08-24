@@ -1,6 +1,6 @@
 import { openDB as openIDB, deleteDB as deleteIDB } from "idb";
-import { defaultUser, dummyUser } from './User'
-import { dummyPDF, dummyPDFs } from './PDF'
+import { defaultUser, dummyUser } from './Users'
+import { dummyPDF, dummyPDFs } from './PDFs'
 
 const devEnvironment = process.env.REACT_APP_ENVIRONMENT === 'DEVELOPMENT'
 
@@ -14,25 +14,28 @@ const devEnvironment = process.env.REACT_APP_ENVIRONMENT === 'DEVELOPMENT'
  * Version: 1
  * 
  * Object Stores:
- * - users (see User.js for more info)
- * - pdfs (see PDF.js for more info)
- * - deleted_pdfs (not yet implemented)
+ * - users (see Users.js for more info)
+ * - pdfs (see PDFs.js for more info)
+ * - deleted_pdfs (see Deletes.js)
  * **/
 
-export const PDFSaveDB = {
+export const ClientDB = {
     name: 'PDFSaveProto',
     version: 1,
     pdfStore: 'pdfs',
-    userStore: 'users'
+    userStore: 'users',
+    deleteStore: 'deletes'
 }
 
 export async function openDB() {
-    return await openIDB(PDFSaveDB.name, PDFSaveDB.version, {
+    return await openIDB(ClientDB.name, ClientDB.version, {
         upgrade(db) {
             db.createObjectStore('users', { autoIncrement: true })
             const pdfStore = db.createObjectStore('pdfs', { autoIncrement: true })
 
             pdfStore.createIndex('file_path', 'file_path', { unique: true })
+
+            db.createObjectStore('deletes', { keyPath: 'file_path' })
         }
     })
 }
@@ -41,7 +44,7 @@ export async function initDB() {
     try {
         const db = await openDB()
 
-        console.log(`initializing ${PDFSaveDB.name} database...`)
+        console.log(`initializing ${ClientDB.name} database...`)
 
         const userStore = db.transaction('users', 'readwrite').store
         const users = await userStore.getAll()
@@ -75,9 +78,9 @@ export async function initDB() {
 
 
 export async function deleteDB() {
-    const deletePromise = await deleteIDB(PDFSaveDB.name)
+    const deletePromise = await deleteIDB(ClientDB.name)
 
-    console.log(`deleting ${PDFSaveDB.name} database...`)
+    console.log(`deleting ${ClientDB.name} database...`)
     await deletePromise()
     console.log('deletion complete!')
 }

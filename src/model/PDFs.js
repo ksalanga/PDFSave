@@ -1,4 +1,5 @@
-import { openDB, PDFSaveDB } from './DB'
+import { openDB, ClientDB } from './DB'
+import { add as addToDeleteStore } from './Deletes'
 import uniqid from 'uniqid'
 
 var id = uniqid()
@@ -26,6 +27,8 @@ var id = uniqid()
  * - name (string) - name of bookmark.
  * - page (num) - page that the bookmark represents,
  * 
+ * Indexes:
+ * file_name
  * **/
 
 
@@ -115,7 +118,7 @@ export var dummyPDFs = [
 export async function getWithKey(key) {
     try {
         const db = await openDB()
-        return await db.get(PDFSaveDB.pdfStore, key)    
+        return await db.get(ClientDB.pdfStore, key)    
     } catch (error) {
         console.log(`Something went wrong getting PDF ${key}`)
     }
@@ -124,7 +127,7 @@ export async function getWithKey(key) {
 export async function getWithFile(file_path) {
     try {
         const db = await openDB()
-        return await db.getFromIndex(PDFSaveDB.pdfStore, 'file_path', file_path)
+        return await db.getFromIndex(ClientDB.pdfStore, 'file_path', file_path)
     } catch (error) {
         console.log(`Something went wrong getting PDF in ${file_path}`)
     }
@@ -134,7 +137,7 @@ export async function getWithFile(file_path) {
 export async function add(pdf) {
     try {
         const db = await openDB()
-        const pdfStore = db.transaction(PDFSaveDB.pdfStore, 'readwrite').store
+        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
 
         await pdfStore.add(pdf)
     } catch (error) {
@@ -148,7 +151,7 @@ export async function list() {
         const db = await openDB()
         const pdfs = []
 
-        let cursor = await db.transaction(PDFSaveDB.pdfStore).store.openCursor()
+        let cursor = await db.transaction(ClientDB.pdfStore).store.openCursor()
 
         while (cursor) {
             pdfs.push({key: cursor.key, ...cursor.value})
@@ -164,7 +167,7 @@ export async function list() {
 export async function update(key, values) {
     try {
         const db = await openDB()
-        const pdfStore = db.transaction(PDFSaveDB.pdfStore, 'readwrite').store
+        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
         const pdf = await pdfStore.get(key)
     
         const valueKeys = Object.keys(values)
@@ -184,7 +187,15 @@ export async function update(key, values) {
 export async function remove(key) {
     try {
         const db = await openDB()
-        const pdfStore = db.transaction(PDFSaveDB.pdfStore, 'readwrite').store
+        const tx = db.transaction([ClientDB.pdfStore, ClientDB.deleteStore], 'readwrite')
+
+        const pdfStore = tx.objectStore(ClientDB.pdfStore)
+        const deleteStore = tx.objectStore(ClientDB.deleteStore)
+
+        // first add pdf's file to delete store
+        const pdf = await pdfStore.get(key)
+        await addToDeleteStore(pdf.file_path, deleteStore)
+
         await pdfStore.delete(key)
     } catch (error) {
         console.log("Something went wrong deleting PDF", error)

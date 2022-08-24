@@ -1,4 +1,4 @@
-import { openDB, PDFSaveDB } from './DB'
+import { openDB, ClientDB } from './DB'
 
 /**
  * Users Object Store for the Client Database
@@ -35,17 +35,17 @@ export const defaultUser =
 export async function get(key) {
     try {
         const db = await openDB()
-        return await db.get(PDFSaveDB.userStore, key)    
+        return await db.get(ClientDB.userStore, key)    
     } catch (error) {
         console.log(`Something went wrong getting User ${key}`)
     }
 }
 
 // update user
-export async function update(key) {
+export async function update(key, values) {
     try {
         const db = await openDB()
-        const userStore = db.transaction(PDFSaveDB.userStore, 'readwrite').store
+        const userStore = db.transaction(ClientDB.userStore, 'readwrite').store
         const user = await userStore.get(key)
     
         const valueKeys = Object.keys(values)
