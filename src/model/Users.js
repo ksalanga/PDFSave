@@ -31,7 +31,9 @@ export const defaultUser =
     email: ''
 }
 
-// const values for user record keys that can be updated
+// const values for user record keys that can be updated in the object store
+// where the key is our "enumeration"/ access to all possible update keys
+// and the value is the actual key value inside the record
 export const userUpdateKeys = 
 {
     name: 'name',
