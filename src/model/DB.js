@@ -1,6 +1,6 @@
 import { openDB as openIDB, deleteDB as deleteIDB } from "idb";
-import { defaultUser, dummyUser } from './Users'
-import { dummyPDFs } from './PDFs'
+import { defaultUser } from './Users'
+import { dummyUser, dummyPDFs } from "../tests/DummyData";
 import { CodeError } from "../view/utils/Error";
 
 const devEnvironment = process.env.REACT_APP_ENVIRONMENT === 'DEVELOPMENT'

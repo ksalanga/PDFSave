@@ -17,13 +17,6 @@ import { openDB, ClientDB, batchUpdate } from './DB'
  * (see defaultUser const in this module for starting default values)
  *  **/
 
-export const dummyUser = 
-{
-    name: 'CoolPerson',
-    phone_number: '+12345678912',
-    email: 'email@email.com'
-}
-
 export const defaultUser =
 {
     name: 'user',
