@@ -4,6 +4,21 @@ import { dummyPDF, dummyPDFs } from './PDF'
 
 const devEnvironment = process.env.REACT_APP_ENVIRONMENT === 'DEVELOPMENT'
 
+/** 
+ * Client Database
+ * 
+ * description:
+ * Client side storage using IndexedDB w/ Promise based IDB API.
+ * For local and offline usage in saving PDF data and user phone numbers to send progress notifications if they opt in.
+ * 
+ * Version: 1
+ * 
+ * Object Stores:
+ * - users (see User.js for more info)
+ * - pdfs (see PDF.js for more info)
+ * - deleted_pdfs (not yet implemented)
+ * **/
+
 export const PDFSaveDB = {
     name: 'PDFSaveProto',
     version: 1,
