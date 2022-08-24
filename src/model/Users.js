@@ -1,4 +1,4 @@
-import { openDB, ClientDB } from './DB'
+import { openDB, ClientDB, batchUpdate } from './DB'
 
 /**
  * Users Object Store for the Client Database
@@ -31,6 +31,18 @@ export const defaultUser =
     email: ''
 }
 
+// const values for user record keys that can be updated
+export const userUpdateKeys = 
+{
+    name: 'name',
+    phoneNumber: 'phone_number',
+    email: 'email'
+}
+
+// expected keys list that can be updated
+// ex: name, phone_number, etc.
+const expectedUserUpdateKeys = Object.values(userUpdateKeys)
+
 // get user
 export async function get(key) {
     try {
@@ -46,17 +58,13 @@ export async function update(key, values) {
     try {
         const db = await openDB()
         const userStore = db.transaction(ClientDB.userStore, 'readwrite').store
-        const user = await userStore.get(key)
-    
-        const valueKeys = Object.keys(values)
-    
-        valueKeys.forEach((key) => {
-            user[key] = values[key]
-        })
 
-        await userStore.put(user, key)
-
-        console.log('successfully updated user', key)
+        await batchUpdate (
+            userStore,
+            key,
+            values,
+            expectedUserUpdateKeys
+        )
     } catch (error) {
         console.log("Something went wrong updating user", error)
     }
