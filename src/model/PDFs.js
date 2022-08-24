@@ -1,5 +1,6 @@
-import { openDB, ClientDB } from './DB'
+import { openDB, ClientDB, update as updateDB, batchUpdate } from './DB'
 import { add as addToDeleteStore } from './Deletes'
+import { incorrectStringFormat, notBoolean, notNumber } from '../utils/Formatting'
 import uniqid from 'uniqid'
 
 var id = uniqid()
@@ -35,6 +36,106 @@ var id = uniqid()
  * file_name
  * **/
 
+// const values for pdf record keys that can be updated
+export const pdfUpdateKeys = 
+{
+    name: 'name',
+    currentPage: 'current_page',
+    lastWeekLatestPage: 'last_week_latest_page',
+    currentWeekLatestPage: 'current_week_latest_page',
+    bookmarks: 'bookmarks',
+    autoSaveOn: 'auto_save_on',
+    progressNotificationOn: 'progress_notification_on'
+}
+
+// expected keys list that can be updated
+// ex: name, current_page, etc.
+const expectedPDFUpdateKeys = Object.values(pdfUpdateKeys)
+
+export async function updateName(key, name) {
+    try {
+        if (incorrectStringFormat(name)) {
+            throw 'Error: Incorrect String Format for name'
+        }
+
+        const db = await openDB()
+        await updateDB(
+            db.transaction(ClientDB.pdfStore, 'readwrite').store,
+            key,
+            pdfUpdateKeys.name,
+            name
+        )
+    } catch(error) {
+        console.log(`Something went wrong updating PDF ${key} name`, error)
+    }
+}
+
+const checkIncorrectPageFormat = (pageNumber, length) => {
+    if (notNumber(pageNumber)
+    || pageNumber < 0
+    || pageNumber > length) {
+        throw 'Error: page must be a number between 0 and length of pdf'
+    }
+}
+
+// function for updating a page number within a PDF whether that's the current page, the last weekly page, or the current weekly page
+// the function has built in format checking to throw errors regarding page number
+// primaryKey: primary key of pdf record
+// updateKey: the key in the pdf record we wish to update
+// page: page number (number) value
+
+const updatePage = async (primaryKey, updateKey, page) => {
+    try {
+        const db = await openDB()
+        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
+        const pdf = pdfStore.get(primaryKey)
+
+        checkIncorrectPageFormat(pdfStore.get(primaryKey), pdf.length)
+        
+        await updateDB(
+            pdfStore,
+            primaryKey,
+            updateKey,
+            page
+        )
+    } catch(error) {
+        console.log(`Something went wrong updating PDF ${primaryKey}'s ${updateKey} page`, error)
+    }
+}
+
+// function for updating a boolean within a PDF.
+// the function has built in format checking to throw errors regarding wrong booleans
+// primaryKey: primary key of pdf record
+// updateKey: the boolean key we wish to update
+// b: boolean value
+
+const updateBoolean = async (primaryKey, updateKey, b) => {
+    try {
+        if (notBoolean(b)) {
+            throw 'updating value must be boolean'
+        }
+    
+        const db = await openDB()
+    
+        await updateDB(
+            db.transaction(ClientDB.pdfStore, 'readwrite').store,
+            primaryKey,
+            updateKey,
+            b
+        )
+    } catch (error) {
+        console.log(`Something went wrong updating PDF ${primaryKey}'s ${updateKey} page`, error)
+    }
+}
+
+export async function updateCurrentPage(key, currentPage) { await updatePage(key, pdfUpdateKeys.currentPage, currentPage) }
+export async function updateLastWeekLatestPage(key, lastWeekLatestPage) { await updatePage(key, pdfUpdateKeys.lastWeekLatestPage, lastWeekLatestPage) }
+export async function updateCurrentWeekLatestPage(key, currentWeekLatestPage) { await updatePage(key, pdfUpdateKeys.currentWeekLatestPage, currentWeekLatestPage) }
+export async function updateAutoSaveOn(key, autoSaveOn) { updateBoolean(key, pdfUpdateKeys.autoSaveOn, autoSaveOn) }
+export async function updateProgressNotificationOn(key, progressNotificationOn) { updateBoolean(key, pdfUpdateKeys.progressNotificationOn, progressNotificationOn) }
+
+export async function updateBookmark(key, id, values) {
+}
 
 export var dummyPDF =  
 {
@@ -135,6 +236,7 @@ export var dummyPDFs = [
     }
 ]
 
+// gets pdf with key
 export async function getWithKey(key) {
     try {
         const db = await openDB()
@@ -144,6 +246,7 @@ export async function getWithKey(key) {
     }
 }
 
+// gets pdf with file name index
 export async function getWithFile(file_path) {
     try {
         const db = await openDB()
@@ -154,19 +257,48 @@ export async function getWithFile(file_path) {
 }
 
 // add a PDF to pdfs Object Store
-export async function add(pdf) {
+export async function add(
+    name,
+    filePath,
+    length
+) {
     try {
-        const db = await openDB()
-        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
+        if (incorrectStringFormat(name)) {
+            throw 'Error creating PDF: name must be a non empty string'
+        }
+        if (incorrectStringFormat(filePath)) {
+            throw 'Error creating PDF: file path must be a non empty string'
+        }
+        if (notNumber(length)
+        || length < 1) {
+            throw 'Error creating PDF: length of pdf must be a number > 0'
+        }
 
+        const db = await openDB()
+
+        const pdf =
+        {
+            name: name,
+            file_path: filePath,
+            current_page: 0,
+            length: length,
+            last_week_latest_page: 0,
+            current_week_latest_page: 0,
+            bookmarks: [],
+            auto_save_on: true,
+            progress_notification_on: false
+        }
+
+        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
+        
         await pdfStore.add(pdf)
     } catch (error) {
         console.log("Something went wrong adding a PDF", error)
     }
 }
 
-// grab a list of PDFs
-export async function list() {
+// grab a list of all PDFs
+export async function getAll() {
     try {
         const db = await openDB()
         const pdfs = []
@@ -184,26 +316,27 @@ export async function list() {
     }
 }
 
+// update a record of key: key
+// with an object of key, value pairs to update
 export async function update(key, values) {
     try {
         const db = await openDB()
+
         const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
-        const pdf = await pdfStore.get(key)
-    
-        const valueKeys = Object.keys(values)
-    
-        valueKeys.forEach((key) => {
-            pdf[key] = values[key]
-        })
 
-        await pdfStore.put(pdf, key)
+        await batchUpdate(
+            pdfStore, 
+            key, 
+            values, 
+            expectedPDFUpdateKeys
+        )
 
-        console.log('successfully updated pdf', key)
     } catch (error) {
         console.log("Something went wrong updating PDF", error)
     }
 }
 
+// removes pdf of key: key
 export async function remove(key) {
     try {
         const db = await openDB()
