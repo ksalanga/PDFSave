@@ -1,6 +1,7 @@
 import { openDB as openIDB, deleteDB as deleteIDB } from "idb";
 import { defaultUser, dummyUser } from './Users'
-import { dummyPDF, dummyPDFs } from './PDFs'
+import { dummyPDFs } from './PDFs'
+import { CodeError } from "../view/utils/Error";
 
 const devEnvironment = process.env.REACT_APP_ENVIRONMENT === 'DEVELOPMENT'
 
@@ -89,7 +90,8 @@ export async function update(store, primaryKey, key, value) {
     
         await store.put(record)
     } catch (error) {
-        throw 'Something went wrong updating record', error
+        console.log('Something went wrong updating a store', error)
+        throw new CodeError('Something went wrong updating record', 404)
     }
 }
 
@@ -101,28 +103,32 @@ export async function update(store, primaryKey, key, value) {
 // expectedKeys: list of string keys that this stores allows to update 
 export async function batchUpdate(store, key, values, expectedKeys) {
     try {
-        const valueKeys = Object.keys(values)
+        const updateKeys = Object.keys(values)
 
-        if (valueKeys.length > expectedKeys.length )
-        {
-            throw `Error: updating more keys than expected for this record`
+        if (updateKeys.length > expectedKeys.length) {
+            throw new CodeError(`Error: updating more keys than expected for this record`, 404)
         }
 
-        valueKeys.forEach((valueKey) => {
-            if (!expectedKeys.includes(valueKey)) {
-                throw `Error: ${valueKey} is not a key that you can update in this record`
+        if (updateKeys.length === 0) {
+            throw new CodeError('Error: cannot update nothing', 404)
+        }
+
+        updateKeys.forEach((updateKey) => {
+            if (!expectedKeys.includes(updateKey)) {
+                throw new CodeError(`Error: ${updateKey} is not a key that you can update in this record`, 404)
             }
         })
 
         const record = await store.get(key)
     
-        valueKeys.forEach((key) => {
+        updateKeys.forEach((key) => {
             record[key] = values[key]
         })
     
         await store.put(record, key)
     } catch (error) {
-        throw 'Something went wrong batch updating values in store:', error
+        console.log('Something went wrong back updating values in store', error)
+        throw new CodeError('Something went wrong batch updating values in record', 404)
     }
 }
 
