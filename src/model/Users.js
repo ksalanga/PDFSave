@@ -11,7 +11,7 @@ import { openDB, ClientDB } from './DB'
  * user record in Object Store keys:
  * - primary_key (number) - indexedDB auto generated key.
  * - name (string) - name of user.
- * - phone (string) - phone number of user for notification purposes.
+ * - phone_number (string) - phone number of user for notification purposes.
  * - email (string) - email of user for notification purposes (might not be used).
  * 
  * (see defaultUser const in this module for starting default values)
@@ -20,7 +20,7 @@ import { openDB, ClientDB } from './DB'
 export const dummyUser = 
 {
     name: 'CoolPerson',
-    phoneNumber: '+123456789',
+    phone_number: '+12345678912',
     email: 'email@email.com'
 }
 
