@@ -1,9 +1,7 @@
 import { openDB, ClientDB, update as updateDB, batchUpdate } from './DB'
 import { add as addToDeleteStore } from './Deletes'
 import { incorrectStringFormat, notBoolean, notNumber } from '../utils/Formatting'
-import uniqid from 'uniqid'
-
-var id = uniqid()
+import { CodeError } from '../view/utils/Error'
 
 /** 
  * PDFs Object Store for the Client Database
@@ -36,7 +34,9 @@ var id = uniqid()
  * file_name
  * **/
 
-// const values for pdf record keys that can be updated
+// pdf record keys that can be updated
+// where the key is a constant value that other modules trying to update a PDF's keys can access as an "enumeration"
+// and the value is the actual key value inside the record
 export const pdfUpdateKeys = 
 {
     name: 'name',
@@ -48,33 +48,16 @@ export const pdfUpdateKeys =
     progressNotificationOn: 'progress_notification_on'
 }
 
-// expected keys list that can be updated
+// expected keys list that can be updated in the object store
 // ex: name, current_page, etc.
 const expectedPDFUpdateKeys = Object.values(pdfUpdateKeys)
 
-export async function updateName(key, name) {
-    try {
-        if (incorrectStringFormat(name)) {
-            throw 'Error: Incorrect String Format for name'
-        }
-
-        const db = await openDB()
-        await updateDB(
-            db.transaction(ClientDB.pdfStore, 'readwrite').store,
-            key,
-            pdfUpdateKeys.name,
-            name
-        )
-    } catch(error) {
-        console.log(`Something went wrong updating PDF ${key} name`, error)
-    }
-}
 
 const checkIncorrectPageFormat = (pageNumber, length) => {
     if (notNumber(pageNumber)
     || pageNumber < 0
     || pageNumber > length) {
-        throw 'Error: page must be a number between 0 and length of pdf'
+        throw new CodeError('Error: page must be a number between 0 and length of pdf', 404)
     }
 }
 
@@ -83,12 +66,11 @@ const checkIncorrectPageFormat = (pageNumber, length) => {
 // primaryKey: primary key of pdf record
 // updateKey: the key in the pdf record we wish to update
 // page: page number (number) value
-
 const updatePage = async (primaryKey, updateKey, page) => {
     try {
         const db = await openDB()
         const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
-        const pdf = pdfStore.get(primaryKey)
+        const pdf = await pdfStore.get(primaryKey)
 
         checkIncorrectPageFormat(pdfStore.get(primaryKey), pdf.length)
         
@@ -108,11 +90,10 @@ const updatePage = async (primaryKey, updateKey, page) => {
 // primaryKey: primary key of pdf record
 // updateKey: the boolean key we wish to update
 // b: boolean value
-
 const updateBoolean = async (primaryKey, updateKey, b) => {
     try {
         if (notBoolean(b)) {
-            throw 'updating value must be boolean'
+            throw new CodeError('updating value must be a boolean', 404)
         }
     
         const db = await openDB()
@@ -128,113 +109,126 @@ const updateBoolean = async (primaryKey, updateKey, b) => {
     }
 }
 
+// updates name in PDF record with key: key
+// key: PDF primary key
+// name: name / title value to update to
+export async function updateName(key, name) {
+    try {
+        if (incorrectStringFormat(name)) {
+            throw new CodeError('Error: Incorrect String Format for name', 404)
+        }
+
+        const db = await openDB()
+        await updateDB(
+            db.transaction(ClientDB.pdfStore, 'readwrite').store,
+            key,
+            pdfUpdateKeys.name,
+            name
+        )
+    } catch(error) {
+        console.log(`Something went wrong updating PDF ${key} name`, error)
+    }
+}
 export async function updateCurrentPage(key, currentPage) { await updatePage(key, pdfUpdateKeys.currentPage, currentPage) }
 export async function updateLastWeekLatestPage(key, lastWeekLatestPage) { await updatePage(key, pdfUpdateKeys.lastWeekLatestPage, lastWeekLatestPage) }
 export async function updateCurrentWeekLatestPage(key, currentWeekLatestPage) { await updatePage(key, pdfUpdateKeys.currentWeekLatestPage, currentWeekLatestPage) }
 export async function updateAutoSaveOn(key, autoSaveOn) { updateBoolean(key, pdfUpdateKeys.autoSaveOn, autoSaveOn) }
 export async function updateProgressNotificationOn(key, progressNotificationOn) { updateBoolean(key, pdfUpdateKeys.progressNotificationOn, progressNotificationOn) }
 
-export async function updateBookmark(key, id, values) {
-}
+// creates new bookmark to pdf with primaryKey: key
+// key: primaryKey of pdf record
+// id: application generated id of bookmark
+// name: name of bookmark
+// page: page of bookmark
+export async function createBookmark(key, id, name, page) {
+    try {
+        if (incorrectStringFormat(id)) {
+            throw new CodeError('Bookmark id ought to be a nonempty stirng', 404)
+        }
 
-export var dummyPDF =  
-{
-    name: `pdf${id}`,
-    file_path: `/pdf/pdf${id}.pdf`,
-    current_page: 0,
-    length: 100,
-    last_week_latest_page: 0,
-    current_week_latest_page: 0,
-    bookmarks: [
-        {
-            id: '1',
-            name: 'Bookmark 1',
-            page: 1
-        },
-    ],
-    auto_save_on: true,
-    progress_notification_on: false,
-}
+        if (incorrectStringFormat(name)) {
+            throw new CodeError('Name ought to be a nonempty string', 404)
+        }
 
-// TODO (Kenny): Delete dummy PDF array later
-export var dummyPDFs = [
-    {
-        name: 'PDF 1',
-        file_path: '/pdf/pdf1.pdf',
-        current_page: 24,
-        length: 50,
-        last_week_latest_page: 0,
-        current_week_latest_page: 10,
-        bookmarks: [
+        checkIncorrectPageFormat(page)
+
+        const db = await openDB()
+        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
+        const pdf = await pdfStore.get(key)
+
+        pdf.bookmarks.push(
             {
-                id: '1',
-                name: 'Bookmark 1',
-                page: 1
-            },
-            {
-                id: '2',
-                name: 'Bookmark 2',
-                page: 2
-            },
-            {
-                id: '3',
-                name: 'Bookmark 3',
-                page: 3
-            },
-            {
-                id: '4',
-                name: 'Bookmark 4',
-                page: 4
-            },
-            {
-                id: '5',
-                name: 'Bookmark 5',
-                page: 5
-            },
-        ],
-        auto_save_on: true,
-        progress_notification_on: false
-    },
-    {
-        name: 'PDF 2',
-        file_path: '/pdf/pdf2.pdf',
-        current_page: 37,
-        length: 700,
-        last_week_latest_page: 0,
-        current_week_latest_page: 0,
-        bookmarks: [
-            {
-                id: '1',
-                name: 'Bookmark 1',
-                page: 1
-            },
-            {
-                id: '2',
-                name: 'Bookmark 2',
-                page: 2
+                id: id,
+                name: name,
+                page: page
             }
-        ],
-        auto_save_on: true,
-        progress_notification_on: false
-    },
-    {
-        name: 'PDF 3',
-        file_path: '/pdf/pdf3.pdf',
-        current_page: 400,
-        length: 1000,
-        last_week_latest_page: 120,
-        current_week_latest_page: 300,
-        bookmarks: [
-            {
-                id: '1',
-                name: 'Bookmark 1',
-                page: 1
-            }
-        ],
-        auto_save_on: true,
-        progress_notification_on: true
+        )
+
+        await pdfStore.put(pdf, key)
+    } catch (error) {
+        console.log(`Something went wrong creating PDF ${key}'s new bookmark`, error)
     }
-]
+}
+
+// updates a bookmark of id: id, with values
+// key: key of pdf record
+// id: id of bookmark to update
+// name: name of bookmark
+// page: page of bookmark
+export async function updateBookmark(key, id, name, page) {
+    try {
+        if (incorrectStringFormat(id)) {
+            throw new CodeError('Bookmark id ought to be a nonempty string', 404)
+        }
+        
+        if (incorrectStringFormat(name)) {
+            throw new CodeError('Name ought to be a string', 404)
+        }
+
+        checkIncorrectPageFormat(page)
+
+        const db = await openDB()
+        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
+        const pdf = await pdfStore.get(key)
+
+        pdf.bookmarks = pdf.bookmarks.map(bookmark => {
+            if (bookmark.id === id) {
+                return {
+                    name: name,
+                    page: page,
+                    ...bookmark
+                }
+            }
+            return bookmark
+        })
+
+        await pdfStore.put(pdf, key)
+    } catch (error) {
+        console.log(`Something went wrong updating PDF ${key}'s Bookmark: ${id}`, error)
+    }
+}
+
+
+// deletes a bookmark in pdf with primaryKey: key
+// key: primaryKey of pdf record
+// id: application generated id of bookmark
+export async function deleteBookmark(key, id) {
+    try {
+        if (incorrectStringFormat(id)) {
+            throw new CodeError('Bookmark id ought to be a stirng', 404)
+        }
+
+        const db = await openDB()
+        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
+        const pdf = await pdfStore.get(key)
+
+        pdf.bookmarks = pdf.bookmarks.filter(bookmark => bookmark.id !== id)
+
+        await pdfStore.put(pdf, key)
+    } catch (error) {
+        console.log(`Something went wrong deleting PDF ${key}'s Bookmark: ${id}`, error)
+    }
+}
 
 // gets pdf with key
 export async function getWithKey(key) {
@@ -257,6 +251,9 @@ export async function getWithFile(file_path) {
 }
 
 // add a PDF to pdfs Object Store
+// name: name of PDF
+// filePath: filepath of PDF
+// length: length in pages of pdf
 export async function add(
     name,
     filePath,
@@ -264,14 +261,14 @@ export async function add(
 ) {
     try {
         if (incorrectStringFormat(name)) {
-            throw 'Error creating PDF: name must be a non empty string'
+            throw new CodeError('Error creating PDF: name must be a non empty string', 404)
         }
         if (incorrectStringFormat(filePath)) {
-            throw 'Error creating PDF: file path must be a non empty string'
+            throw new CodeError('Error creating PDF: file path must be a non empty string', 404)
         }
         if (notNumber(length)
         || length < 1) {
-            throw 'Error creating PDF: length of pdf must be a number > 0'
+            throw new CodeError('Error creating PDF: length of pdf must be a number > 0', 404)
         }
 
         const db = await openDB()
@@ -316,8 +313,8 @@ export async function getAll() {
     }
 }
 
-// update a record of key: key
-// with an object of key, value pairs to update
+// batch update a pdf record of key: key
+// with a values object of key, value pairs to update
 export async function update(key, values) {
     try {
         const db = await openDB()
