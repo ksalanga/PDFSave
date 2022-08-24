@@ -77,6 +77,55 @@ export async function initDB() {
 }
 
 
+// update a specific key and value within an object store
+// store: object Store
+// primaryKey: primaryKey of the record in object store we want to update
+// key: key of the record we want to update
+// value: value of the record we want to update
+export async function update(store, primaryKey, key, value) {
+    try {
+        const record = await store.get(primaryKey)
+        record[key] = value
+    
+        await store.put(record)
+    } catch (error) {
+        throw 'Something went wrong updating record', error
+    }
+}
+
+
+// batch update multiple key, values in a specific store to a single write transaction
+// key: key of the record in object store we want to update
+// store: Object Store
+// values: Object of key,values pairs that we wish to update in our object store
+// expectedKeys: list of string keys that this stores allows to update 
+export async function batchUpdate(store, key, values, expectedKeys) {
+    try {
+        const valueKeys = Object.keys(values)
+
+        if (valueKeys.length > expectedKeys.length )
+        {
+            throw `Error: updating more keys than expected for this record`
+        }
+
+        valueKeys.forEach((valueKey) => {
+            if (!expectedKeys.includes(valueKey)) {
+                throw `Error: ${valueKey} is not a key that you can update in this record`
+            }
+        })
+
+        const record = await store.get(key)
+    
+        valueKeys.forEach((key) => {
+            record[key] = values[key]
+        })
+    
+        await store.put(record, key)
+    } catch (error) {
+        throw 'Something went wrong batch updating values in store:', error
+    }
+}
+
 export async function deleteDB() {
     const deletePromise = await deleteIDB(ClientDB.name)
 
