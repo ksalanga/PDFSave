@@ -13,6 +13,7 @@ import { openDB, ClientDB, batchUpdate } from './DB'
  * - name (string) - name of user.
  * - phone_number (string) - phone number of user for notification purposes.
  * - email (string) - email of user for notification purposes (might not be used).
+ * - progress_notification_on (boolean) - if it's on, users will get emails or texts about their reading progression
  * 
  * (see defaultUser const in this module for starting default values)
  *  **/
@@ -21,7 +22,10 @@ export const defaultUser =
 {
     name: 'user',
     phone_number: '',
-    email: ''
+    email: '',
+    progress_notification_on: false
+}
+
 }
 
 // const values for user record keys that can be updated in the object store

@@ -6,7 +6,8 @@ export const dummyUser =
 {
     name: 'CoolPerson',
     phone_number: '+12345678912',
-    email: 'email@email.com'
+    email: 'email@email.com',
+    progress_notification_on: true
 }
 
 export var dummyPDF =  
