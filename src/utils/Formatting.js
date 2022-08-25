@@ -2,6 +2,6 @@
 
 export const incorrectStringFormat = (s) => {return typeof(s) !== 'string' || s === ''}
 
-export const notNumber = (n) => {return typeof(n) !== 'number'}
+export const notInteger = (n) => {return !Number.isInteger(n)}
 
 export const notBoolean = (b) => {return typeof(b) !== 'boolean'}

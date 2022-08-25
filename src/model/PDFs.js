@@ -1,6 +1,6 @@
 import { openDB, ClientDB, update as updateDB, batchUpdate } from './DB'
 import { add as addToDeleteStore } from './Deletes'
-import { incorrectStringFormat, notBoolean, notNumber } from '../utils/Formatting'
+import { incorrectStringFormat, notBoolean, notInteger } from '../utils/Formatting'
 import { CodeError } from '../view/utils/Error'
 
 /** 
@@ -10,13 +10,13 @@ import { CodeError } from '../view/utils/Error'
  * holds records for all pdfs that are opened through a Chrome based browser.
  * 
  * pdf record in Object Store keys:
- * - primary_key (num) - indexedDB auto generated key.
+ * - primary_key (int) - indexedDB auto generated key.
  * - name (string) - title of the pdf that user can decide.
  * - file_path (string) - absolute file path of the pdf from the chrome url.
- * - current_page (num) - current page that the user is reading or left off at.
- * - length (num) - the length in pages of the pdf.
- * - last_week_latest_page (num) [DEFAULT: 0] - the latest page that the user read last week for reading progress notification purposes.
- * - current_week_latest_page (num) [DEFAULT: 0] - the latest page that the user is currently reading this week for reading progress notification purposes.
+ * - current_page (int) - current page that the user is reading or left off at.
+ * - length (int) - the length in pages of the pdf.
+ * - last_week_latest_page (int) [DEFAULT: 0] - the latest page that the user read last week for reading progress notification purposes.
+ * - current_week_latest_page (int) [DEFAULT: 0] - the latest page that the user is currently reading this week for reading progress notification purposes.
  * - bookmarks (list(Bookmark)) - list of bookmark objects (see Bookmark Object keys below).
  * - auto_save_on (boolean) - indicates if this pdf has auto saving on or not.
  * - progress_notification_on (boolean) - turns on reading progress notification for this specific pdf.
@@ -54,7 +54,7 @@ const expectedPDFUpdateKeys = Object.values(pdfUpdateKeys)
 
 
 const checkIncorrectPageFormat = (pageNumber, length) => {
-    if (notNumber(pageNumber)
+    if (notInteger(pageNumber)
     || pageNumber < 0
     || pageNumber > length) {
         throw new CodeError('Error: page must be a number between 0 and length of pdf', 404)
@@ -266,7 +266,7 @@ export async function add(
         if (incorrectStringFormat(filePath)) {
             throw new CodeError('Error creating PDF: file path must be a non empty string', 404)
         }
-        if (notNumber(length)
+        if (notInteger(length)
         || length < 1) {
             throw new CodeError('Error creating PDF: length of pdf must be a number > 0', 404)
         }
