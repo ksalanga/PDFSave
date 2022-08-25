@@ -43,7 +43,7 @@ export const pdfKeyTypes = {
     length: 'number',
     last_week_latest_page: 'number',
     current_week_latest_page: 'number',
-    bookmarks: 'object',
+    bookmarks: 'object', // specifically a LIST
     auto_save_on: 'boolean',
     progress_notification_on: 'boolean'
 }
