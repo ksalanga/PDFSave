@@ -315,11 +315,9 @@ export async function add(
     }
 }
 
-// returns a list of all PDFs as a list of Objects
-// the returned List of PDF Objects WILL include the pdf's key for each PDF Object
-// BUT this key field is not a field inside a pdf record
-// because our primary key within our DB is just an internal key, not a specific field.
-export async function getAll() {
+// returns a list of all PDF Objects including the primary key as key: key.
+// inside each returned Object.
+export async function getAllWithPrimaryKey() {
     try {
         const db = await openDB()
         const pdfs = []
@@ -330,6 +328,21 @@ export async function getAll() {
             pdfs.push({key: cursor.key, ...cursor.value})
             cursor = await cursor.continue()
         }
+
+        return pdfs
+    } catch (error) {
+        console.log("Something went wrong reading PDFs", error)
+    }
+}
+
+// returns a list of all PDF Objects EXCLUDING the primary key value.
+// only has the values stored in each record.
+export async function getAll() {
+    try {
+        const db = await openDB()
+        const pdfStore = db.transaction(ClientDB.pdfStore).store
+
+        const pdfs = await pdfStore.getAll()
 
         return pdfs
     } catch (error) {
