@@ -315,7 +315,10 @@ export async function add(
     }
 }
 
-// grab a list of all PDFs
+// returns a list of all PDFs as a list of Objects
+// the returned List of PDF Objects WILL include the pdf's key for each PDF Object
+// BUT this key field is not a field inside a pdf record
+// because our primary key within our DB is just an internal key, not a specific field.
 export async function getAll() {
     try {
         const db = await openDB()
