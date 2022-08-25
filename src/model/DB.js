@@ -46,8 +46,6 @@ export async function initDB() {
     try {
         const db = await openDB()
 
-        console.log(`initializing ${ClientDB.name} database...`)
-
         const userStore = db.transaction('users', 'readwrite').store
         const users = await userStore.getAll()
 
@@ -71,8 +69,6 @@ export async function initDB() {
                 await pdfStore.add(pdf)
             })
         }
-
-        console.log('initialization complete!')
     } catch (error) {
         console.log('Something went wrong initializing DB', error)
     }

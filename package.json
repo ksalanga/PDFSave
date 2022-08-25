@@ -38,6 +38,17 @@
     ]
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.193"
+    "@babel/plugin-transform-modules-commonjs": "^7.18.6",
+    "@types/chrome": "^0.0.193",
+    "fake-indexeddb": "^4.0.0"
+  },
+  "babel": {
+    "env": {
+      "test": {
+        "plugins": [
+          "@babel/plugin-transform-modules-commonjs"
+        ]
+      }
+    }
   }
 }
