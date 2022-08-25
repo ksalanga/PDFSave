@@ -34,6 +34,27 @@ import { CodeError } from '../view/utils/Error'
  * file_name
  * **/
 
+// expected keys and type pairs for a PDF model
+export const pdfKeyTypes = {
+    primary_key: 'number',
+    name: 'string',
+    file_path: 'string',
+    current_page: 'number',
+    length: 'number',
+    last_week_latest_page: 'number',
+    current_week_latest_page: 'number',
+    bookmarks: 'object',
+    auto_save_on: 'boolean',
+    progress_notification_on: 'boolean'
+}
+
+// expected keys and type pairs for a Bookmark Object
+export const bookmarkKeyTypes = {
+    id: 'string',
+    name: 'string',
+    page: 'number'
+}
+
 // pdf record keys that can be updated
 // where the key is a constant value that other modules trying to update a PDF's keys can access as an "enumeration"
 // and the value is the actual key value inside the record
@@ -336,6 +357,9 @@ export async function update(key, values) {
 // removes pdf of key: key
 export async function remove(key) {
     try {
+        if (notInteger(key)) {
+            throw new CodeError('key ought to be an integer', 404)
+        }
         const db = await openDB()
         const tx = db.transaction([ClientDB.pdfStore, ClientDB.deleteStore], 'readwrite')
 

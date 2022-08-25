@@ -26,6 +26,14 @@ export const defaultUser =
     progress_notification_on: false
 }
 
+// expected keys and type pairs for a User model
+export const userKeyTypes =
+{
+    primary_key: 'number',
+    name: 'string',
+    phone_number: 'string',
+    email: 'string',
+    progress_notification_on: 'boolean'
 }
 
 // const values for user record keys that can be updated in the object store
@@ -35,7 +43,8 @@ export const userUpdateKeys =
 {
     name: 'name',
     phoneNumber: 'phone_number',
-    email: 'email'
+    email: 'email',
+    progressNotificationOn: 'progress_notification_on'
 }
 
 // expected keys list that can be updated
