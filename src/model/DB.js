@@ -35,6 +35,7 @@ export async function openDB() {
             const pdfStore = db.createObjectStore('pdfs', { autoIncrement: true })
 
             pdfStore.createIndex('file_path', 'file_path', { unique: true })
+            pdfStore.createIndex('progress_notification_on', 'progress_notification_on', { unique: false })
 
             db.createObjectStore('deletes', { keyPath: 'file_path' })
         }

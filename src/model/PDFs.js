@@ -32,6 +32,7 @@ import { CodeError } from '../view/utils/Error'
  * 
  * Indexes:
  * file_name
+ * progress_notification_on
  * **/
 
 // expected keys and type pairs for a PDF model
