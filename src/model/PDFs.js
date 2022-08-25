@@ -37,7 +37,6 @@ import { CodeError } from '../view/utils/Error'
 
 // expected keys and type pairs for a PDF model
 export const pdfKeyTypes = {
-    primary_key: 'number',
     name: 'string',
     file_path: 'string',
     current_page: 'number',

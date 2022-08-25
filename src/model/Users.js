@@ -29,7 +29,6 @@ export const defaultUser =
 // expected keys and type pairs for a User model
 export const userKeyTypes =
 {
-    primary_key: 'number',
     name: 'string',
     phone_number: 'string',
     email: 'string',
