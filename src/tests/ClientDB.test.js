@@ -20,6 +20,21 @@ import { generateRandomString, generateRandomInt } from './utils/Random';
 // Jest ES6 support set up:
 // https://stackoverflow.com/a/52224329
 
+jest.setTimeout(1000)
+
+beforeEach(
+async () => {
+    await initDB()
+})
+
+// for clearing fake indexeddb (in memory idb) databases
+// https://github.com/dumbmatter/fakeIndexedDB/issues/2
+afterEach(
+async () => {
+    await indexedDB._databases.clear()
+})
+
+describe('Development Client DB Tests', () => {
 
             const name = generateRandomString(7)
             const filePath = generateRandomString(10)
