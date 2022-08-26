@@ -1,11 +1,14 @@
 import 'dotenv/config.js'
 import "fake-indexeddb/auto";
-import { initDB } from "../model/DB";
-import { get as getUser } from "../model/Users"
 import { dummyUser } from "./DummyData"
+import { add as addPDF, getAll as getAllPDFs, getWithKey as getPDFWithKey } from "../model/PDFs";
+import { deleteDB, initDB } from "../model/DB";
+import { defaultUser, get, get as getUser, userKeyTypes } from "../model/Users"
 import { generateRandomString, generateRandomInt } from './utils/Random';
+import {jest} from '@jest/globals'
+import { indexedDB } from "fake-indexeddb";
 
-// run test: npx jest
+// run test: npx jest --detectOpenHandles --watch --verbose false
 
 // Jest by default runs in a node environment, so our 
 // - indexedDB isn't running on a DOM (indexedDB requires it)
@@ -35,33 +38,93 @@ async () => {
 })
 
 describe('Development Client DB Tests', () => {
+    describe('User tests',
+    () =>
+    {
+        test('Dummy User is initialized with correct values',
+        async () => 
+        {
+            const user = await getUser(1)
+            expect(user).toStrictEqual(dummyUser)
+        })
+        
+        test("Dummy User's keys are the correct types", 
+        async () => 
+        {
+            const user = await getUser(1)
+            const userKeys = Object.keys(user)
+    
+            userKeys.forEach((key) => {
+                expect(typeof(user[key])).toEqual(userKeyTypes[key])
+            })
+        })
+    }) 
+    
+    describe('PDF tests',
+    () =>
+    {
+        const initialValues =
+        {
+            current_page: 0,
+            last_week_latest_page: 0,
+            current_week_latest_page: 0,
+            bookmarks: [],
+            auto_save_on: true,
+            progress_notification_on: false,
+        }
 
+        test("Adding a PDF results in correct initial fields",
+        async () =>
+        {
             const name = generateRandomString(7)
             const filePath = generateRandomString(10)
             const length = generateRandomInt(50)
 
+            const dummyCreatePDF =
+            {
+                name: name,
+                file_path: filePath,
+                length: length,
+                ...initialValues
+            }
 
-describe('Production ClientDB Tests', () => {
-    beforeAll(async () => {
+            await addPDF(name, filePath, length)
+            const createdDBPDF = await getPDFWithKey(4)
+            const pdfs = await getAllPDFs()
+
+            expect(createdDBPDF).toStrictEqual(dummyCreatePDF)
+            expect(pdfs.length).toEqual(4)
+        })
+
+        test("Amount of items in a freshly reset PDF store is 3", 
+        async () => 
+        {
+            const pdfs = await getAllPDFs()
+            expect(pdfs.length).toEqual(3)
+            console.log('finished getting items')
+        })
+    })
+})
+
+
+describe.skip('Production ClientDB Tests', () => {
+    beforeEach(async () => {
         process.env.REACT_APP_ENVIRONMENT = 'PRODUCTION'
         await initDB()
     })
 
-    afterAll(async() => {
-        await deleteDB()
-    })
-
     test('Default User is initialized with default values', async () => {
         const user = await getUser(1)
-
         expect(user).toStrictEqual(dummyUser)
     })
     
     test("Default User's keys are the correct types", async () => {
         const user = await getUser(1)
 
-        for (var key in Object.keys(user)) {
+        const userKeys = Object.keys(user)
+
+        userKeys.forEach((key) => {
             expect(typeof(user[key])).toEqual(userKeyTypes[key])
-        }
+        })
     })
 })
