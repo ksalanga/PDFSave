@@ -24,7 +24,29 @@ import { generateRandomString, generateRandomInt } from './utils/Random';
             const name = generateRandomString(7)
             const filePath = generateRandomString(10)
             const length = generateRandomInt(50)
+
+
+describe('Production ClientDB Tests', () => {
+    beforeAll(async () => {
+        process.env.REACT_APP_ENVIRONMENT = 'PRODUCTION'
+        await initDB()
+    })
+
+    afterAll(async() => {
+        await deleteDB()
+    })
+
+    test('Default User is initialized with default values', async () => {
         const user = await getUser(1)
+
         expect(user).toStrictEqual(dummyUser)
+    })
+    
+    test("Default User's keys are the correct types", async () => {
+        const user = await getUser(1)
+
+        for (var key in Object.keys(user)) {
+            expect(typeof(user[key])).toEqual(userKeyTypes[key])
+        }
     })
 })

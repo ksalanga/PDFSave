@@ -3,8 +3,6 @@ import { defaultUser } from './Users'
 import { dummyUser, dummyPDFs } from "../tests/DummyData";
 import { CodeError } from "../view/utils/Error";
 
-const devEnvironment = process.env.REACT_APP_ENVIRONMENT === 'DEVELOPMENT'
-
 /** 
  * Client Database
  * 
@@ -44,6 +42,7 @@ export async function openDB() {
 
 export async function initDB() {
     try {
+        const devEnvironment = process.env.REACT_APP_ENVIRONMENT === 'DEVELOPMENT'
         const db = await openDB()
 
         const userStore = db.transaction('users', 'readwrite').store
