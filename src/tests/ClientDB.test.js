@@ -3,6 +3,7 @@ import "fake-indexeddb/auto";
 import { initDB } from "../model/DB";
 import { get as getUser } from "../model/Users"
 import { dummyUser } from "./DummyData"
+import { generateRandomString, generateRandomInt } from './utils/Random';
 
 // run test: npx jest
 
@@ -20,9 +21,9 @@ import { dummyUser } from "./DummyData"
 // https://stackoverflow.com/a/52224329
 
 
-test('User is initialized with default values', () => {
-    initDB()
-    .then(async () => {
+            const name = generateRandomString(7)
+            const filePath = generateRandomString(10)
+            const length = generateRandomInt(50)
         const user = await getUser(1)
         expect(user).toStrictEqual(dummyUser)
     })
