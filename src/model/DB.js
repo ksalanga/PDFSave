@@ -130,9 +130,13 @@ export async function batchUpdate(store, key, values, expectedKeys) {
 }
 
 export async function deleteDB() {
-    const deletePromise = await deleteIDB(ClientDB.name)
-
-    console.log(`deleting ${ClientDB.name} database...`)
-    await deletePromise()
-    console.log('deletion complete!')
+    try {
+        await deleteIDB(ClientDB.name, {
+            blocked(db) {
+                db.close()
+            }
+        })
+    } catch (error) {
+        console.log('Error deleting Database', error)
+    }
 }
