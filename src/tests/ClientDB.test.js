@@ -8,7 +8,8 @@ import {
     expectedPDFKeyTypes,
     getAll as getAllPDFs,
     pdfUpdateKeys,
-    getUsingPrimaryKey as getPDFWithKey,
+    getUsingPrimaryKey as getPDFUsingPrimaryKey,
+    getUsingFilePath as getPDFUsingFilePath,
     updateName as updatePDFName,
     updateCurrentPage as updatePDFCurrentPage,
     updateLastWeekLatestPage as updatePDFLastWeekLatestPage,
@@ -171,12 +172,13 @@ describe('Development Client DB Tests', () => {
                     ...initialValues
                 }
     
-                await addPDF(name, filePath, length)
-                const createdDBPDF = await getPDFWithKey(4)
+                const pdfKey = await addPDF(name, filePath, length)
+                const createdDBPDF = await getPDFUsingPrimaryKey(4)
                 const pdfs = await getAllPDFs()
     
                 expect(createdDBPDF).toStrictEqual(dummyCreatePDF)
                 expect(pdfs.length).toEqual(4)
+                expect(pdfKey).toEqual(4)
             })
     
             test("Adding a PDF has correct types for each value",
@@ -187,7 +189,7 @@ describe('Development Client DB Tests', () => {
                 const length = generateRandomInt(50)
     
                 await addPDF(name, filePath, length)
-                const createdDbPDF = await getPDFWithKey(4)
+                const createdDbPDF = await getPDFUsingPrimaryKey(4)
     
                 const createdDbPDFKeys = Object.keys(createdDbPDF)
     
@@ -255,7 +257,7 @@ describe('Development Client DB Tests', () => {
                 expect(dbPDFs).toStrictEqual(expectedPDFs)
             }
 
-            test.only("Updating name succesfully changes name value for each pdf record in pdf store.",
+            test.only('Updating name succesfully changes name value for each pdf record in pdf store.',
             async () =>
             {
                 await updatePrimitiveTypeTest(updatePDFName, pdfUpdateKeys.name)

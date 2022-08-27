@@ -275,6 +275,7 @@ export async function getUsingFilePath(file_path) {
 // name: name of PDF
 // filePath: filepath of PDF
 // length: length in pages of pdf
+// returns: auto generated key (num) that the added pdf gets
 export async function add(
     name,
     filePath,
@@ -309,7 +310,9 @@ export async function add(
 
         const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
         
-        await pdfStore.add(pdf)
+        const addedPDFKey = await pdfStore.add(pdf)
+
+        return addedPDFKey
     } catch (error) {
         console.log("Something went wrong adding a PDF", error)
     }
