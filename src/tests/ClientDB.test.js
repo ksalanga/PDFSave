@@ -323,11 +323,11 @@ describe('Development Client DB Tests', () => {
             test.only(`Updating progressNotificationOn (boolean) in PDF store`,
             async () =>
             {
-                await updatePrimitiveTypeTest(updateProgressNotificationOn, pdfUpdateKeys.progressNotificationOn)
+                await updatePrimitiveTypeTest(updatePDFProgressNotificationOn, pdfUpdateKeys.progressNotificationOn)
             })
         })
 
-        describe('Getting PDF record(s)',
+        describe.skip('Getting PDF record(s)',
         () =>
         {
             test('Getting all initial PDFs in DB are the dummyPDFs', 
@@ -369,6 +369,23 @@ describe('Development Client DB Tests', () => {
                 const pdf = await getPDFUsingFilePath(filePath)
 
                 expect(pdf).toStrictEqual(expectedPDF)
+            })
+
+            test('Getting all PDFs in PDF store with primary keys returns all pdfs with correct pks',
+            async () =>
+            {
+                const expectedPDFs = cloneDeep(dummyPDFs)
+
+                let key = 1
+                
+                for (const pdf of expectedPDFs) {
+                    pdf.key = key
+                    key++
+                }
+
+                const dbPDFs = await getAllPDFsWithPrimaryKey()
+
+                expect(dbPDFs).toStrictEqual(expectedPDFs)
             })
         })
     })
