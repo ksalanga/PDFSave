@@ -294,12 +294,49 @@ describe('Development Client DB Tests', () => {
             })
         })
 
-        test("Amount of items in a freshly reset PDF store is 3", 
-        async () => 
+        describe('Getting PDF record(s)',
+        () =>
         {
-            const pdfs = await getAllPDFs()
-            expect(pdfs.length).toEqual(3)
-            console.log('finished getting items')
+            test('Getting all initial PDFs in DB are the dummyPDFs', 
+            async () => 
+            {
+                const pdfs = await getAllPDFs()
+                expect(pdfs).toStrictEqual(dummyPDFs)
+            })
+
+            test('Getting all initial PDFs in DB has 3 items', 
+            async () => 
+            {
+                const pdfs = await getAllPDFs()
+                expect(pdfs.length).toEqual(3)
+            })
+
+            test(`Getting a PDF using its primary key gets us that exact PDF object 
+            (excluding its primary key)`,
+            async () =>
+            {
+                const primaryKey = 2
+                const pdf = await getPDFUsingPrimaryKey(primaryKey)
+                
+                // since the index starts at 0, but the auto incremented primaryKeys start at 1,
+                // getting any PDF with key in the list we must use key - 1
+                const expectedPDF = dummyPDFs[primaryKey - 1]
+
+                expect(pdf).toStrictEqual(expectedPDF)
+            })
+
+            test(`Getting a PDF using its file path get us that exact PDF Object
+            (excluding its primary key)`,
+            async () =>
+            {
+                const primaryKey = 3
+                const expectedPDF = dummyPDFs[primaryKey - 1]
+                const filePath = expectedPDF.file_path
+
+                const pdf = await getPDFUsingFilePath(filePath)
+
+                expect(pdf).toStrictEqual(expectedPDF)
+            })
         })
     })
 })
