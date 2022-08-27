@@ -12,3 +12,7 @@ export function generateRandomString(length) {
 export function generateRandomInt(max) {
   return Math.floor(Math.random() * max) + 1;
 }
+
+export function generateRandomBoolean() {
+  return Math.random() < 0.5
+}
