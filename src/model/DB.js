@@ -123,7 +123,7 @@ export async function batchUpdate(store, key, values, expectedKeys) {
     
         await store.put(record, key)
     } catch (error) {
-        console.log('Something went wrong back updating values in store', error)
+        console.log('Something went wrong batch updating values in store', error)
         throw new CodeError('Something went wrong batch updating values in record', 404)
     }
 }
