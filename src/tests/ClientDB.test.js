@@ -2,7 +2,7 @@ import 'dotenv/config.js'
 import "fake-indexeddb/auto";
 import { dummyUser } from "./DummyData"
 import { deleteDB, initDB } from "../model/DB";
-import { defaultUser, get as getUser, update as updateUser, userKeyTypes } from "../model/Users"
+import { defaultUser, get as getUser, update as updateUser, expectedUserKeyTypes } from "../model/Users"
 import { add as addPDF, getAll as getAllPDFs, getWithKey as getPDFWithKey } from "../model/PDFs";
 import { generateRandomString, generateRandomInt } from './utils/Random';
 import {jest} from '@jest/globals'
@@ -43,49 +43,84 @@ async () => {
 // - Initializes a defaultUser with default user configuration values
 // Other than that, functionality for both is virtually the same
 
-describe.skip('Development Client DB Tests', () => {
+describe('Development Client DB Tests', () => {
     beforeEach(
     async () => {
         await initDB()
     })
 
-    describe('User tests',
+    describe.skip('User tests',
     () =>
     {
-        test.skip('Dummy User is initialized with correct values in DB',
+        test('Dummy User is initialized with correct values in DB',
         async () => 
         {
-            const user = await getUser(1)
-            expect(user).toStrictEqual(dummyUser)
+            const dummyDBuser = await getUser(1)
+            expect(dummyDBuser).toStrictEqual(dummyUser)
         })
         
-        test.skip('Dummy User\'s keys are the correct types', 
+        test('Dummy User\'s keys are the correct types', 
         async () => 
         {
-            const user = await getUser(1)
-            const userKeys = Object.keys(user)
+            const dummyDBuser = await getUser(1)
+            const userKeys = Object.keys(dummyDBuser)
     
             userKeys.forEach((key) => {
-                expect(typeof(user[key])).toEqual(userKeyTypes[key])
+                expect(typeof(dummyDBuser[key])).toEqual(expectedUserKeyTypes[key])
             })
         })
 
-        test('Updating all of a user\'s keys via batch updating updates the user store in the ClientDB correctly',
+        test(`Updating some of a user's keys:
+        (phone_numer, email, and progress notifications on)
+        via batch updating correctly updates the user store in the ClientDB`,
         async () =>
         {
-            const dummyUpdateUser =
+            
+            const someUpdateValues =
             {
-                name: 'userTest',
                 phone_number: '202-555-0177',
-                email: 'email@email.com',
+                email: 'updatedemail@email.com',
                 progress_notification_on: true
             }
 
-            await updateUser(1, dummyUpdateUser)
+            const dummyUpdateUser =
+            {
+                ...dummyUser,
+                ...someUpdateValues
+            }
+
+            await updateUser(1, someUpdateValues)
 
             const updatedDBUser = await getUser(1)
 
             expect(updatedDBUser).toStrictEqual(dummyUpdateUser)
+        })
+
+        test(`Batch updating all of a user's keys gives us the correct types
+        for each corresponding value`, 
+        async () =>
+        {
+            const allUpdateValues = 
+            {
+                name: 'updatedName',
+                phone_number: '202-555-0177',
+                email: 'updatedemail@email.com',
+                progress_notification_on: true
+            }
+
+            await updateUser(1, allUpdateValues)
+
+            const updatedDBUser = await getUser(1)
+            
+            const updatedDBUserKeys = Object.keys(updatedDBUser)
+
+            updatedDBUserKeys.forEach((key) =>
+            {
+                const updatedValue = updatedDBUser[key]
+                const expectedValue = expectedUserKeyTypes[key]
+
+                expect(typeof(updatedValue)).toEqual(expectedValue)
+            })
         })
     }) 
     
@@ -102,7 +137,7 @@ describe.skip('Development Client DB Tests', () => {
             progress_notification_on: false,
         }
 
-        test("Adding a PDF results in correct initial fields",
+        test("Adding a PDF results in correct initial values",
         async () =>
         {
             const name = generateRandomString(7)
@@ -152,7 +187,7 @@ describe.skip('Production ClientDB Tests', () => {
         const userKeys = Object.keys(user)
 
         userKeys.forEach((key) => {
-            expect(typeof(user[key])).toEqual(userKeyTypes[key])
+            expect(typeof(user[key])).toEqual(expectedUserKeyTypes[key])
         })
     })
 })
