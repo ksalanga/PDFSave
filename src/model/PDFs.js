@@ -93,7 +93,7 @@ const updatePage = async (primaryKey, updateKey, page) => {
         const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
         const pdf = await pdfStore.get(primaryKey)
 
-        checkIncorrectPageFormat(pdfStore.get(primaryKey), pdf.length)
+        checkIncorrectPageFormat(page, pdf.length)
         
         await updateDB(
             pdfStore,
