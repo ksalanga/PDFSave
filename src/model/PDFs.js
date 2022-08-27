@@ -36,7 +36,7 @@ import { CodeError } from '../view/utils/Error'
  * **/
 
 // expected keys and type pairs for a PDF model
-export const pdfKeyTypes = {
+export const expectedPDFKeyTypes = {
     name: 'string',
     file_path: 'string',
     current_page: 'number',
@@ -49,7 +49,7 @@ export const pdfKeyTypes = {
 }
 
 // expected keys and type pairs for a Bookmark Object
-export const bookmarkKeyTypes = {
+export const expectedBookmarkKeyTypes = {
     id: 'string',
     name: 'string',
     page: 'number'
