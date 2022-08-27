@@ -1,9 +1,9 @@
 import 'dotenv/config.js'
 import "fake-indexeddb/auto";
 import { dummyUser } from "./DummyData"
-import { add as addPDF, getAll as getAllPDFs, getWithKey as getPDFWithKey } from "../model/PDFs";
 import { deleteDB, initDB } from "../model/DB";
-import { defaultUser, get, get as getUser, userKeyTypes } from "../model/Users"
+import { defaultUser, get as getUser, update as updateUser, userKeyTypes } from "../model/Users"
+import { add as addPDF, getAll as getAllPDFs, getWithKey as getPDFWithKey } from "../model/PDFs";
 import { generateRandomString, generateRandomInt } from './utils/Random';
 import {jest} from '@jest/globals'
 import { indexedDB } from "fake-indexeddb";
@@ -41,14 +41,14 @@ describe.skip('Development Client DB Tests', () => {
     describe('User tests',
     () =>
     {
-        test('Dummy User is initialized with correct values',
+        test.skip('Dummy User is initialized with correct values in DB',
         async () => 
         {
             const user = await getUser(1)
             expect(user).toStrictEqual(dummyUser)
         })
         
-        test("Dummy User's keys are the correct types", 
+        test.skip('Dummy User\'s keys are the correct types', 
         async () => 
         {
             const user = await getUser(1)
@@ -58,9 +58,27 @@ describe.skip('Development Client DB Tests', () => {
                 expect(typeof(user[key])).toEqual(userKeyTypes[key])
             })
         })
+
+        test('Updating all of a user\'s keys via batch updating updates the user store in the ClientDB correctly',
+        async () =>
+        {
+            const dummyUpdateUser =
+            {
+                name: 'userTest',
+                phone_number: '202-555-0177',
+                email: 'email@email.com',
+                progress_notification_on: true
+            }
+
+            await updateUser(1, dummyUpdateUser)
+
+            const updatedDBUser = await getUser(1)
+
+            expect(updatedDBUser).toStrictEqual(dummyUpdateUser)
+        })
     }) 
     
-    describe('PDF tests',
+    describe.skip('PDF tests',
     () =>
     {
         const initialValues =
