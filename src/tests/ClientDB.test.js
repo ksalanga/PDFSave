@@ -32,6 +32,17 @@ async () => {
     await indexedDB._databases.clear()
 })
 
+// NOTE: Difference between Development DB and Production DB are the initial values in the object stores.
+// both have the same Object Stores (PDF, User, Deleted) and Database (ClientDB)
+// Differences:
+// Development DB:
+// - Initializes PDF store with three Dummy PDFs
+// - Initializes a dummyUser with dummy Data
+// Production DB:
+// - Initializes no PDFs in store
+// - Initializes a defaultUser with default user configuration values
+// Other than that, functionality for both is virtually the same
+
 describe.skip('Development Client DB Tests', () => {
     beforeEach(
     async () => {
