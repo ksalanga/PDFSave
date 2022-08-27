@@ -25,11 +25,6 @@ import { indexedDB } from "fake-indexeddb";
 
 jest.setTimeout(1000)
 
-beforeEach(
-async () => {
-    await initDB()
-})
-
 // for clearing fake indexeddb (in memory idb) databases
 // https://github.com/dumbmatter/fakeIndexedDB/issues/2
 afterEach(
@@ -37,7 +32,12 @@ async () => {
     await indexedDB._databases.clear()
 })
 
-describe('Development Client DB Tests', () => {
+describe.skip('Development Client DB Tests', () => {
+    beforeEach(
+    async () => {
+        await initDB()
+    })
+
     describe('User tests',
     () =>
     {
@@ -106,7 +106,6 @@ describe('Development Client DB Tests', () => {
     })
 })
 
-
 describe.skip('Production ClientDB Tests', () => {
     beforeEach(async () => {
         process.env.REACT_APP_ENVIRONMENT = 'PRODUCTION'
@@ -115,7 +114,7 @@ describe.skip('Production ClientDB Tests', () => {
 
     test('Default User is initialized with default values', async () => {
         const user = await getUser(1)
-        expect(user).toStrictEqual(dummyUser)
+        expect(user).toStrictEqual(defaultUser)
     })
     
     test("Default User's keys are the correct types", async () => {
