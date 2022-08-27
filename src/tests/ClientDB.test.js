@@ -8,13 +8,14 @@ import {
     expectedPDFKeyTypes,
     getAll as getAllPDFs,
     pdfUpdateKeys,
-    getWithKey as getPDFWithKey,
+    getUsingPrimaryKey as getPDFWithKey,
     updateName as updatePDFName,
     updateCurrentPage as updatePDFCurrentPage,
     updateLastWeekLatestPage as updatePDFLastWeekLatestPage,
     updateCurrentWeekLatestPage as updatePDFCurrentWeekLatestPage,
     updateAutoSaveOn as updatePDFAutoSaveOn,
-    updateProgressNotificationOn as updatePDFProgressNotificationOn
+    updateProgressNotificationOn as updatePDFProgressNotificationOn,
+    updateProgressNotificationOn
 } from "../model/PDFs";
 import { generateRandomString, generateRandomInt, generateRandomBoolean } from './utils/Random';
 import {jest} from '@jest/globals';
@@ -152,105 +153,143 @@ describe('Development Client DB Tests', () => {
             progress_notification_on: false,
         }
         
-        test("Adding a PDF results in correct initial values",
-        async () =>
+        describe.skip('Adding a PDF Record in PDF store',
+        () =>
         {
-            const name = generateRandomString(7)
-            const filePath = generateRandomString(10)
-            const length = generateRandomInt(50)
-
-            const dummyCreatePDF =
+            test("Adding a PDF results in correct initial values",
+            async () =>
             {
-                name: name,
-                file_path: filePath,
-                length: length,
-                ...initialValues
-            }
-
-            await addPDF(name, filePath, length)
-            const createdDBPDF = await getPDFWithKey(4)
-            const pdfs = await getAllPDFs()
-
-            expect(createdDBPDF).toStrictEqual(dummyCreatePDF)
-            expect(pdfs.length).toEqual(4)
-        })
-
-        test("Adding a PDF has correct types for each value",
-        async () => 
-        {
-            const name = generateRandomString(7)
-            const filePath = generateRandomString(10)
-            const length = generateRandomInt(50)
-
-            await addPDF(name, filePath, length)
-            const createdDbPDF = await getPDFWithKey(4)
-
-            const createdDbPDFKeys = Object.keys(createdDbPDF)
-
-            createdDbPDFKeys.forEach((key) =>
+                const name = generateRandomString(7)
+                const filePath = generateRandomString(10)
+                const length = generateRandomInt(50)
+    
+                const dummyCreatePDF =
+                {
+                    name: name,
+                    file_path: filePath,
+                    length: length,
+                    ...initialValues
+                }
+    
+                await addPDF(name, filePath, length)
+                const createdDBPDF = await getPDFWithKey(4)
+                const pdfs = await getAllPDFs()
+    
+                expect(createdDBPDF).toStrictEqual(dummyCreatePDF)
+                expect(pdfs.length).toEqual(4)
+            })
+    
+            test("Adding a PDF has correct types for each value",
+            async () => 
             {
-                const dbValue = createdDbPDF[key]
-                const dbValueType = typeof(dbValue)
-
-                const expectedValueType = expectedPDFKeyTypes[key]
-
-                expect(dbValueType).toEqual(expectedValueType)
+                const name = generateRandomString(7)
+                const filePath = generateRandomString(10)
+                const length = generateRandomInt(50)
+    
+                await addPDF(name, filePath, length)
+                const createdDbPDF = await getPDFWithKey(4)
+    
+                const createdDbPDFKeys = Object.keys(createdDbPDF)
+    
+                createdDbPDFKeys.forEach((key) =>
+                {
+                    const dbValue = createdDbPDF[key]
+                    const dbValueType = typeof(dbValue)
+    
+                    const expectedValueType = expectedPDFKeyTypes[key]
+    
+                    expect(dbValueType).toEqual(expectedValueType)
+                })
             })
         })
-
-        /** 
-         * Reusable function for all primitive type field updates in the pdf store that guarantees.
-         * that each PDF record in the store gets their expected key and value updated.
-         * 
-         * Will update all PDFs in the store with the same key value
-         * and asser that they have been correctly updated in the db.
-         * 
-         * params:
-         * - updateFunction (callback function)
-         * - field (string) - the pdf record’s field we want to update and expect to change
-         * **/
-        const updatePrimitiveTypeTest = async (updatePDFfunction, field) =>
+        
+        describe.skip('Updating PDF Record primitive fields',
+        () =>
         {
-            const expectedPDFs = cloneDeep(dummyPDFs)
-
-            let key = 1
-
-            for (const pdf of expectedPDFs)
+            /** 
+             * Reusable function for all primitive type field updates in the pdf store that guarantees.
+             * that each PDF record in the store gets their expected key and value updated.
+             * 
+             * Will update all PDFs in the store with the same key value
+             * and asser that they have been correctly updated in the db.
+             * 
+             * params:
+             * - updateFunction (callback function)
+             * - field (string) - the pdf record’s field we want to update and expect to change
+             * **/
+            const updatePrimitiveTypeTest = async (updatePDFfunction, field) =>
             {
-                let randomUpdatedValue
-
-                switch (expectedPDFKeyTypes[field])
+                const expectedPDFs = cloneDeep(dummyPDFs)
+    
+                let key = 1
+    
+                for (const pdf of expectedPDFs)
                 {
-                    case 'string':
-                        randomUpdatedValue = generateRandomString(10)
-                        break
-                    case 'number':
-                        randomUpdatedValue = generateRandomInt(100)
-                        break
-                    case 'boolean':
-                        randomUpdatedValue = generateRandomBoolean()
-                        break
-                    default:
-                        console.log('default')
-                        randomUpdatedValue = generateRandomInt(100)
+                    let randomUpdatedValue
+    
+                    switch (expectedPDFKeyTypes[field])
+                    {
+                        case 'string':
+                            randomUpdatedValue = generateRandomString(10)
+                            break
+                        case 'number':
+                            randomUpdatedValue = generateRandomInt(100)
+                            break
+                        case 'boolean':
+                            randomUpdatedValue = generateRandomBoolean()
+                            break
+                        default:
+                            console.log('default')
+                            randomUpdatedValue = generateRandomInt(100)
+                    }
+    
+                    pdf[field] = randomUpdatedValue
+    
+                    await updatePDFfunction(key, randomUpdatedValue)
+    
+                    key++
                 }
-
-                pdf[field] = randomUpdatedValue
-
-                await updatePDFfunction(key, randomUpdatedValue)
-
-                key++
+    
+                const dbPDFs = await getAllPDFs()
+    
+                expect(dbPDFs).toStrictEqual(expectedPDFs)
             }
 
-            const dbPDFs = await getAllPDFs()
-
-            expect(dbPDFs).toStrictEqual(expectedPDFs)
-        }
-
-        test.only("Updating name succesfully changes name value for each pdf record in pdf store.",
-        async () =>
-        {
-            await updatePrimitiveTypeTest(updatePDFName, pdfUpdateKeys.name)
+            test.only("Updating name succesfully changes name value for each pdf record in pdf store.",
+            async () =>
+            {
+                await updatePrimitiveTypeTest(updatePDFName, pdfUpdateKeys.name)
+            })
+    
+            test.only(`Updating current Page (int) in PDF store`,
+            async () =>
+            {
+                await updatePrimitiveTypeTest(updatePDFCurrentPage, pdfUpdateKeys.currentPage)
+            })
+    
+            test.only(`Updating last week latest Page (int) in PDF store`,
+            async () =>
+            {
+                await updatePrimitiveTypeTest(updatePDFLastWeekLatestPage, pdfUpdateKeys.lastWeekLatestPage)
+            })
+    
+            test.only(`Updating current week latest Page (int) in PDF store`,
+            async () =>
+            {
+                await updatePrimitiveTypeTest(updatePDFCurrentWeekLatestPage, pdfUpdateKeys.currentWeekLatestPage)
+            })
+    
+            test.only(`Updating autoSaveOn (boolean) in PDF store`,
+            async () =>
+            {
+                await updatePrimitiveTypeTest(updatePDFAutoSaveOn, pdfUpdateKeys.autoSaveOn)
+            })
+    
+            test.only(`Updating progressNotificationOn (boolean) in PDF store`,
+            async () =>
+            {
+                await updatePrimitiveTypeTest(updateProgressNotificationOn, pdfUpdateKeys.progressNotificationOn)
+            })
         })
 
         test("Amount of items in a freshly reset PDF store is 3", 

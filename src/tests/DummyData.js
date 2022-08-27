@@ -15,7 +15,7 @@ export var dummyPDF =
     name: `pdf${id}`,
     file_path: `/pdf/pdf${id}.pdf`,
     current_page: 0,
-    length: 100,
+    length: 300,
     last_week_latest_page: 0,
     current_week_latest_page: 0,
     bookmarks: [
@@ -35,7 +35,7 @@ export var dummyPDFs = [
         name: 'PDF 1',
         file_path: '/pdf/pdf1.pdf',
         current_page: 24,
-        length: 50,
+        length: 300,
         last_week_latest_page: 0,
         current_week_latest_page: 10,
         bookmarks: [
