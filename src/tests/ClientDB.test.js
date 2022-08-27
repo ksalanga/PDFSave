@@ -170,7 +170,7 @@ describe('Development Client DB Tests', () => {
     })
 })
 
-describe.skip('Production ClientDB Tests', () => {
+describe('Production ClientDB Initialization Tests', () => {
     beforeEach(async () => {
         process.env.REACT_APP_ENVIRONMENT = 'PRODUCTION'
         await initDB()
@@ -189,5 +189,13 @@ describe.skip('Production ClientDB Tests', () => {
         userKeys.forEach((key) => {
             expect(typeof(user[key])).toEqual(expectedUserKeyTypes[key])
         })
+    })
+
+    test("Production PDF Store starts with no records",
+    async () =>
+    {
+        const pdfs = await getAllPDFs()
+
+        expect(pdfs.length).toEqual(0)
     })
 })
