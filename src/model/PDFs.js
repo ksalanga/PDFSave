@@ -251,8 +251,8 @@ export async function deleteBookmark(key, id) {
     }
 }
 
-// gets pdf with key
-export async function getWithKey(key) {
+// gets pdf using primary key
+export async function getUsingPrimaryKey(key) {
     try {
         const db = await openDB()
         return await db.get(ClientDB.pdfStore, key)    
@@ -261,8 +261,8 @@ export async function getWithKey(key) {
     }
 }
 
-// gets pdf with file name index
-export async function getWithFile(file_path) {
+// gets pdf using file name index
+export async function getUsingFilePath(file_path) {
     try {
         const db = await openDB()
         return await db.getFromIndex(ClientDB.pdfStore, 'file_path', file_path)
