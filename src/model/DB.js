@@ -84,7 +84,7 @@ export async function update(store, primaryKey, key, value) {
         const record = await store.get(primaryKey)
         record[key] = value
     
-        await store.put(record)
+        await store.put(record, primaryKey)
     } catch (error) {
         console.log('Something went wrong updating a store', error)
         throw new CodeError('Something went wrong updating record', 404)
