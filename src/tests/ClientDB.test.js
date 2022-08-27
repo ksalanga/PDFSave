@@ -1,12 +1,25 @@
-import 'dotenv/config.js'
+import 'dotenv/config.js';
 import "fake-indexeddb/auto";
-import { dummyUser } from "./DummyData"
-import { deleteDB, initDB } from "../model/DB";
-import { defaultUser, get as getUser, update as updateUser, expectedUserKeyTypes } from "../model/Users"
-import { add as addPDF, getAll as getAllPDFs, getWithKey as getPDFWithKey } from "../model/PDFs";
-import { generateRandomString, generateRandomInt } from './utils/Random';
-import {jest} from '@jest/globals'
+import { dummyPDFs, dummyUser } from "./DummyData";
+import { initDB } from "../model/DB";
+import { defaultUser, get as getUser, update as updateUser, expectedUserKeyTypes } from "../model/Users";
+import { 
+    add as addPDF,
+    expectedPDFKeyTypes,
+    getAll as getAllPDFs,
+    pdfUpdateKeys,
+    getWithKey as getPDFWithKey,
+    updateName as updatePDFName,
+    updateCurrentPage as updatePDFCurrentPage,
+    updateLastWeekLatestPage as updatePDFLastWeekLatestPage,
+    updateCurrentWeekLatestPage as updatePDFCurrentWeekLatestPage,
+    updateAutoSaveOn as updatePDFAutoSaveOn,
+    updateProgressNotificationOn as updatePDFProgressNotificationOn
+} from "../model/PDFs";
+import { generateRandomString, generateRandomInt, generateRandomBoolean } from './utils/Random';
+import {jest} from '@jest/globals';
 import { indexedDB } from "fake-indexeddb";
+import cloneDeep from 'lodash.clonedeep';
 
 // run test: npx jest --detectOpenHandles --watch --verbose false
 
@@ -96,7 +109,7 @@ describe('Development Client DB Tests', () => {
             expect(updatedDBUser).toStrictEqual(dummyUpdateUser)
         })
 
-        test(`Batch updating all of a user's keys gives us the correct types
+        test.only(`Batch updating all of a user's keys gives us the correct types
         for each corresponding value`, 
         async () =>
         {
@@ -117,14 +130,16 @@ describe('Development Client DB Tests', () => {
             updatedDBUserKeys.forEach((key) =>
             {
                 const updatedValue = updatedDBUser[key]
-                const expectedValue = expectedUserKeyTypes[key]
+                const updatedValueType = typeof(updatedValue)
 
-                expect(typeof(updatedValue)).toEqual(expectedValue)
+                const expectedValueType = expectedUserKeyTypes[key]
+
+                expect(updatedValueType).toEqual(expectedValueType)
             })
         })
     }) 
     
-    describe.skip('PDF tests',
+    describe('PDF tests',
     () =>
     {
         const initialValues =
@@ -136,7 +151,7 @@ describe('Development Client DB Tests', () => {
             auto_save_on: true,
             progress_notification_on: false,
         }
-
+        
         test("Adding a PDF results in correct initial values",
         async () =>
         {
@@ -160,6 +175,84 @@ describe('Development Client DB Tests', () => {
             expect(pdfs.length).toEqual(4)
         })
 
+        test("Adding a PDF has correct types for each value",
+        async () => 
+        {
+            const name = generateRandomString(7)
+            const filePath = generateRandomString(10)
+            const length = generateRandomInt(50)
+
+            await addPDF(name, filePath, length)
+            const createdDbPDF = await getPDFWithKey(4)
+
+            const createdDbPDFKeys = Object.keys(createdDbPDF)
+
+            createdDbPDFKeys.forEach((key) =>
+            {
+                const dbValue = createdDbPDF[key]
+                const dbValueType = typeof(dbValue)
+
+                const expectedValueType = expectedPDFKeyTypes[key]
+
+                expect(dbValueType).toEqual(expectedValueType)
+            })
+        })
+
+        /** 
+         * Reusable function for all primitive type field updates in the pdf store that guarantees.
+         * that each PDF record in the store gets their expected key and value updated.
+         * 
+         * Will update all PDFs in the store with the same key value
+         * and asser that they have been correctly updated in the db.
+         * 
+         * params:
+         * - updateFunction (callback function)
+         * - field (string) - the pdf record’s field we want to update and expect to change
+         * **/
+        const updatePrimitiveTypeTest = async (updatePDFfunction, field) =>
+        {
+            const expectedPDFs = cloneDeep(dummyPDFs)
+
+            let key = 1
+
+            for (const pdf of expectedPDFs)
+            {
+                let randomUpdatedValue
+
+                switch (expectedPDFKeyTypes[field])
+                {
+                    case 'string':
+                        randomUpdatedValue = generateRandomString(10)
+                        break
+                    case 'number':
+                        randomUpdatedValue = generateRandomInt(100)
+                        break
+                    case 'boolean':
+                        randomUpdatedValue = generateRandomBoolean()
+                        break
+                    default:
+                        console.log('default')
+                        randomUpdatedValue = generateRandomInt(100)
+                }
+
+                pdf[field] = randomUpdatedValue
+
+                await updatePDFfunction(key, randomUpdatedValue)
+
+                key++
+            }
+
+            const dbPDFs = await getAllPDFs()
+
+            expect(dbPDFs).toStrictEqual(expectedPDFs)
+        }
+
+        test.only("Updating name succesfully changes name value for each pdf record in pdf store.",
+        async () =>
+        {
+            await updatePrimitiveTypeTest(updatePDFName, pdfUpdateKeys.name)
+        })
+
         test("Amount of items in a freshly reset PDF store is 3", 
         async () => 
         {
@@ -170,7 +263,7 @@ describe('Development Client DB Tests', () => {
     })
 })
 
-describe('Production ClientDB Initialization Tests', () => {
+describe.skip('Production ClientDB Initialization Tests', () => {
     beforeEach(async () => {
         process.env.REACT_APP_ENVIRONMENT = 'PRODUCTION'
         await initDB()
