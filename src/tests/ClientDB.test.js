@@ -16,12 +16,13 @@ import {
     updateCurrentWeekLatestPage as updatePDFCurrentWeekLatestPage,
     updateAutoSaveOn as updatePDFAutoSaveOn,
     updateProgressNotificationOn as updatePDFProgressNotificationOn,
-    updateProgressNotificationOn
+    getAllWithPrimaryKey as getAllPDFsWithPrimaryKey
 } from "../model/PDFs";
-import { generateRandomString, generateRandomInt, generateRandomBoolean } from './utils/Random';
+import { generateRandomString, generateRandomInt, generateRandomBoolean, generateRandomIntFromInterval } from './utils/Random';
 import {jest} from '@jest/globals';
 import { indexedDB } from "fake-indexeddb";
 import cloneDeep from 'lodash.clonedeep';
+import { add } from '../model/Deletes';
 
 // run test: npx jest --detectOpenHandles --watch --verbose false
 
@@ -203,6 +204,38 @@ describe('Development Client DB Tests', () => {
                     expect(dbValueType).toEqual(expectedValueType)
                 })
             })
+
+            test('add 1000 PDFs',
+            async () =>
+            {
+                const expectedPDFs = cloneDeep(dummyPDFs)
+                // const numberOfPDFs = generateRandomIntFromInterval(50, 1000)  
+                const numberOfPDFs = 1000
+
+                for (let i = 0; i < numberOfPDFs; i++)
+                {
+                    const newName = generateRandomString(20)
+                    const newFilePath = generateRandomString(30)
+                    const newLength = generateRandomInt(100)
+
+                    const newPDF = 
+                    {
+                        name: newName,
+                        file_path: newFilePath,
+                        length: newLength,
+                        ...initialValues
+                    }
+
+                    expectedPDFs.push(newPDF)
+
+                    await addPDF(newName, newFilePath, newLength)
+                }
+
+                const dbPDFs = await getAllPDFs()
+
+                expect(dbPDFs).toStrictEqual(expectedPDFs)
+            },
+            5000)
         })
         
         describe.skip('Updating PDF Record primitive fields',
