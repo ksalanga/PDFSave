@@ -23,7 +23,7 @@ import { CodeError } from "../view/utils/Error";
  * Name, version, and store names
  */
 export const ClientDB = {
-    name: 'PDFSaveProto',
+    name: 'ClientDB',
     version: 1,
     pdfStoreName: 'pdfs',
     userStoreName: 'users',

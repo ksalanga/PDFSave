@@ -2,7 +2,11 @@ import 'dotenv/config.js';
 import "fake-indexeddb/auto";
 import { dummyPDFs, dummyUser } from "./DummyData";
 import { initDB } from "../model/DB";
-import { defaultUser, get as getUser, update as updateUser, expectedUserKeyTypes } from "../model/Users";
+import { 
+    defaultUser, 
+    get as getUser, 
+    update as updateUser, 
+    expectedUserKeyTypes } from "../model/Users";
 import { 
     add as addPDF,
     expectedPDFKeyTypes,
@@ -72,7 +76,7 @@ describe('Development Client DB Tests', () => {
         await initDB()
     })
 
-    describe.skip('User Store tests',
+    describe('User Store tests',
     () =>
     {
         test('Dummy User is initialized with correct values in DB',
@@ -119,7 +123,7 @@ describe('Development Client DB Tests', () => {
             expect(updatedDBUser).toStrictEqual(dummyUpdateUser)
         })
 
-        test.only(`Batch updating all of a user's keys gives us the correct types
+        test(`Batch updating all of a user's keys gives us the correct types
         for each corresponding value`, 
         async () =>
         {
@@ -162,7 +166,7 @@ describe('Development Client DB Tests', () => {
             progress_notification_on: false,
         }
         
-        describe.skip('Adding a PDF record',
+        describe('Adding a PDF record',
         () =>
         {
             test("Adding a PDF results in correct initial values",
@@ -245,7 +249,7 @@ describe('Development Client DB Tests', () => {
             5000)
         })
         
-        describe.skip('Updating PDF record primitive fields',
+        describe('Updating PDF record primitive fields',
         () =>
         {
             /** 
@@ -297,44 +301,44 @@ describe('Development Client DB Tests', () => {
                 expect(dbPDFs).toStrictEqual(expectedPDFs)
             }
 
-            test.only('Updating name succesfully changes name value for each pdf record in pdf store.',
+            test('Updating name succesfully changes name value for each pdf record in pdf store.',
             async () =>
             {
                 await updatePrimitiveTypeTest(updatePDFName, pdfUpdateKeysENUM.name)
             })
     
-            test.only(`Updating current Page (int) in PDF store`,
+            test(`Updating current Page (int) in PDF store`,
             async () =>
             {
                 await updatePrimitiveTypeTest(updatePDFCurrentPage, pdfUpdateKeysENUM.currentPage)
             })
     
-            test.only(`Updating last week latest Page (int) in PDF store`,
+            test(`Updating last week latest Page (int) in PDF store`,
             async () =>
             {
                 await updatePrimitiveTypeTest(updatePDFLastWeekLatestPage, pdfUpdateKeysENUM.lastWeekLatestPage)
             })
     
-            test.only(`Updating current week latest Page (int) in PDF store`,
+            test(`Updating current week latest Page (int) in PDF store`,
             async () =>
             {
                 await updatePrimitiveTypeTest(updatePDFCurrentWeekLatestPage, pdfUpdateKeysENUM.currentWeekLatestPage)
             })
     
-            test.only(`Updating autoSaveOn (boolean) in PDF store`,
+            test(`Updating autoSaveOn (boolean) in PDF store`,
             async () =>
             {
                 await updatePrimitiveTypeTest(updatePDFAutoSaveOn, pdfUpdateKeysENUM.autoSaveOn)
             })
     
-            test.only(`Updating progressNotificationOn (boolean) in PDF store`,
+            test(`Updating progressNotificationOn (boolean) in PDF store`,
             async () =>
             {
                 await updatePrimitiveTypeTest(updatePDFProgressNotificationOn, pdfUpdateKeysENUM.progressNotificationOn)
             })
         })
 
-        describe.skip('Getting PDF record(s)',
+        describe('Getting PDF record(s)',
         () =>
         {
             test('Getting all initial PDFs in DB are the dummyPDFs', 
@@ -344,14 +348,14 @@ describe('Development Client DB Tests', () => {
                 expect(pdfs).toStrictEqual(dummyPDFs)
             })
 
-            test.only('Getting all initial PDFs in DB has 3 items', 
+            test('Getting all initial PDFs in DB has 3 items', 
             async () => 
             {
                 const pdfs = await getAllPDFs()
                 expect(pdfs).toHaveLength(3)
             })
 
-            test.only('Getting all deleted PDFs returns a list of 0 items',
+            test('Getting all deleted PDFs returns a list of 0 items',
             async () =>
             {
                 
@@ -410,7 +414,7 @@ describe('Development Client DB Tests', () => {
             })
         })
 
-        test.skip('Batch update PDF record keys',
+        test('Batch update PDF record keys',
         async () =>
         {
             const expectedPDFs = cloneDeep(dummyPDFs)
@@ -457,7 +461,7 @@ describe('Development Client DB Tests', () => {
             expect(dbPDF).toStrictEqual(expectedUpdatedPDF)
         })
 
-        describe.skip('Removing PDF record(s)',
+        describe('Removing PDF record(s)',
         () =>
         {
             test('Removing one',
@@ -493,7 +497,7 @@ describe('Development Client DB Tests', () => {
             })
         })
 
-        describe.skip('Bookmarks',
+        describe('Bookmarks',
         () =>
         {
             test('Creating one',
@@ -654,7 +658,7 @@ describe('Development Client DB Tests', () => {
             expect(deletedFiles).toHaveLength(3)
         })
 
-        test.skip('Remove a file in deleted File Store',
+        test('Remove a file in deleted File Store',
         async () =>
         {
             const primaryKey = 2
@@ -675,7 +679,7 @@ describe('Development Client DB Tests', () => {
             expect(deletedPDF).toBeUndefined()
         })
 
-        test.only('Remove all files in deleted File Store',
+        test('Remove all files in deleted File Store',
         async () =>
         {
             for (let key = 1; key <= 3; key++)
@@ -702,10 +706,10 @@ describe('Development Client DB Tests', () => {
         })
     })
 
-    describe.skip('User interactivity',
+    describe('User interactivity',
     () => 
     {
-        test.skip(`Simulate medium speed scrolling that constantly updates PDF record's current page every second`,
+        test(`Simulate medium speed scrolling that constantly updates PDF record's current page every second`,
         async () =>
         {
             /**
@@ -768,7 +772,7 @@ describe('Development Client DB Tests', () => {
     }) 
 })
 
-describe.skip('Production ClientDB Initialization Tests', () => {
+describe('Production ClientDB Initialization Tests', () => {
     beforeEach(async () => {
         process.env.REACT_APP_ENVIRONMENT = 'PRODUCTION'
         await initDB()
