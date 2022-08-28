@@ -7,7 +7,7 @@ import {
     add as addPDF,
     expectedPDFKeyTypes,
     getAll as getAllPDFs,
-    pdfUpdateKeys,
+    pdfUpdateKeysENUM,
     getUsingPrimaryKey as getPDFUsingPrimaryKey,
     getUsingFilePath as getPDFUsingFilePath,
     updateName as updatePDFName,
@@ -294,37 +294,37 @@ describe('Development Client DB Tests', () => {
             test.only('Updating name succesfully changes name value for each pdf record in pdf store.',
             async () =>
             {
-                await updatePrimitiveTypeTest(updatePDFName, pdfUpdateKeys.name)
+                await updatePrimitiveTypeTest(updatePDFName, pdfUpdateKeysENUM.name)
             })
     
             test.only(`Updating current Page (int) in PDF store`,
             async () =>
             {
-                await updatePrimitiveTypeTest(updatePDFCurrentPage, pdfUpdateKeys.currentPage)
+                await updatePrimitiveTypeTest(updatePDFCurrentPage, pdfUpdateKeysENUM.currentPage)
             })
     
             test.only(`Updating last week latest Page (int) in PDF store`,
             async () =>
             {
-                await updatePrimitiveTypeTest(updatePDFLastWeekLatestPage, pdfUpdateKeys.lastWeekLatestPage)
+                await updatePrimitiveTypeTest(updatePDFLastWeekLatestPage, pdfUpdateKeysENUM.lastWeekLatestPage)
             })
     
             test.only(`Updating current week latest Page (int) in PDF store`,
             async () =>
             {
-                await updatePrimitiveTypeTest(updatePDFCurrentWeekLatestPage, pdfUpdateKeys.currentWeekLatestPage)
+                await updatePrimitiveTypeTest(updatePDFCurrentWeekLatestPage, pdfUpdateKeysENUM.currentWeekLatestPage)
             })
     
             test.only(`Updating autoSaveOn (boolean) in PDF store`,
             async () =>
             {
-                await updatePrimitiveTypeTest(updatePDFAutoSaveOn, pdfUpdateKeys.autoSaveOn)
+                await updatePrimitiveTypeTest(updatePDFAutoSaveOn, pdfUpdateKeysENUM.autoSaveOn)
             })
     
             test.only(`Updating progressNotificationOn (boolean) in PDF store`,
             async () =>
             {
-                await updatePrimitiveTypeTest(updatePDFProgressNotificationOn, pdfUpdateKeys.progressNotificationOn)
+                await updatePrimitiveTypeTest(updatePDFProgressNotificationOn, pdfUpdateKeysENUM.progressNotificationOn)
             })
         })
 

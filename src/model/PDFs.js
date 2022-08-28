@@ -58,7 +58,7 @@ export const expectedBookmarkKeyTypes = {
 // pdf record keys that can be updated
 // where the key is a constant value that other modules trying to update a PDF's keys can access as an "enumeration"
 // and the value is the actual key value inside the record
-export const pdfUpdateKeys = 
+export const pdfUpdateKeysENUM = 
 {
     name: 'name',
     currentPage: 'current_page',
@@ -71,7 +71,7 @@ export const pdfUpdateKeys =
 
 // expected keys list that can be updated in the object store
 // ex: name, current_page, etc.
-const expectedPDFUpdateKeys = Object.values(pdfUpdateKeys)
+const expectedPDFUpdateKeys = Object.values(pdfUpdateKeysENUM)
 
 
 const checkIncorrectPageFormat = (pageNumber, length) => {
@@ -143,18 +143,18 @@ export async function updateName(key, name) {
         await updateDB(
             db.transaction(ClientDB.pdfStore, 'readwrite').store,
             key,
-            pdfUpdateKeys.name,
+            pdfUpdateKeysENUM.name,
             name
         )
     } catch(error) {
         console.log(`Something went wrong updating PDF ${key} name`, error)
     }
 }
-export async function updateCurrentPage(key, currentPage) { await updatePage(key, pdfUpdateKeys.currentPage, currentPage) }
-export async function updateLastWeekLatestPage(key, lastWeekLatestPage) { await updatePage(key, pdfUpdateKeys.lastWeekLatestPage, lastWeekLatestPage) }
-export async function updateCurrentWeekLatestPage(key, currentWeekLatestPage) { await updatePage(key, pdfUpdateKeys.currentWeekLatestPage, currentWeekLatestPage) }
-export async function updateAutoSaveOn(key, autoSaveOn) { updateBoolean(key, pdfUpdateKeys.autoSaveOn, autoSaveOn) }
-export async function updateProgressNotificationOn(key, progressNotificationOn) { updateBoolean(key, pdfUpdateKeys.progressNotificationOn, progressNotificationOn) }
+export async function updateCurrentPage(key, currentPage) { await updatePage(key, pdfUpdateKeysENUM.currentPage, currentPage) }
+export async function updateLastWeekLatestPage(key, lastWeekLatestPage) { await updatePage(key, pdfUpdateKeysENUM.lastWeekLatestPage, lastWeekLatestPage) }
+export async function updateCurrentWeekLatestPage(key, currentWeekLatestPage) { await updatePage(key, pdfUpdateKeysENUM.currentWeekLatestPage, currentWeekLatestPage) }
+export async function updateAutoSaveOn(key, autoSaveOn) { updateBoolean(key, pdfUpdateKeysENUM.autoSaveOn, autoSaveOn) }
+export async function updateProgressNotificationOn(key, progressNotificationOn) { updateBoolean(key, pdfUpdateKeysENUM.progressNotificationOn, progressNotificationOn) }
 
 // creates new bookmark to pdf with primaryKey: key
 // key: primaryKey of pdf record
