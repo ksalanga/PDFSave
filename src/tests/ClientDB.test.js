@@ -27,7 +27,9 @@ import { generateRandomString, generateRandomInt, generateRandomBoolean, generat
 import {jest} from '@jest/globals';
 import { indexedDB } from "fake-indexeddb";
 import cloneDeep from 'lodash.clonedeep';
-import { add } from '../model/Deletes';
+import { 
+    getAll as getAllDeletedFilePaths,
+    remove as removeDeletedFilePath } from '../model/DeletedFiles';
 
 // run test: npx jest --detectOpenHandles --watch --verbose false
 
@@ -598,6 +600,94 @@ describe('Development Client DB Tests', () => {
             })
         })
     })
+
+    describe('PDF Deleted Files Store tests',
+    () =>
+    {
+        test('Removing One PDF ends up in the delete store',
+        async () =>
+        {
+            const primaryKey = 2
+
+            const expectedPDFs = cloneDeep(dummyPDFs)
+
+            const expectedDeletedPDF = expectedPDFs.splice(primaryKey - 1, 1)[0]
+
+            await removePDF(primaryKey)
+            
+            const deletedFiles = await getAllDeletedFilePaths()
+            const deletedFile = deletedFiles[0]
+
+            expect(deletedFiles).toHaveLength(1)
+            expect(deletedFile.file_path).toEqual(expectedDeletedPDF.file_path)
+        })
+
+        test('Removing All PDFs ends up in the delete store',
+        async () =>
+        {
+            for (let key = 1; key <= 3; key++)
+            {
+                await removePDF(key)
+            }
+
+            const deletedFiles = await getAllDeletedFilePaths()
+
+            for (let i = 0; i < 3; i++)
+            {
+                expect(deletedFiles[i]).toHaveProperty('file_path', dummyPDFs[i].file_path)
+            }
+
+            expect(deletedFiles).toHaveLength(3)
+        })
+
+        test.skip('Remove a file in deleted File Store',
+        async () =>
+        {
+            const primaryKey = 2
+
+            const expectedPDFs = cloneDeep(dummyPDFs)
+
+            const expectedDeletedPDF = expectedPDFs.splice(primaryKey - 1, 1)[0]
+
+            await removePDF(primaryKey)
+
+            await removeDeletedFilePath(expectedDeletedPDF.file_path)
+
+            const deletedFiles = await getAllDeletedFilePaths()
+
+            const deletedPDF = await getPDFUsingFilePath(expectedDeletedPDF.file_path)
+
+            expect(deletedFiles).toHaveLength(0)
+            expect(deletedPDF).toBeUndefined()
+        })
+
+        test.only('Remove all files in deleted File Store',
+        async () =>
+        {
+            for (let key = 1; key <= 3; key++)
+            {
+                await removePDF(key)
+            }
+
+            const deletedFiles = await getAllDeletedFilePaths()
+
+            for (var deletedFile of deletedFiles)
+            {
+                await removeDeletedFilePath(deletedFile.file_path)
+            }
+
+            const newDeletedFiles = await getAllDeletedFilePaths()
+
+            expect(newDeletedFiles).toHaveLength(0)
+        })
+
+        test('Remove all files in deleted File Store',
+        async () =>
+        {
+            
+        })
+    })
+
 })
 
 describe.skip('Production ClientDB Initialization Tests', () => {
