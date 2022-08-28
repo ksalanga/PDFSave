@@ -688,6 +688,70 @@ describe('Development Client DB Tests', () => {
         })
     })
 
+    describe.skip('User interactivity',
+    () => 
+    {
+        test.skip(`Simulate medium speed scrolling that constantly updates PDF record's current page every second`,
+        async () =>
+        {
+            /**
+             * Updating the page every millisecond and succesfully updates the currentPage value. 
+             * This is pretty fast and is sufficient for your average user of the app.
+             * This test synchronously waits for the page to update the DB before continuing, but our application will update it asynchronously.
+             * 
+             * This makes the current page less accurate but makes the application experience smoother for the user.
+             * And it's only less accurate in the worst case.
+             * For example: 
+             *      if some user goes haywire and constantly tries to update the current page they're reading
+             *      by scrolling really fast or using some scrolling script
+             *      and then proceeds to randomly close the page that they're reading,
+             *      leaving the DB to not succesfully update the last page or last few pages.
+             * 
+             * But even in this worst case scenario, the fact that an update page operation can succesfully update in a millisecond
+             * (Probably even faster, we just capped the update at a millisecond)
+             * means that by the time they closed, their saved page in the DB is probably a few pages behind from what the application actually sees.
+             *      - For one:
+             *          - this scenario is bad faith as heck and isn't even how you use this application.
+             *      - and two:
+             *          - the average user is probably not gonna be doing that.
+             *      - and three:
+             *          - the update operation speed is quick enough that
+             *          - the closed DB pages will be pretty damn close from the actual view before we closed so it's only a minor inconvenience but still good.
+             *          - they can still just scroll a bit to where they needed to be.
+             * 
+             * So we'll take the decrease in accuracy for the smoother application experience with the async calls.
+             */
+            
+            const pdf = await getPDFUsingPrimaryKey(1)
+
+            let newPage
+
+            var timeleft = 1000;
+
+            var wait = (ms) => {
+                const start = Date.now();
+                let now = start;
+                while (now - start < ms) {
+                now = Date.now();
+                }
+            }
+
+            while (timeleft > 0)
+            {
+                newPage = generateRandomIntFromInterval(0, pdf.length)
+                await updatePDFCurrentPage(1, newPage)
+                timeleft--
+
+                wait(1)
+            }
+
+            const newPDF = await getPDFUsingPrimaryKey(1)
+            const currentPage = newPDF[pdfUpdateKeysENUM.currentPage]
+
+            expect(currentPage).toEqual(newPage)
+        },
+        20000)
+    }) 
 })
 
 describe.skip('Production ClientDB Initialization Tests', () => {
