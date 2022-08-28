@@ -344,11 +344,25 @@ describe('Development Client DB Tests', () => {
                 expect(pdfs).toStrictEqual(dummyPDFs)
             })
 
-            test('Getting all initial PDFs in DB has 3 items', 
+            test.only('Getting all initial PDFs in DB has 3 items', 
             async () => 
             {
                 const pdfs = await getAllPDFs()
-                expect(pdfs.length).toEqual(3)
+                expect(pdfs).toHaveLength(3)
+            })
+
+            test.only('Getting all deleted PDFs returns a list of 0 items',
+            async () =>
+            {
+                
+                for (let key = 1; key <= 3; key++)
+                {
+                    await removePDF(key)
+                }
+
+                const pdfs = await getAllPDFs()
+
+                expect(pdfs).toHaveLength(0)
             })
 
             test(`Getting a PDF using its primary key gets us that exact PDF object 
