@@ -17,7 +17,11 @@ import {
     updateAutoSaveOn as updatePDFAutoSaveOn,
     updateProgressNotificationOn as updatePDFProgressNotificationOn,
     update as updatePDF,
-    getAllWithPrimaryKey as getAllPDFsWithPrimaryKey
+    remove as removePDF,
+    createBookmark,
+    getAllWithPrimaryKey as getAllPDFsWithPrimaryKey,
+    updateBookmark,
+    deleteBookmark
 } from "../model/PDFs";
 import { generateRandomString, generateRandomInt, generateRandomBoolean, generateRandomIntFromInterval } from './utils/Random';
 import {jest} from '@jest/globals';
@@ -66,7 +70,7 @@ describe('Development Client DB Tests', () => {
         await initDB()
     })
 
-    describe.skip('User tests',
+    describe.skip('User Store tests',
     () =>
     {
         test('Dummy User is initialized with correct values in DB',
@@ -143,7 +147,7 @@ describe('Development Client DB Tests', () => {
         })
     }) 
     
-    describe('PDF tests',
+    describe('PDF Store tests',
     () =>
     {
         const initialValues =
@@ -156,7 +160,7 @@ describe('Development Client DB Tests', () => {
             progress_notification_on: false,
         }
         
-        describe.skip('Adding a PDF Record in PDF store',
+        describe.skip('Adding a PDF record',
         () =>
         {
             test("Adding a PDF results in correct initial values",
@@ -239,7 +243,7 @@ describe('Development Client DB Tests', () => {
             5000)
         })
         
-        describe.skip('Updating PDF Record primitive fields',
+        describe.skip('Updating PDF record primitive fields',
         () =>
         {
             /** 
@@ -390,7 +394,7 @@ describe('Development Client DB Tests', () => {
             })
         })
 
-        test.only('Batch update PDF keys',
+        test.skip('Batch update PDF record keys',
         async () =>
         {
             const expectedPDFs = cloneDeep(dummyPDFs)
