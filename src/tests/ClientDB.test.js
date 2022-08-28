@@ -25,7 +25,8 @@ import {
     createBookmark,
     getAllWithPrimaryKey as getAllPDFsWithPrimaryKey,
     updateBookmark,
-    deleteBookmark
+    deleteBookmark,
+    getAllWithProgressNotificationOn as getAllPDFsWithProgressNotificationOn
 } from "../model/PDFs";
 import { generateRandomString, generateRandomInt, generateRandomBoolean, generateRandomIntFromInterval } from './utils/Random';
 import {jest} from '@jest/globals';
@@ -383,6 +384,14 @@ describe('Development Client DB Tests', () => {
                 expect(pdf).toStrictEqual(expectedPDF)
             })
 
+            test.only(`Getting a PDF using a wrong primary key returns undefined`,
+            async () =>
+            {
+                const pdf = await getPDFUsingPrimaryKey(60)
+
+                expect(pdf).toBeUndefined()
+            })
+
             test(`Getting a PDF using its file path get us that exact PDF Object
             (excluding its primary key)`,
             async () =>
@@ -394,6 +403,14 @@ describe('Development Client DB Tests', () => {
                 const pdf = await getPDFUsingFilePath(filePath)
 
                 expect(pdf).toStrictEqual(expectedPDF)
+            })
+
+            test.only(`Getting a PDF using its file path with an incorrect or new file path string returns undefined`,
+            async () =>
+            {
+                const pdf = await getPDFUsingFilePath('WEIRDAHHH Name')
+
+                expect(pdf).toBeUndefined()
             })
 
             test('Getting all PDFs in PDF store with primary keys returns all pdfs with correct pks',
@@ -411,6 +428,28 @@ describe('Development Client DB Tests', () => {
                 const dbPDFs = await getAllPDFsWithPrimaryKey()
 
                 expect(dbPDFs).toStrictEqual(expectedPDFs)
+            })
+
+            test.only('Getting all PDFs with progress notification on',
+            async () =>
+            {
+                const expectedPDFs = cloneDeep(dummyPDFs)
+
+                const expectedPDFsWithProgressNotificationsOn =
+                expectedPDFs.filter(pdf => pdf.progress_notification_on)
+
+                const dbPDFsWithProgressNotificationOn = await getAllPDFsWithProgressNotificationOn()
+
+                expect(dbPDFsWithProgressNotificationOn).toStrictEqual(expectedPDFsWithProgressNotificationsOn)
+            })
+
+            test.only('Getting no PDFs with progress notification on gives an empty list',
+            async () =>
+            {
+                await removePDF(3)
+
+                const dbPDFsWithProgressNotificationOn = await getAllPDFsWithProgressNotificationOn()
+                expect(dbPDFsWithProgressNotificationOn).toStrictEqual([])
             })
         })
 
@@ -483,7 +522,7 @@ describe('Development Client DB Tests', () => {
                 expect(pdfs).toStrictEqual(expectedPDFs)
             })
 
-            test('Removing all',
+            test.only('Removing all',
             async () =>
             {
                 for (let key = 1; key <= 3; key++)
@@ -494,6 +533,7 @@ describe('Development Client DB Tests', () => {
                 const pdfs = await getAllPDFs()
 
                 expect(pdfs).toHaveLength(0)
+                expect(pdfs).toStrictEqual([])
             })
         })
 
