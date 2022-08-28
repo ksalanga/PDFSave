@@ -437,6 +437,42 @@ describe('Development Client DB Tests', () => {
             expect(dbPDF).toStrictEqual(expectedUpdatedPDF)
         })
 
+        describe.skip('Removing PDF record(s)',
+        () =>
+        {
+            test('Removing one',
+            async () =>
+            {
+                const primaryKey = 2
+    
+                const expectedPDFs = cloneDeep(dummyPDFs)
+    
+                expectedPDFs.splice(primaryKey - 1, 1)
+    
+                await removePDF(primaryKey)
+                
+                const deletedDbPDF = await getPDFUsingPrimaryKey(primaryKey)
+                
+                const pdfs = await getAllPDFs()
+
+                expect(deletedDbPDF).toBeUndefined()
+                expect(pdfs).toStrictEqual(expectedPDFs)
+            })
+
+            test('Removing all',
+            async () =>
+            {
+                for (let key = 1; key <= 3; key++)
+                {
+                    await removePDF(key)
+                }
+
+                const pdfs = await getAllPDFs()
+
+                expect(pdfs).toHaveLength(0)
+            })
+        })
+
         describe.skip('Bookmarks',
         () =>
         {
