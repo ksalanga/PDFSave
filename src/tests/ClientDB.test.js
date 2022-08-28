@@ -384,7 +384,7 @@ describe('Development Client DB Tests', () => {
                 expect(pdf).toStrictEqual(expectedPDF)
             })
 
-            test.only(`Getting a PDF using a wrong primary key returns undefined`,
+            test(`Getting a PDF using a wrong primary key returns undefined`,
             async () =>
             {
                 const pdf = await getPDFUsingPrimaryKey(60)
@@ -405,7 +405,7 @@ describe('Development Client DB Tests', () => {
                 expect(pdf).toStrictEqual(expectedPDF)
             })
 
-            test.only(`Getting a PDF using its file path with an incorrect or new file path string returns undefined`,
+            test(`Getting a PDF using its file path with an incorrect or new file path string returns undefined`,
             async () =>
             {
                 const pdf = await getPDFUsingFilePath('WEIRDAHHH Name')
@@ -430,7 +430,7 @@ describe('Development Client DB Tests', () => {
                 expect(dbPDFs).toStrictEqual(expectedPDFs)
             })
 
-            test.only('Getting all PDFs with progress notification on',
+            test('Getting all PDFs with progress notification on',
             async () =>
             {
                 const expectedPDFs = cloneDeep(dummyPDFs)
@@ -443,7 +443,7 @@ describe('Development Client DB Tests', () => {
                 expect(dbPDFsWithProgressNotificationOn).toStrictEqual(expectedPDFsWithProgressNotificationsOn)
             })
 
-            test.only('Getting no PDFs with progress notification on gives an empty list',
+            test('Getting no PDFs with progress notification on gives an empty list',
             async () =>
             {
                 await removePDF(3)
@@ -522,7 +522,7 @@ describe('Development Client DB Tests', () => {
                 expect(pdfs).toStrictEqual(expectedPDFs)
             })
 
-            test.only('Removing all',
+            test('Removing all',
             async () =>
             {
                 for (let key = 1; key <= 3; key++)
