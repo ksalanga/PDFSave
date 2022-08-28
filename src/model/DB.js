@@ -18,24 +18,28 @@ import { CodeError } from "../view/utils/Error";
  * - deletedFiles (see DeletedFiless.js)
  * **/
 
+/**
+ * Object where you can access data about the Client DB's
+ * Name, version, and store names
+ */
 export const ClientDB = {
     name: 'PDFSaveProto',
     version: 1,
-    pdfStore: 'pdfs',
-    userStore: 'users',
-    deletedFileStore: 'deletedFiles'
+    pdfStoreName: 'pdfs',
+    userStoreName: 'users',
+    deletedFileStoreName: 'deletedFiles'
 }
 
 export async function openDB() {
     return await openIDB(ClientDB.name, ClientDB.version, {
         upgrade(db) {
-            db.createObjectStore('users', { autoIncrement: true })
-            const pdfStore = db.createObjectStore('pdfs', { autoIncrement: true })
+            db.createObjectStore(ClientDB.userStoreName, { autoIncrement: true })
+            const pdfStore = db.createObjectStore(ClientDB.pdfStoreName, { autoIncrement: true })
 
             pdfStore.createIndex('file_path', 'file_path', { unique: true })
             pdfStore.createIndex('progress_notification_on', 'progress_notification_on', { unique: false })
 
-            db.createObjectStore('deletes', { keyPath: 'file_path' })
+            db.createObjectStore(ClientDB.deletedFileStoreName, { keyPath: 'file_path' })
         }
     })
 }

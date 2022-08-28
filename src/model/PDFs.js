@@ -90,7 +90,7 @@ const checkIncorrectPageFormat = (pageNumber, length) => {
 const updatePage = async (primaryKey, updateKey, page) => {
     try {
         const db = await openDB()
-        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
+        const pdfStore = db.transaction(ClientDB.pdfStoreName, 'readwrite').store
         const pdf = await pdfStore.get(primaryKey)
 
         checkIncorrectPageFormat(page, pdf.length)
@@ -120,7 +120,7 @@ const updateBoolean = async (primaryKey, updateKey, b) => {
         const db = await openDB()
     
         await updateDB(
-            db.transaction(ClientDB.pdfStore, 'readwrite').store,
+            db.transaction(ClientDB.pdfStoreName, 'readwrite').store,
             primaryKey,
             updateKey,
             b
@@ -141,7 +141,7 @@ export async function updateName(key, name) {
 
         const db = await openDB()
         await updateDB(
-            db.transaction(ClientDB.pdfStore, 'readwrite').store,
+            db.transaction(ClientDB.pdfStoreName, 'readwrite').store,
             key,
             pdfUpdateKeysENUM.name,
             name
@@ -174,7 +174,7 @@ export async function createBookmark(key, id, name, page) {
         checkIncorrectPageFormat(page)
 
         const db = await openDB()
-        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
+        const pdfStore = db.transaction(ClientDB.pdfStoreName, 'readwrite').store
         const pdf = await pdfStore.get(key)
 
         pdf.bookmarks.push(
@@ -209,7 +209,7 @@ export async function updateBookmark(key, id, name, page) {
         checkIncorrectPageFormat(page)
 
         const db = await openDB()
-        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
+        const pdfStore = db.transaction(ClientDB.pdfStoreName, 'readwrite').store
         const pdf = await pdfStore.get(key)
 
         pdf.bookmarks = pdf.bookmarks.map(bookmark => {
@@ -240,7 +240,7 @@ export async function deleteBookmark(key, id) {
         }
 
         const db = await openDB()
-        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
+        const pdfStore = db.transaction(ClientDB.pdfStoreName, 'readwrite').store
         const pdf = await pdfStore.get(key)
 
         pdf.bookmarks = pdf.bookmarks.filter(bookmark => bookmark.id !== id)
@@ -255,7 +255,7 @@ export async function deleteBookmark(key, id) {
 export async function getUsingPrimaryKey(key) {
     try {
         const db = await openDB()
-        return await db.get(ClientDB.pdfStore, key)    
+        return await db.get(ClientDB.pdfStoreName, key)    
     } catch (error) {
         console.log(`Something went wrong getting PDF ${key}`)
     }
@@ -265,7 +265,7 @@ export async function getUsingPrimaryKey(key) {
 export async function getUsingFilePath(file_path) {
     try {
         const db = await openDB()
-        return await db.getFromIndex(ClientDB.pdfStore, 'file_path', file_path)
+        return await db.getFromIndex(ClientDB.pdfStoreName, 'file_path', file_path)
     } catch (error) {
         console.log(`Something went wrong getting PDF in ${file_path}`)
     }
@@ -308,7 +308,7 @@ export async function add(
             progress_notification_on: false
         }
 
-        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
+        const pdfStore = db.transaction(ClientDB.pdfStoreName, 'readwrite').store
         
         const addedPDFKey = await pdfStore.add(pdf)
 
@@ -325,7 +325,7 @@ export async function getAllWithPrimaryKey() {
         const db = await openDB()
         const pdfs = []
 
-        let cursor = await db.transaction(ClientDB.pdfStore).store.openCursor()
+        let cursor = await db.transaction(ClientDB.pdfStoreName).store.openCursor()
 
         while (cursor) {
             pdfs.push({key: cursor.key, ...cursor.value})
@@ -343,7 +343,7 @@ export async function getAllWithPrimaryKey() {
 export async function getAll() {
     try {
         const db = await openDB()
-        const pdfStore = db.transaction(ClientDB.pdfStore).store
+        const pdfStore = db.transaction(ClientDB.pdfStoreName).store
 
         const pdfs = await pdfStore.getAll()
 
@@ -359,7 +359,7 @@ export async function update(key, values) {
     try {
         const db = await openDB()
 
-        const pdfStore = db.transaction(ClientDB.pdfStore, 'readwrite').store
+        const pdfStore = db.transaction(ClientDB.pdfStoreName, 'readwrite').store
 
         await batchUpdate(
             pdfStore, 
@@ -380,10 +380,10 @@ export async function remove(key) {
             throw new CodeError('key ought to be an integer', 404)
         }
         const db = await openDB()
-        const tx = db.transaction([ClientDB.pdfStore, ClientDB.deletedFileStore], 'readwrite')
+        const tx = db.transaction([ClientDB.pdfStoreName, ClientDB.deletedFileStoreName], 'readwrite')
 
-        const pdfStore = tx.objectStore(ClientDB.pdfStore)
-        const deleteStore = tx.objectStore(ClientDB.deletedFileStore)
+        const pdfStore = tx.objectStore(ClientDB.pdfStoreName)
+        const deleteStore = tx.objectStore(ClientDB.deletedFileStoreName)
 
         // first add pdf's file to delete store
         const pdf = await pdfStore.get(key)

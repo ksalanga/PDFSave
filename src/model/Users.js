@@ -54,7 +54,7 @@ const expectedUserUpdateKeys = Object.values(userUpdateKeys)
 export async function get(key) {
     try {
         const db = await openDB()
-        return await db.get(ClientDB.userStore, key)    
+        return await db.get(ClientDB.userStoreName, key)    
     } catch (error) {
         console.log(`Something went wrong getting User ${key}`)
     }
@@ -64,7 +64,7 @@ export async function get(key) {
 export async function update(key, values) {
     try {
         const db = await openDB()
-        const userStore = db.transaction(ClientDB.userStore, 'readwrite').store
+        const userStore = db.transaction(ClientDB.userStoreName, 'readwrite').store
 
         await batchUpdate (
             userStore,

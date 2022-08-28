@@ -27,7 +27,7 @@ export async function add(file_path, deleteStore) {
 export async function remove(file_path) {
     try {
         const db = await openDB()
-        const deleteStore = db.transaction(ClientDB.deletedFileStore, 'readwrite').store
+        const deleteStore = db.transaction(ClientDB.deletedFileStoreName, 'readwrite').store
 
         await deleteStore.delete(file_path)
     } catch (error) {
@@ -39,7 +39,7 @@ export async function getAll()
 {
     try {
         const db = await openDB()
-        const deleteStore = db.transaction(ClientDB.deletedFileStore).store
+        const deleteStore = db.transaction(ClientDB.deletedFileStoreName).store
 
         return await deleteStore.getAll()
     } catch (error) {
