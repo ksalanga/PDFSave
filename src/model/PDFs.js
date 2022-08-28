@@ -1,5 +1,5 @@
 import { openDB, ClientDB, update as updateDB, batchUpdate } from './DB'
-import { add as addToDeleteStore } from './Deletes'
+import { add as addToDeleteStore } from './DeletedFiles'
 import { incorrectStringFormat, notBoolean, notInteger } from '../utils/Formatting'
 import { CodeError } from '../view/utils/Error'
 
@@ -380,10 +380,10 @@ export async function remove(key) {
             throw new CodeError('key ought to be an integer', 404)
         }
         const db = await openDB()
-        const tx = db.transaction([ClientDB.pdfStore, ClientDB.deleteStore], 'readwrite')
+        const tx = db.transaction([ClientDB.pdfStore, ClientDB.deletedFileStore], 'readwrite')
 
         const pdfStore = tx.objectStore(ClientDB.pdfStore)
-        const deleteStore = tx.objectStore(ClientDB.deleteStore)
+        const deleteStore = tx.objectStore(ClientDB.deletedFileStore)
 
         // first add pdf's file to delete store
         const pdf = await pdfStore.get(key)

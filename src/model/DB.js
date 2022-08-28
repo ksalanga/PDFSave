@@ -15,7 +15,7 @@ import { CodeError } from "../view/utils/Error";
  * Object Stores:
  * - users (see Users.js for more info)
  * - pdfs (see PDFs.js for more info)
- * - deleted_pdfs (see Deletes.js)
+ * - deletedFiles (see DeletedFiless.js)
  * **/
 
 export const ClientDB = {
@@ -23,7 +23,7 @@ export const ClientDB = {
     version: 1,
     pdfStore: 'pdfs',
     userStore: 'users',
-    deleteStore: 'deletes'
+    deletedFileStore: 'deletedFiles'
 }
 
 export async function openDB() {
