@@ -32,7 +32,6 @@ import { CodeError } from '../view/utils/Error'
  * 
  * Indexes:
  * file_name
- * progress_notification_on
  * **/
 
 // expected keys and type pairs for a PDF model
@@ -153,8 +152,8 @@ export async function updateName(key, name) {
 export async function updateCurrentPage(key, currentPage) { await updatePage(key, pdfUpdateKeysENUM.currentPage, currentPage) }
 export async function updateLastWeekLatestPage(key, lastWeekLatestPage) { await updatePage(key, pdfUpdateKeysENUM.lastWeekLatestPage, lastWeekLatestPage) }
 export async function updateCurrentWeekLatestPage(key, currentWeekLatestPage) { await updatePage(key, pdfUpdateKeysENUM.currentWeekLatestPage, currentWeekLatestPage) }
-export async function updateAutoSaveOn(key, autoSaveOn) { updateBoolean(key, pdfUpdateKeysENUM.autoSaveOn, autoSaveOn) }
-export async function updateProgressNotificationOn(key, progressNotificationOn) { updateBoolean(key, pdfUpdateKeysENUM.progressNotificationOn, progressNotificationOn) }
+export async function updateAutoSaveOn(key, on) { updateBoolean(key, pdfUpdateKeysENUM.autoSaveOn, on) }
+export async function updateProgressNotificationOn(key, on) { updateBoolean(key, pdfUpdateKeysENUM.progressNotificationOn, on) }
 
 // creates new bookmark to pdf with primaryKey: key
 // key: primaryKey of pdf record
@@ -252,6 +251,9 @@ export async function deleteBookmark(key, id) {
 }
 
 // gets pdf using primary key
+// returns:
+// PDF Object if one exists
+// undefined if PDF doesn't exist
 export async function getUsingPrimaryKey(key) {
     try {
         const db = await openDB()
@@ -262,6 +264,9 @@ export async function getUsingPrimaryKey(key) {
 }
 
 // gets pdf using file name index
+// returns: 
+// PDF Object if one exists
+// undefined if PDF doesn't exist
 export async function getUsingFilePath(file_path) {
     try {
         const db = await openDB()
@@ -318,8 +323,9 @@ export async function add(
     }
 }
 
-// returns a list of all PDF Objects including the primary key as key: key.
-// inside each returned Object.
+// returns:
+// if elements exist: a list of all PDF Objects including the primary key as key: key.
+// if no elements exist: empty list
 export async function getAllWithPrimaryKey() {
     try {
         const db = await openDB()
@@ -338,8 +344,27 @@ export async function getAllWithPrimaryKey() {
     }
 }
 
-// returns a list of all PDF Objects EXCLUDING the primary key value.
-// only has the values stored in each record.
+
+// Grab all PDFs with progress notifications on.
+// returns:
+// List of PDFs with notifications on.
+// Empty List if no PDF has notification on.
+export async function getAllWithProgressNotificationOn() {
+    try {
+        const db = await openDB()
+        const pdfStore = db.transaction(ClientDB.pdfStoreName).store
+
+        const pdfs = await pdfStore.getAll()
+
+        return pdfs.filter(pdf => pdf.progress_notification_on)
+    } catch (error) {
+        console.log("Something went wrong getting PDFs with Progress Notifications On", error)
+    }
+}
+
+// returns:
+// if elements exist: a list of all PDF Objects EXCLUDING the primary key.
+// if elements don't exist: empty list
 export async function getAll() {
     try {
         const db = await openDB()

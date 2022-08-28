@@ -412,6 +412,28 @@ describe('Development Client DB Tests', () => {
 
                 expect(dbPDFs).toStrictEqual(expectedPDFs)
             })
+
+            test.only('Getting all PDFs with progress notification on',
+            async () =>
+            {
+                const expectedPDFs = cloneDeep(dummyPDFs)
+
+                const expectedPDFsWithProgressNotificationsOn =
+                expectedPDFs.filter(pdf => pdf.progress_notification_on)
+
+                const dbPDFsWithProgressNotificationOn = await getAllPDFsWithProgressNotificationOn()
+
+                expect(dbPDFsWithProgressNotificationOn).toStrictEqual(expectedPDFsWithProgressNotificationsOn)
+            })
+
+            test.only('Getting no PDFs with progress notification on gives an empty list',
+            async () =>
+            {
+                await removePDF(3)
+
+                const dbPDFsWithProgressNotificationOn = await getAllPDFsWithProgressNotificationOn()
+                expect(dbPDFsWithProgressNotificationOn).toStrictEqual([])
+            })
         })
 
         test('Batch update PDF record keys',
