@@ -436,6 +436,127 @@ describe('Development Client DB Tests', () => {
 
             expect(dbPDF).toStrictEqual(expectedUpdatedPDF)
         })
+
+        describe.skip('Bookmarks',
+        () =>
+        {
+            test('Creating one',
+            async () =>
+            {
+                const expectedPDFs = cloneDeep(dummyPDFs)
+
+                let key = 1
+
+                for (const pdf of expectedPDFs)
+                {
+                    let id = generateRandomString(20)
+                    let name = generateRandomString(30)
+                    let page = generateRandomInt(50)
+
+                    const newBookmark =
+                    {
+                        id: id,
+                        name: name,
+                        page: page
+                    }
+
+                    pdf.bookmarks.push(newBookmark)
+
+                    await createBookmark(key, id, name, page)
+
+                    key++
+                }
+
+                const pdfs = await getAllPDFs()
+
+                expect(pdfs).toStrictEqual(expectedPDFs)
+            })
+
+            test('Updating one',
+            async () =>
+            {
+                const expectedPDFs = cloneDeep(dummyPDFs)
+
+                let key = 1
+
+                for (const pdf of expectedPDFs)
+                {
+                    const bookmarks = pdf.bookmarks
+                    let randomBookmarkIndex = generateRandomIntFromInterval(0, bookmarks.length - 1)
+                    
+                    const randomBookmark = bookmarks[randomBookmarkIndex]
+                    
+                    let id = randomBookmark.id
+                    let name = generateRandomString(30)
+                    let page = generateRandomInt(50)
+
+                    // update expected PDF bookmark
+                    randomBookmark.name = name
+                    randomBookmark.page = page
+
+                    await updateBookmark(key, id, name, page)
+
+                    key++
+                }
+
+                const pdfs = await getAllPDFs()
+
+                expect(pdfs).toStrictEqual(expectedPDFs)
+            })
+
+            test('Delete One',
+            async () =>
+            {
+                const expectedPDFs = cloneDeep(dummyPDFs)
+
+                let key = 1
+
+                for (const pdf of expectedPDFs)
+                {
+                    const bookmarks = pdf.bookmarks
+                    let randomBookmarkIndex = generateRandomIntFromInterval(0, bookmarks.length - 1)
+                    
+                    const randomBookmark = bookmarks[randomBookmarkIndex]
+                    
+                    let id = randomBookmark.id
+
+                    // delete expected PDF bookmark
+                    pdf.bookmarks = bookmarks.filter(bookmark => bookmark.id !== id)
+
+                    await deleteBookmark(key, id)
+
+                    key++
+                }
+
+                const pdfs = await getAllPDFs()
+
+                expect(pdfs).toStrictEqual(expectedPDFs)
+            })
+
+            test('Delete All',
+            async () =>
+            {
+                const expectedPDFs = cloneDeep(dummyPDFs)
+
+                let key = 1
+
+                for (const pdf of expectedPDFs)
+                {
+                    const bookmarks = pdf.bookmarks
+
+                    for (var bookmark; bookmark = bookmarks.shift(); )
+                    {
+                        await deleteBookmark(key, bookmark.id)
+                    }
+
+                    key++
+                }
+
+                const pdfs = await getAllPDFs()
+
+                expect(pdfs).toStrictEqual(expectedPDFs)
+            })
+        })
     })
 })
 

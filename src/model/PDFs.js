@@ -215,9 +215,9 @@ export async function updateBookmark(key, id, name, page) {
         pdf.bookmarks = pdf.bookmarks.map(bookmark => {
             if (bookmark.id === id) {
                 return {
+                    ...bookmark,
                     name: name,
-                    page: page,
-                    ...bookmark
+                    page: page
                 }
             }
             return bookmark
