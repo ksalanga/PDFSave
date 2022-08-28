@@ -16,6 +16,7 @@ import {
     updateCurrentWeekLatestPage as updatePDFCurrentWeekLatestPage,
     updateAutoSaveOn as updatePDFAutoSaveOn,
     updateProgressNotificationOn as updatePDFProgressNotificationOn,
+    update as updatePDF,
     getAllWithPrimaryKey as getAllPDFsWithPrimaryKey
 } from "../model/PDFs";
 import { generateRandomString, generateRandomInt, generateRandomBoolean, generateRandomIntFromInterval } from './utils/Random';
@@ -387,6 +388,53 @@ describe('Development Client DB Tests', () => {
 
                 expect(dbPDFs).toStrictEqual(expectedPDFs)
             })
+        })
+
+        test.only('Batch update PDF keys',
+        async () =>
+        {
+            const expectedPDFs = cloneDeep(dummyPDFs)
+            const expectedPDF = expectedPDFs[0]
+
+            const expectedPDFUpdateKeys = Object.values(pdfUpdateKeysENUM)
+            
+            const updateValues = {}
+
+            for (const key of expectedPDFUpdateKeys)
+            {
+                let randomUpdatedValue
+                switch (expectedPDFKeyTypes[key])
+                {
+                    case 'string':
+                        randomUpdatedValue = generateRandomString(10)
+                        break
+                    case 'number':
+                        randomUpdatedValue = generateRandomInt(100)
+                        break
+                    case 'boolean':
+                        randomUpdatedValue = generateRandomBoolean()
+                        break
+                    case 'object':
+                        randomUpdatedValue = []
+                        break
+                    default:
+                        randomUpdatedValue = 0
+                }
+
+                updateValues[key] = randomUpdatedValue
+            }
+
+            const expectedUpdatedPDF =
+            {
+                ...expectedPDF,
+                ...updateValues
+            }
+
+            await updatePDF(1, updateValues)
+
+            const dbPDF = await getPDFUsingFilePath(expectedUpdatedPDF.file_path)
+
+            expect(dbPDF).toStrictEqual(expectedUpdatedPDF)
         })
     })
 })
