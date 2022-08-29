@@ -1,3 +1,6 @@
+/**
+ * MOST LIKELY GOING TO MIGRATE TO ./src/view/browser/PDFTab.js
+ */
 /* eslint-disable no-undef */
 
 // Listen to the current url:

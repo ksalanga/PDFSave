@@ -12,5 +12,12 @@
     "48": "logo192.png",
     "128": "logo192.png"
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "background": {
+    "service_worker": "./static/js/backgroundTab.js",
+    "type": "module"
+  },
+  "permissions": [
+    "activeTab"
+  ]
 }
