@@ -68,6 +68,7 @@ export function Icon(props) {
         <div>
             <img 
                 src={`/images/${props.imgFilename}`}
+                alt={`Icon ${props.imgFilename}`}
                 height={props.height ? props.height : "24px"}
                 width={props.width ? props.width : "24px"}
                 style={{"cursor": "pointer"}}
