@@ -18,7 +18,7 @@ chrome.tabs.onActivated.addListener(tabActivated)
 // Set up a listener for when a tab has finished switching and has updated.
 // https://developer.chrome.com/docs/extensions/reference/tabs/#event-onUpdated
 
-function grabActiveUrl()
+export function grabActiveUrl()
 {
     const queryInfo = {active: true, lastFocusedWindow: true};
 
