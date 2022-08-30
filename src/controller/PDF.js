@@ -6,7 +6,7 @@
  * 
  * How will view to view work with Chrome extensions?:
  * - Message passing:
- * Browser View (Background Script) <------- Message Passing (Controller) -------> App (React.js)
+ * Browser View (Content Script) (see ./public/view/PDF.js) <------- Message Passing (Controller) -------> App (React.js)
  * 
  * Communicates between Model and View:
  * - Inputs ALWAYS start from the View level
@@ -24,23 +24,21 @@
  * - Open New PDF Tab in Browser View -> Select PDF Item in App View
  * - Open Existing PDF Tab -> Select PDF Item
  */
-export function openTab()
+export function openedPDFTab()
 {
     /* eslint-disable no-undef */
     
-    // Listen to the current url:
-    // view ./src/chrome/backgroundTab.js
+    // our PDF content script will fire a message claiming that a pdf of filepath: url is opened
+    // and our View can react to that.
 
-    // if the current url is a pdf extension (ends in .pdf):
+    // search filepath in PDF Store
 
-        // search filepath in PDF Store
+    // If filepath exists:
+        // Send a message: select existing item in App View
 
-        // If filepath exists:
-            // Send a message: select existing item in App View
-
-        // If filepath doesn't exist:
-            // put new filepath into PDF Store
-            // Send a message: select existing item in App View
+    // If filepath doesn't exist:
+        // put new filepath into PDF Store
+        // Send a message: select existing item in App View
 
     /* eslint-disable no-undef */
 }
