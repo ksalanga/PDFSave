@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './view/app/App';
+import App from './view/App';
 import reportWebVitals from './reportWebVitals';
 
 // TODO: fix slow image loading
