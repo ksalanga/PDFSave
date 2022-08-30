@@ -19,28 +19,40 @@
 // In order to grab the current page,
 // We have to observe any changes in the viewer.
 // Check out mutation observer
-
-// const callback = (mutationList, observer) => {
-//   for (const mutation of mutationList) {
-//     if (mutation.type === 'childList') {
-//       alert('A child node has been added or removed.');
-//     } else if (mutation.type === 'attributes') {
-//       alert(`The ${mutation.attributeName} attribute was modified.`);
-//     } else {
-//         alert('Something else changed')
+// var pdfviewObserver = new MutationObserver((records, observer) =>
+// {
+//     alert("Something going on")
+//     let i = 0
+//     for (const record of records)
+//     {
+//         i++
 //     }
-//   }
-// };
+//     alert(i)
+// })
+
+// pdfviewObserver.observe(pdfview[0], { childList: true, subtree: true, attributes: false, characterData: false })
+
+// Looks like we can't access the shadow dom and see changes directly from the dom parent:
+// Possible solutions?:
+// Try to use CSS tricks?
+// https://stackoverflow.com/questions/16633057/is-it-possible-to-access-shadow-dom-elements-through-the-parent-document
+
+// Or see if you can grab custom elements:
+// https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements
 
 
+// SHADOW DOM IS MAD ANNOYING MAN JUST LET ME GRAB THE CONTENTS FOR PETES SAKE
+
+alert("Before load: " + document.body.firstElementChild.src)
 
 window.addEventListener ("load", myMain, false);
 
 function myMain (evt) {
-
-    var jsInitChecktimer = setInterval (checkForJS_Finish, 1000);
+    var jsInitChecktimer = setInterval (checkForJS_Finish, 15000);
 
     function checkForJS_Finish () {
+        let pdfview = document.getElementsByTagNameNS('*', 'pdf-viewer')
+        alert("After load: " + document.body.firstElementChild.src)
         if (    typeof SOME_GLOBAL_VAR != "undefined"
             ||  document.querySelector ("#viewer")
         ) {
@@ -50,15 +62,6 @@ function myMain (evt) {
             alert("JS Finished Viewer:" + viewer)
         }
     }
-    // let shadowDom = viewer.shadowRoot
-    // let toolbar = shadowDom.getElementById('toolbar')
-    // let toolbarShadow = toolbar.shadowRoot
-    // let center = toolbarShadow.getElementById('center')
-    // let pageSelector = center.getElementsByTagName('viewer-page-selector')[0]
-    // let pageSelectorShadow = pageSelector.shadowRoot
-    // let currentPageInput = pageSelectorShadow.getElementById('pageSelector')
-    
-    // alert(currentPageInput.value)
 }
 
 /**
