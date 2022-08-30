@@ -12,6 +12,13 @@
     "48": "logo192.png",
     "128": "logo192.png"
   },
+  "content_scripts": [
+   {
+     "matches": ["*://*/*.pdf", "file:///*/*.pdf"],
+     "run_at": "document_end",
+     "js": ["./view/PDF.js"]
+   }
+  ],
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "background": {
     "service_worker": "./static/js/backgroundTab.js",
