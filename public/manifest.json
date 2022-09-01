@@ -19,13 +19,22 @@
     "*://*/*.pdf",
     "file://*/*.pdf"
   ],
+  "commands": {
+    "save-at-page":
+    {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Prompts extension to ask user to save currently viewed PDF at a defined page."
+    }
+  },
   "permissions": [
     "activeTab",
-    "scripting",
     "tabs"
   ],
   "background": {
-    "service_worker": "./static/js/backgroundTab.js",
+    "service_worker": "./background/pdfTabs.js",
     "type": "module"
   }
 }
