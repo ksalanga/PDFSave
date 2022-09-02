@@ -46,5 +46,16 @@
   "background": {
     "service_worker": "./js/background/pdfTabs.js",
     "type": "module"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "/templates/dialog.html"
+      ],
+      "matches": [
+        "<all_urls>",
+        "file://*/*"
+      ]
+    }
+  ]
 }
