@@ -35,8 +35,16 @@
   ],
   "content_scripts": [
     {
-      "matches": ["*://*/*.pdf", "file:///*/*.pdf"],
-      "js": ["./content/pdfViewer.js"]
+      "matches": [
+        "*://*/*.pdf", 
+        "file:///*/*.pdf"
+      ],
+      "js": [
+        "./js/utils/jquery-3.2.1.js",
+        "./js/utils/bootstrap.min.js",
+        "./js/content/pdfViewer.js"
+      ],
+      "css": ["./css/bootstrap.min.css"]
     }
   ],
   "background": {
