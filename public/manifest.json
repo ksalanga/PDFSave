@@ -1,7 +1,7 @@
 {
-  "name": "PDF Save",
-  "description": "Autosaves page position in Chrome/Brave PDF and bookmark PDFs.",
-  "version": "1.0",
+  "name": "PDF Save Extension Scripts",
+  "description": "Browser script functionalities",
+  "version": "0.0.1",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
