@@ -1,0 +1,1 @@
+// Content Script that will try to load popups in the PDF Viewer.
