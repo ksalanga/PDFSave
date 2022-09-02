@@ -1,7 +1,9 @@
 // Content Script that will try to load popups in the PDF Viewer.
 
 // Popup:
-// Inject HTML into Content Script: https://stackoverflow.com/a/16336073
+// TODO: Fetching this dialog.html does not work with file:// Content Scripts
+// have to revert BACK to just prepending html as a variable:
+// https://wtools.io/html-to-javascript-converter
 
 fetch(chrome.runtime.getURL('/templates/dialog.html')).then(r => r.text()).then(html => {
     $("body").prepend(html)
@@ -15,7 +17,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
             // sendResponse: message: popup exists
         
         // Else
-            // TODO: Inject popup with CSS into DOM
             $("#exampleModalCenter").modal('show');
 
         sendResponse({message: "popup added"})
