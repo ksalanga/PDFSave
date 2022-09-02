@@ -5,22 +5,16 @@
 // - Context Menu 
 // - Accessing Current URLs
 
-console.log("Right here...")
-
 chrome.commands.onCommand.addListener((command) => {
-    console.log("Hello?")
     switch(command)
     {
         case "save-at-page":
-            // Grab Active URL:
-            console.log("Saving at page")
             const queryInfo = {active: true, lastFocusedWindow: true};
+            
             chrome.tabs && chrome.tabs.query(queryInfo, tabs => {
+                // Grab Active URL:
                 const url = tabs[0].url;
 
-                console.log(url)
-
-                // // If url is valid (ends in .pdf):
                 if (url.endsWith('.pdf'))
                 {
                     // Send Message to indicate that we are requesting a save at page
@@ -42,9 +36,6 @@ chrome.commands.onCommand.addListener((command) => {
     }
 });
 
-chrome.tabs.onUpdated.addListener((tabid, changeinfo, tab) =>
-{
-    console.log("WHYT DONT COMMANDS WOKR???")
-})
+chrome.tabs.onUpdated.addListener((tabid, changeinfo, tab) => {})
 
 /* eslint-disable no-undef */
