@@ -15,10 +15,6 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
-  "host_permissions": [
-    "*://*/*.pdf",
-    "file://*/*.pdf"
-  ],
   "commands": {
     "save-at-page":
     {
@@ -48,7 +44,7 @@
     }
   ],
   "background": {
-    "service_worker": "./background/pdfTabs.js",
+    "service_worker": "./js/background/pdfTabs.js",
     "type": "module"
   }
 }
