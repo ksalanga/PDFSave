@@ -56,7 +56,6 @@ var saveNotification = '' +
 
 $("body").prepend(saveNotification)
 
-// window.onbeforeunload = confirmExit;
 function showAlert() {
     $("#saveNotification").addClass("in");
 }
@@ -68,12 +67,6 @@ window.setTimeout(function () {
     	$('.alert').alert('close')
     }, 50000)
 }, 1000);
-
-function confirmExit(e) {
-    $("#exampleModalCenter").modal('show');
-    return "Confirm exit?"
-}
-
 
 fetch(chrome.runtime.getURL('/templates/dialog.html')).then(r => r.text()).then(html => {
     $("body").prepend(html)
