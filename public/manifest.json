@@ -40,7 +40,10 @@
         "./js/utils/bootstrap.min.js",
         "./js/content/pdfViewer.js"
       ],
-      "css": ["./css/bootstrap.min.css"]
+      "css": [
+        "./css/bootstrap.min.css",
+        "./css/alert.css"
+      ]
     }
   ],
   "background": {
