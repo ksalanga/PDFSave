@@ -5,6 +5,17 @@
 // - Accessing Current URLs
 
 /**
+ * On Install Routines:
+ *  1. Check if any commands have collided with other extension commands
+ */
+
+chrome.runtime.onInstalled.addListener((reason) => {
+  if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    checkCommandShortcuts();
+  }
+});
+
+/**
  * Service Worker (B_S) Keyboard Command Messages to Content Script (C_S):
  * 
  * B_S:
@@ -211,5 +222,28 @@ function sendMessageToActiveTab(messageType, message)
             console.log(response.message);
         })
     })
+}
+
+/**
+ * Check if any commands are registered:
+ * https://developer.chrome.com/docs/extensions/reference/commands/#verify-commands-registered
+ */
+// Only use this function during the initial install phase. After
+// installation the user may have intentionally unassigned commands.
+function checkCommandShortcuts() {
+  chrome.commands.getAll((commands) => {
+    let missingShortcuts = [];
+
+    for (let {name, shortcut} of commands) {
+      if (shortcut === '') {
+        missingShortcuts.push(name);
+      }
+    }
+
+    if (missingShortcuts.length > 0) {
+        // TODO: Update the extension UI to inform the user that one or more
+        // commands are currently unassigned.
+    }
+  });
 }
 /* eslint-disable no-undef */
