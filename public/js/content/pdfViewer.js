@@ -1,28 +1,6 @@
 // Content Script that will try to load popups in the PDF Viewer.
 
 /**
- * Opens save notification Bootstrap alert after a specified amount of time and closes after a closed amount of time
- * @param saveNotification (string) - HTML string of a save notification element
- */
-function openSavePageAlert(saveNotification)
-{
-
-    $("body").prepend(saveNotification)
-
-    function showAlert() {
-        $("#saveNotification").addClass("in");
-    }
-
-    window.setTimeout(function () {
-        showAlert();
-        
-        window.setTimeout(function () {
-            $('.alert').alert('close')
-        }, 50000)
-    }, 1000);
-}
-
-/**
  * Listen for B_S messages (requests)
  */
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
@@ -100,3 +78,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
 
     return true
 })
+
+/**
+ * Utility Functions:
+ */
+
+/**
+ * Opens save notification Bootstrap alert after a specified amount of time and closes after a closed amount of time
+ * @param saveNotification (string) - HTML string of a save notification element
+ */
+function openSavePageAlert(saveNotification)
+{
+
+    $("body").prepend(saveNotification)
+
+    function showAlert() {
+        $("#saveNotification").addClass("in");
+    }
+
+    window.setTimeout(function () {
+        showAlert();
+        
+        window.setTimeout(function () {
+            $('.alert').alert('close')
+        }, 50000)
+    }, 1000);
+}

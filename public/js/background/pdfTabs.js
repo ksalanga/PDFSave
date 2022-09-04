@@ -52,46 +52,6 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 /**
- * 
- * @param url (string) - chrome runtime url of .html file 
- * @param resource (string) - the type of HTML resource you want to message over
- * and want the listener to receive. If you don't know how to name the resource, just make this string
- * the name of the html file you're sending.
- * ex: modal, alert.
- */
-function loadHTML(url, resource)
-{
-    fetch(url)
-    .then(r => r.text())
-    .then(htmlString => {
-        const message =
-        {
-            message: "load",
-            resource: resource,
-            data: htmlString
-        }
-
-        chrome.tabs.query( {active: true, currentWindow: true}, (tabs) =>
-        {
-            chrome.tabs.sendMessage(tabs[0].id, message, (response) =>
-            {
-                if (chrome.runtime.lastError)
-                {
-                    console.log(`${message.resource} Load Message Error: `, chrome.runtime.lastError)
-                    return
-                }
-
-                console.log(response.message);
-            })
-        })
-    })
-    .catch((err) =>
-    {
-        console.log(`Fetching ${message.resource} Resource Error:`, err)
-    })
-}
-
-/**
  * Load and send HTML templates (Web Accessible Resources aka WAR)
  * https://developer.chrome.com/docs/extensions/mv3/manifest/web_accessible_resources/
  * NOTE: IF LOADING AN HTML WAR: ADD IT INTO THE MANIFEST UNDER "web_accessible_resources"
@@ -196,9 +156,70 @@ const savePageContextMenuID = chrome.contextMenus.create(
 
 chrome.contextMenus.onClicked.addListener((info, tab) =>
 {
-    if (info.menuItemId === savePageContextMenuID)
+
+/**
+ * Utility Functions:
+ */
+
+/**
+ * 
+ * @param url (string) - chrome runtime url of .html file 
+ * @param resource (string) - the type of HTML resource you want to message over
+ * and want the listener to receive. If you don't know how to name the resource, just make this string
+ * the name of the html file you're sending.
+ * ex: modal, alert.
+ */
+function loadHTML(url, resource)
+{
+    fetch(url)
+    .then(r => r.text())
+    .then(htmlString => {
+        const message =
+        {
+            message: "load",
+            resource: resource,
+            data: htmlString
+        }
+
+        chrome.tabs.query( {active: true, currentWindow: true}, (tabs) =>
+        {
+            chrome.tabs.sendMessage(tabs[0].id, message, (response) =>
+            {
+                if (chrome.runtime.lastError)
+                {
+                    console.log(`${message.resource} Load Message Error: `, chrome.runtime.lastError)
+                    return
+                }
+
+                console.log(response.message);
+            })
+        })
+    })
+    .catch((err) =>
     {
-        console.log("Saved at page")
-    }
-})
+        console.log(`Fetching ${message.resource} Resource Error:`, err)
+    })
+}
+
+/**
+ * 
+ * @param messageType (string) - The type of message you're sending to Tab, messageType will be referenced whenever an error occurs
+ * @param message (object) - message to send to active tab
+ */
+function sendMessageToActiveTab(messageType, message)
+{
+    chrome.tabs.query( {active: true, currentWindow: true}, (tabs) =>
+    {
+        chrome.tabs.sendMessage(tabs[0].id, message, (response) =>
+        {
+            if (chrome.runtime.lastError)
+            {
+                console.log(`${messageType} Message Error: `, chrome.runtime.lastError)
+                return
+            }
+
+            console.log(response.message);
+        })
+    })
+}
 /* eslint-disable no-undef */
