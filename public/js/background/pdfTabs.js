@@ -31,20 +31,7 @@ chrome.commands.onCommand.addListener((command) => {
     {
         case "save-at-page":
             message.command = command
-            chrome.tabs.query( {active: true, currentWindow: true}, (tabs) =>
-            {
-                chrome.tabs.sendMessage(tabs[0].id, message, (response) =>
-                {
-                    if (chrome.runtime.lastError)
-                    {
-                        console.log("Command Message Error: ", chrome.runtime.lastError)
-                        return
-                    }
-
-                    console.log(response.message);
-                })
-            })
-
+            sendMessageToActiveTab("Save At Page Command", message)
             break
         default:
             console.log("Invalid Command")
@@ -152,6 +139,7 @@ const savePageContextMenuID = chrome.contextMenus.create(
 
 chrome.contextMenus.onClicked.addListener((info, tab) =>
 {
+        sendMessageToActiveTab("Save At Page Context Menu", message)
 
 /**
  * Utility Functions:
