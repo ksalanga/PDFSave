@@ -1,18 +1,9 @@
 // Content Script that will try to load popups in the PDF Viewer.
 
-// Popup:
-// TODO: Fetching this dialog.html does not work with file:// Content Scripts
-// have to revert BACK to just prepending html as a variable:
-// https://wtools.io/html-to-javascript-converter
-
-// Maybe we can still load web accessible resources via our service worker ?
-// https://stackoverflow.com/questions/69736887/web-accessible-resources-manifest-key-is-ignored-if-respective-resources-are-i
-
-// If this pdf has save / auto open on,
-// Send a notification saying:
-// Make sure to save your .pdf before you close!
-// We might ask you to save it if you don't ;)
-
+/**
+ * Opens save notification Bootstrap alert after a specified amount of time and closes after a closed amount of time
+ * @param saveNotification (string) - HTML string of a save notification element
+ */
 function openSavePageAlert(saveNotification)
 {
 
