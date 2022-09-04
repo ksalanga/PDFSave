@@ -54,7 +54,8 @@
     {
       "resources": [
         "logo192.png",
-        "/templates/dialog.html"
+        "/templates/modal.html",
+        "/templates/alert.html"
       ],
       "matches": [
         "<all_urls>",
