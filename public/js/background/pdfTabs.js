@@ -95,6 +95,7 @@ function loadHTML(url, resource)
 /**
  * Load and send HTML templates (Web Accessible Resources aka WAR)
  * https://developer.chrome.com/docs/extensions/mv3/manifest/web_accessible_resources/
+ * NOTE: IF LOADING AN HTML WAR: ADD IT INTO THE MANIFEST UNDER "web_accessible_resources"
  * 
  * Service Worker (B_S) and Content Script (C_S) WAR Messaging Pathway:
  * 
