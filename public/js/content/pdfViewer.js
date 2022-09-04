@@ -35,12 +35,33 @@ function openSavePageAlert(saveNotification)
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
 {
-    if (request.message === "save-at-page-popup")
+    /**
+     * Service Worker (B_S) Keyboard Command Messaging Pathway to Content Script (C_S):
+     * 
+     * B_S:
+     *  1. Listens for chrome keyboard commands
+     *  2. On a command event,
+     *  3. Send request that contains:
+     *      {
+     *          message (string): "command" (required),
+     *          command (string): name of command
+     *      }
+     * 
+     * C_S:
+     *  1. Listens for B_S messages / requests
+     *  2. If request.message is "command"
+     *  3. Do something depending on the request.command
+     */
+    if (request.message === "command")
     {
-        window.onbeforeunload = null
-        $("#savePagePrompt").modal('show')
-
-        sendResponse({message: "popup added"})
+        // load savePagePrompt modal
+        if (request.command === "save-at-page")
+        {
+            window.onbeforeunload = null
+            $("#savePagePrompt").modal('show')
+    
+            sendResponse({message: "popup added"})
+        }
     }
 
     if (request.message === "load")

@@ -1,18 +1,39 @@
 /* eslint-disable no-undef */
 
 // Sets up background actions for:
-// - Keyboard shortcuts
 // - Context Menu 
 // - Accessing Current URLs
 
+/**
+ * Service Worker (B_S) Keyboard Command Messages to Content Script (C_S):
+ * 
+ * B_S:
+ *  1. Listens for chrome keyboard commands
+ *  2. On a command event,
+ *  3. Send request that contains:
+ *      {
+ *          message (string): "command" (required),
+ *          command (string): name of command
+ *      }
+ * 
+ * C_S:
+ *  1. Listens for B_S messages / requests
+ *  2. If request.message is "command"
+ *  3. Do something depending on the request.command
+ */
 chrome.commands.onCommand.addListener((command) => {
+    const message = 
+    {
+        message: "command"
+    }
+
     switch(command)
     {
         case "save-at-page":
-
+            message.command = command
             chrome.tabs.query( {active: true, currentWindow: true}, (tabs) =>
             {
-                chrome.tabs.sendMessage(tabs[0].id, {message: "save-at-page-popup"}, (response) =>
+                chrome.tabs.sendMessage(tabs[0].id, message, (response) =>
                 {
                     if (chrome.runtime.lastError)
                     {
