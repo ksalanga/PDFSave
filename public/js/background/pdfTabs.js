@@ -1,8 +1,7 @@
 /* eslint-disable no-undef */
 
 // Sets up background actions for:
-// - Context Menu 
-// - Accessing Current URLs
+// TODO: - Accessing Current URLs
 
 /**
  * On Install Routines:
