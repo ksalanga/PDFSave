@@ -92,16 +92,42 @@ function loadHTML(url, resource)
     })
 }
 
-// Load and fetch Resources:
+/**
+ * Load and send HTML templates (Web Accessible Resources aka WAR)
+ * https://developer.chrome.com/docs/extensions/mv3/manifest/web_accessible_resources/
+ * 
+ * Service Worker (B_S) and Content Script (C_S) WAR Messaging Pathway:
+ * 
+ * B_S:
+ *  1. fetches HTML resource from the extension's directory via WAR url
+ *  2. sends HTML Resource as a message / request to C_S
+ *  3. Request contains:
+ *      {
+ *          message (string): "load" (required)
+ *          resource (string): name of HTML element you want to load
+ *          data (string): HTML string that the C_S will add into DOM
+ *      }
+ *   4. listen for response
+ * 
+ * C_S:
+ *  1. Listens for B_S requests
+ *  2. Once a request is received
+ *  3. If request.message is "load"
+ *  4. Depending on the resource type, do something with the request.data (HTML string)
+ *      - can simply append resource to DOM, or do more with the elements with JS trickery
+ *  6. Respond with the type of resource you received
+ * 
+ */
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) =>
 {
     if (changeInfo.status === "complete"
     && tab.url.endsWith(".pdf"))
     {
-        // save prompt (modal.html):
+        // Send modal/dialog box template
         const modalURL = chrome.runtime.getURL('/templates/modal.html')
         loadHTML(modalURL, "modal")
 
+        // Send alert html templates
         if (tab.url.startsWith("file"))
         {
             const alertOfflineURL = chrome.runtime.getURL('/templates/alertOffline.html')
@@ -109,7 +135,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) =>
         }
         else
         {
-            // alert (alert.html) + pdf logo
             const alertURL = chrome.runtime.getURL('/templates/alert.html')
             fetch(alertURL)
             .then(r => r.text())
@@ -149,8 +174,5 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) =>
 
     }
 })
-    // save alert (alert.html):
-
-chrome.tabs.onUpdated.addListener((tabid, changeinfo, tab) => {})
 
 /* eslint-disable no-undef */
