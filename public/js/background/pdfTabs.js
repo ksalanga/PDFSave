@@ -77,8 +77,7 @@ chrome.commands.onCommand.addListener((command) => {
  */
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) =>
 {
-    if (changeInfo.status === "complete"
-    && tab.url.endsWith(".pdf"))
+    if (changeInfo.status === "complete")
     {
         // Send modal/dialog box template
         const modalURL = chrome.runtime.getURL('/templates/modal.html')
@@ -212,19 +211,7 @@ function loadHTML(url, resource, modifyHTMLString)
             data: htmlString
         }
 
-        chrome.tabs.query( {active: true, currentWindow: true}, (tabs) =>
-        {
-            chrome.tabs.sendMessage(tabs[0].id, message, (response) =>
-            {
-                if (chrome.runtime.lastError)
-                {
-                    console.log(`${message.resource} Load Message Error: `, chrome.runtime.lastError)
-                    return
-                }
-
-                console.log(response.message);
-            })
-        })
+        sendMessageToActiveTab(message.resource + " load", message)
     })
     .catch((err) =>
     {
@@ -245,7 +232,10 @@ function sendMessageToActiveTab(messageType, message)
         {
             if (chrome.runtime.lastError)
             {
-                console.log(`${messageType} Message Error: `, chrome.runtime.lastError)
+                if (tabs[0].url.includes('.pdf'))
+                {
+                    console.log(`${messageType} Message Error: `, chrome.runtime.lastError)
+                }
                 return
             }
 
