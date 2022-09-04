@@ -132,11 +132,29 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) =>
 /**
  * Context Menus:
  * https://developer.chrome.com/docs/extensions/reference/contextMenus/
+ * 
+ * B_S and C_S Context Menu Messaging Pathway:
+ * 
+ * B_S:
+ *  1. Listens for context menu clicks
+ *  2. On a context menu click:
+ *  3. Sends a request that contains:
+ *      {
+ *          message (string): "contextmenu" (value required)
+ *          id: id of context menu item
+ *      }
+ * 
+ * C_S:
+ *  1. Listens for requests:
+ *  2. If request.message is "contextmenu"
+ *      3. depending on the request.id of that context menu,
+ *          - do stuff with the DOM
  */
-const savePageContextMenuID = chrome.contextMenus.create(
+const saveAtPageContextMenuID = chrome.contextMenus.create(
     {
-        id: "spg",
-        title: "Save at page",
+        id: "save-at-page",
+        title: "Save at Page",
+        contexts: ["all"],
         documentUrlPatterns: [
             "*://*/*.pdf",
             "file:///*/*.pdf"
@@ -144,13 +162,26 @@ const savePageContextMenuID = chrome.contextMenus.create(
     },
     () =>
     {
+        if (chrome.runtime.lastError)
+        {
+            console.log("Error creating Context Menu: ", chrome.runtime.lastError)
+        }
         console.log("Created Save at Page Context Menu")
     }
 )
 
 chrome.contextMenus.onClicked.addListener((info, tab) =>
 {
+    if (info.menuItemId === saveAtPageContextMenuID)
+    {
+        const message =
+        {
+            message: "contextmenu",
+            id: saveAtPageContextMenuID
+        }
         sendMessageToActiveTab("Save At Page Context Menu", message)
+    }
+})
 
 /**
  * Utility Functions:

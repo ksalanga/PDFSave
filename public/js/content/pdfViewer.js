@@ -76,6 +76,39 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
         }
     }
 
+    /**
+     * Context Menus:
+     * https://developer.chrome.com/docs/extensions/reference/contextMenus/
+     * 
+     * B_S and C_S Context Menu Messaging Pathway:
+     * 
+     * B_S:
+     *  1. Listens for context menu clicks
+     *  2. On a context menu click:
+     *  3. Sends a request that contains:
+     *      {
+     *          message (string): "contextmenu" (value required)
+     *          id: id of context menu item
+     *      }
+     * 
+     * C_S:
+     *  1. Listens for requests:
+     *  2. If request.message is "contextmenu"
+     *  3. depending on the request.id of that context menu,
+     *      - do stuff with the DOM
+     */
+    if (request.message === "contextmenu")
+    {
+        // load savePagePrompt modal
+        if (request.id === "save-at-page")
+        {
+            window.onbeforeunload = null
+            $("#savePagePrompt").modal('show')
+    
+            sendResponse({message: "Context Menu Save at Page Clicked"})
+        }
+    }
+
     return true
 })
 
