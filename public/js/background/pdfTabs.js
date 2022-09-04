@@ -152,12 +152,18 @@ chrome.contextMenus.onClicked.addListener((info, tab) =>
  * and want the listener to receive. If you don't know how to name the resource, just make this string
  * the name of the html file you're sending.
  * ex: modal, alert.
+ * @param modifyHTMLString (callback) *OPTIONAL - callback function (htmlstring) that modifies the HTML string and returns the newly modified string
  */
-function loadHTML(url, resource)
+function loadHTML(url, resource, modifyHTMLString)
 {
     fetch(url)
     .then(r => r.text())
     .then(htmlString => {
+        if (modifyHTMLString)
+        {
+            htmlString = modifyHTMLString(htmlString)
+        }
+
         const message =
         {
             message: "load",
