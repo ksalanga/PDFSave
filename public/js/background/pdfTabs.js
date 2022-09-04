@@ -87,51 +87,47 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) =>
         const modalURL = chrome.runtime.getURL('/templates/modal.html')
         loadHTML(modalURL, "modal")
 
-        // Send alert html templates
-        if (tab.url.startsWith("file"))
+        // Send Alert with Command Shortcut as a custom string
+        chrome.commands.getAll((commands) =>
+        {
+            var saveCommandShortcut
+
+            for (let {name, shortcut} of commands)
+            {
+                if (name === 'save-at-page')
+                {
+                    if (shortcut === '') 
+                    {
+                        saveCommandShortcut = "Not Binded, Set a Shortcut in PDF Save Extension Settings"
+                    }
+                    else
+                    {
+                        saveCommandShortcut = shortcut
+                    }
+                    break
+                }
+            }
+
+            if (tab.url.startsWith("file"))
         {
             const alertOfflineURL = chrome.runtime.getURL('/templates/alertOffline.html')
-            loadHTML(alertOfflineURL, "alert")
+            loadHTML(alertOfflineURL, "alert",
+            (htmlString) =>
+            {
+                return htmlString.replace('INSERT COMMAND', saveCommandShortcut)
+            })
         }
         else
         {
             const alertURL = chrome.runtime.getURL('/templates/alert.html')
-            fetch(alertURL)
-            .then(r => r.text())
-            .then((html) => {
-                if (alertURL.startsWith("file"))
-                {
-                    return html.replace('src=""', 'src="https://www.clipartmax.com/png/middle/134-1345050_letter-p-free-clipart-letter-p.png"')
-                }
-                return html.replace('src=""', `src="${chrome.runtime.getURL('logo192.png')}"`)
-            })
-            .then(htmlString => {
-                const message =
-                {
-                    message: "load",
-                    resource: "alert",
-                    data: htmlString
-                }
-                chrome.tabs.query( {active: true, currentWindow: true}, (tabs) =>
-                {
-                    chrome.tabs.sendMessage(tabs[0].id, message, (response) =>
-                    {
-                        if (chrome.runtime.lastError)
-                        {
-                            console.log("Alert Load Message Error: ", chrome.runtime.lastError)
-                            return
-                        }
-    
-                        console.log(response.message);
-                    })
-                })
-            })
-            .catch((err) =>
+            loadHTML(alertURL, "alert", 
+            (htmlString) => 
             {
-                console.log("Fetching Alert Resource Error:", err)
+                htmlString = htmlString.replace('src=""', `src="${chrome.runtime.getURL('logo192.png')}"`)
+                return htmlString.replace('INSERT COMMAND', saveCommandShortcut)
             })
         }
-
+        })
     }
 })
 
