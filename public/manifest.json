@@ -27,7 +27,8 @@
   },
   "permissions": [
     "activeTab",
-    "tabs"
+    "tabs",
+    "contextMenus"
   ],
   "content_scripts": [
     {

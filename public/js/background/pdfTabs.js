@@ -51,7 +51,6 @@ chrome.commands.onCommand.addListener((command) => {
     }
 });
 
-
 /**
  * 
  * @param url (string) - chrome runtime url of .html file 
@@ -176,4 +175,30 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) =>
     }
 })
 
+/**
+ * Context Menus:
+ * https://developer.chrome.com/docs/extensions/reference/contextMenus/
+ */
+const savePageContextMenuID = chrome.contextMenus.create(
+    {
+        id: "spg",
+        title: "Save at page",
+        documentUrlPatterns: [
+            "*://*/*.pdf",
+            "file:///*/*.pdf"
+        ]
+    },
+    () =>
+    {
+        console.log("Created Save at Page Context Menu")
+    }
+)
+
+chrome.contextMenus.onClicked.addListener((info, tab) =>
+{
+    if (info.menuItemId === savePageContextMenuID)
+    {
+        console.log("Saved at page")
+    }
+})
 /* eslint-disable no-undef */
