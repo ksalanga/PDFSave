@@ -55,7 +55,8 @@
       "resources": [
         "logo192.png",
         "/templates/modal.html",
-        "/templates/alert.html"
+        "/templates/alert.html",
+        "/templates/alertOffline.html"
       ],
       "matches": [
         "<all_urls>",
