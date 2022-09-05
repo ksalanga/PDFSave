@@ -1,211 +1,345 @@
 /* eslint-disable no-undef */
 
-// Sets up background actions for:
-// TODO: - Accessing Current URLs
+/**
+ * Definitions:
+ * C_S: Content Script
+ * B_S: Service Worker
+ * message === request
+ * WAR - Web Accessible Resources
+ */
 
 /**
  * On Install Routines:
  *  1. Check if any commands have collided with other extension commands
  */
-
 chrome.runtime.onInstalled.addListener((reason) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    checkCommandShortcuts();
+    checkCommandShortcuts()
   }
 });
 
+urlRedirect()
+sendResources()
+sendUserInputs()
+
 /**
- * Service Worker (B_S) Keyboard Command Messages to Content Script (C_S):
+ * Loads the URL Redirect Listener:
  * 
- * B_S:
- *  1. Listens for chrome keyboard commands
- *  2. On a command event,
- *  3. Send request that contains:
- *      {
- *          message (string): "command" (required),
- *          command (string): name of command
- *      }
+ * ALL Conditions must be met for a URL Redirect Action:
+ * 1. tab URL extension is .pdf
+ * 2. tab URL exists in DB
+ * 2. tab URL has a recorded saved page
+ * 3. tab URL has auto open features on
  * 
- * C_S:
- *  1. Listens for B_S messages / requests
- *  2. If request.message is "command"
- *  3. Do something depending on the request.command
+ * URL Redirect Action:
+ * 1. redirect tab to <url>.pdf#page=X
+ *      - where X is the recorded saved page in our conditions
  */
-chrome.commands.onCommand.addListener((command) => {
-    const message = 
-    {
-        message: "command"
-    }
-
-    switch(command)
-    {
-        case "save-at-page":
-            message.command = command
-            sendMessageToActiveTab("Save At Page Command", message)
-            break
-        default:
-            console.log("Invalid Command")
-    }
-});
-
-
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) =>
+function urlRedirect()
 {
-    if (changeInfo.status === 'complete')
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) =>
     {
-        // TODO: Delete Later. Dummy Data
-        const saved_url = "http://aroma.vn/web/wp-content/uploads/2016/11/code-complete-2nd-edition-v413hav.pdf"
-        const saved_page = 100
-    
+        if (changeInfo.status === 'complete')
+        {
+            // TODO: Delete Later. Dummy Data
+            const saved_url = "http://aroma.vn/web/wp-content/uploads/2016/11/code-complete-2nd-edition-v413hav.pdf"
+            const saved_page = 100
+            const auto_open_on = true
+
+            // TODO: Make isPDFExtension Function
+            // endsWith.pdf is not sufficient because the url can be .pdf#?#?#? and that won't be detected
+            if (
+                tab.url.endsWith('.pdf')
+                && tab.url === saved_url
+                && auto_open_on
+            )
+            {
+                chrome.tabs.update(tabId, {url: tab.url + "#page=" + saved_page}, () => {
+                    chrome.tabs.reload(tabId)
+                })
+                return
+            }
+        }
+    })
+}
+
+/**
+ * Listens for C_S load requests and sends corresponding resources for those requests.
+ */
+function sendResources()
+{
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
+    {
+        if (request.message === "load")
+        {
+            /**
+             * On an HTML Load Request,
+             * get a list of HTML Templates:
+             * 
+             * HTML Template (Object):
+             * {
+             *  name: "string",
+             *  data: "HTML string"
+             * }
+             * 
+             * and send that list as a response
+             * to the C_S
+             */
+            if (request.type === "html")
+            {
+                getHTMLTemplates(request.url)
+                .then((htmlTemplates) => sendResponse(htmlTemplates))
+                .catch((error) =>
+                {
+                    console.log("B_S Load HTML Template Message Error: ", error)
+                })
+                
+                return true
+            }
+        }
+    })
+}
+
+/**
+ * Listens for user inputs (ex: keyboard commands or context menus)
+ * and sends those inputs to the active tab's content script.
+ */
+function sendUserInputs()
+{
+    loadKeyboardCommandsListener()
+    loadContextMenusListener()
+
+    /**
+     * Loads the Listener for any Keyboard Commands that the B_S will consume and send to C_S as a message
+     */
+    function loadKeyboardCommandsListener()
+    {
         /**
-         * When opening a .pdf tab that has a saved page recorded,
-         * redirect the url to end with the #page=saved_page.
-         * This will jump the PDF to that saved page on the Chrome PDF Viewer.
+         * B_S Keyboard Command Messages to C_S:
+         *  1. Listens for chrome keyboard commands
+         *  2. On a command event,
+         *  3. Send message that contains:
+         *      {
+         *          message (string): "userInput" (required),
+         *          type: "keyboard" (required),
+         *          command (string): name of command
+         *      }
+         *  4. Logs the Response (Object):
+         *      {
+         *          message (string) - message that the C_S responds with
+         *      }
          * 
+         * @param command - command event
          */
+        chrome.commands.onCommand.addListener((command) => {
+            const message = 
+            {
+                message: "userInput",
+                type: "keyboard"
+            }
+        
+            switch(command)
+            {
+                case "save-at-page":
+                    message.command = command
+                    sendMessageToActiveTab("Save At Page Keyboard Command", message)
+                    break
+                default:
+                    console.log("Invalid Command")
+            }
+        });
+    }
     
-        /**
-         * Create a rule with declarative Net Request:
-         *  Conditions: 
-         *      - The url ends in .pdf
-         *      - The url is a saved url (in storage or memory)
-         *  Action: 
-         *      - redirect the url to #page=X
-         *      - where X is a saved page
-         */
-        // urls = ["*://*/*.pdf", "file:///*/*.pdf"]
-        if (tab.url.endsWith('.pdf')
-        && tab.url === saved_url)
-        {
-            // Update and Reload Specific Tab ID rather than the active tab
-            // That way we can circumvent any fast tab switches
-            chrome.tabs.update(tabId, {url: tab.url + "#page=" + saved_page}, () => {
-                chrome.tabs.reload(tabId)
-            })
-            return
-        }
-    }
-})
-
-            if (tab.url.startsWith("file"))
-        {
-            const alertOfflineURL = chrome.runtime.getURL('/templates/alertOffline.html')
-            loadHTML(alertOfflineURL, "alert",
-            (htmlString) =>
-            {
-                return htmlString.replace('INSERT COMMAND', saveCommandShortcut)
-            })
-        }
-        else
-        {
-            const alertURL = chrome.runtime.getURL('/templates/alert.html')
-            loadHTML(alertURL, "alert", 
-            (htmlString) => 
-            {
-                htmlString = htmlString.replace('src=""', `src="${chrome.runtime.getURL('logo192.png')}"`)
-                return htmlString.replace('INSERT COMMAND', saveCommandShortcut)
-            })
-        }
-        })
-    }
-})
-
-/**
- * Context Menus:
- * https://developer.chrome.com/docs/extensions/reference/contextMenus/
- * 
- * B_S and C_S Context Menu Messaging Pathway:
- * 
- * B_S:
- *  1. Listens for context menu clicks
- *  2. On a context menu click:
- *  3. Sends a request that contains:
- *      {
- *          message (string): "contextmenu" (value required)
- *          id: id of context menu item
- *      }
- * 
- * C_S:
- *  1. Listens for requests:
- *  2. If request.message is "contextmenu"
- *      3. depending on the request.id of that context menu,
- *          - do stuff with the DOM
- */
-const saveAtPageContextMenuID = chrome.contextMenus.create(
-    {
-        id: "save-at-page",
-        title: "Save at Page",
-        contexts: ["all"],
-        documentUrlPatterns: [
-            "*://*/*.pdf",
-            "file:///*/*.pdf"
-        ]
-    },
-    () =>
-    {
-        if (chrome.runtime.lastError)
-        {
-            console.log("Error creating Context Menu: ", chrome.runtime.lastError)
-        }
-        console.log("Created Save at Page Context Menu")
-    }
-)
-
-chrome.contextMenus.onClicked.addListener((info, tab) =>
-{
-    if (info.menuItemId === saveAtPageContextMenuID)
+    /**
+     * Loads the listener for any Context Menus the B_S will consume and send to C_S as a message
+     */
+    function loadContextMenusListener()
     {
         const message =
         {
-            message: "contextmenu",
-            id: saveAtPageContextMenuID
+            message: "userInput",
+            type: "contextmenu"
         }
-        sendMessageToActiveTab("Save At Page Context Menu", message)
+    
+        /**
+         * Create Context Menus
+         */
+        const saveAtPageID = chrome.contextMenus.create(
+            {
+                id: "save-at-page",
+                title: "Save at Page",
+                contexts: ["all"],
+                documentUrlPatterns: [
+                    "*://*/*.pdf",
+                    "file:///*/*.pdf"
+                ]
+            },
+            () =>
+            {
+                if (chrome.runtime.lastError)
+                {
+                    console.log("Error creating Context Menu: ", chrome.runtime.lastError)
+                }
+            }
+        )
+        
+        /**
+         * B_S Context Menu Requester:
+         *  1. Listens for context menu clicks
+         *  2. On a context menu click:
+         *  3. Sends a request to C_S (active tab) that contains:
+         *      {
+         *          message (string): "userInput" (value required)
+         *          type (string): "contextmenu" (required)
+         *          command: id of context menu item
+         *      }
+         * 
+         *  4. Logs the Response (Object):
+         *      {
+         *          message (string) - message that the C_S responds with
+         *      }
+         */
+        chrome.contextMenus.onClicked.addListener((info, tab) =>
+        {
+            if (info.menuItemId === saveAtPageID)
+            {
+                message.command = saveAtPageID
+                sendMessageToActiveTab("Save At Page Context Menu", message)
+            }
+        })
     }
-})
+}
 
 /**
  * Utility Functions:
  */
 
 /**
+ * gets HTML Templates list
  * 
- * @param url (string) - chrome runtime url of .html file 
- * @param resource (string) - the type of HTML resource you want to message over
+ * @param url - URL of C_S
+ * - Important to distinguish because a file scheme will send different HTML resources than a https scheme
+ * - cause of WAR B.S.
+ */
+async function getHTMLTemplates(url)
+{
+    try
+    {
+        var htmlTemplates = []
+    
+        // Send modal/dialog box template
+        const modalURL = chrome.runtime.getURL('/templates/modal.html')
+        const modalTemplate = await getHTMLTemplate(modalURL, "modal")
+        htmlTemplates.push(modalTemplate)
+    
+        // Send Alert with Command Shortcut as a custom string
+        const commands = await chrome.commands.getAll()
+    
+        var saveCommandShortcut
+    
+        for (let {name, shortcut} of commands)
+        {
+            if (name === 'save-at-page')
+            {
+                if (shortcut === '') 
+                {
+                    saveCommandShortcut = "Not Binded, Set a Shortcut in PDF Save Extension Settings"
+                }
+                else
+                {
+                    saveCommandShortcut = shortcut
+                }
+                break
+            }
+        }
+    
+        if (url.startsWith("file"))
+        {
+            const alertOfflineURL = chrome.runtime.getURL('/templates/alertOffline.html')
+            const alertOfflineTemplate = await getHTMLTemplate(alertOfflineURL, "alert",
+            (htmlString) =>
+            {
+                return htmlString.replace('INSERT COMMAND', saveCommandShortcut)
+            })
+    
+            htmlTemplates.push(alertOfflineTemplate)
+        }
+        else
+        {
+            const alertURL = chrome.runtime.getURL('/templates/alert.html')
+            const alertTemplate = await getHTMLTemplate(alertURL, "alert", 
+            (htmlString) => 
+            {
+                htmlString = htmlString.replace('src=""', `src="${chrome.runtime.getURL('logo192.png')}"`)
+                return htmlString.replace('INSERT COMMAND', saveCommandShortcut)
+            })
+    
+            htmlTemplates.push(alertTemplate)
+        }
+    
+        return htmlTemplates
+    } catch (error)
+    {
+        console.log("Error Loading Resources from loadResources Function: ", error)
+    }
+}
+
+/**
+ * Get an HTML Template from our file directory, and convert it into a readable HTML String.
+ * 
+ * @param url (string) - chrome runtime url of .html file (resource we wish to retrieve)
+ * @param name (string) - the type of HTML resource you want to message over
  * and want the listener to receive. If you don't know how to name the resource, just make this string
  * the name of the html file you're sending.
  * ex: modal, alert.
  * @param modifyHTMLString (callback) *OPTIONAL - callback function (htmlstring) that modifies the HTML string and returns the newly modified string
+ * 
+ * returns:
+ * HTML Template (Object):
+ * {
+ *  name: "string",
+ *  data: "HTML string"
+ * }
  */
-function loadHTML(url, resource, modifyHTMLString)
+async function getHTMLTemplate(url, name, modifyHTMLString)
 {
-    fetch(url)
-    .then(r => r.text())
-    .then(htmlString => {
+    try
+    {
+        const response = await fetch(url)
+        var html = await response.text()
+    
         if (modifyHTMLString)
         {
-            htmlString = modifyHTMLString(htmlString)
+            html = modifyHTMLString(html)
         }
-
-        const message =
+    
+        const template =
         {
-            message: "load",
-            resource: resource,
-            data: htmlString
+            name: name,
+            data: html
         }
-
-        sendMessageToActiveTab(message.resource + " load", message)
-    })
-    .catch((err) =>
+    
+        return template
+    } catch (error)
     {
-        console.log(`Fetching ${message.resource} Resource Error:`, err)
-    })
+        console.log("Error Loading HTML Resource: ", error)
+    }
 }
 
 /**
+ * Sends a message to active tab (C_S).
  * 
+ * If response is successful, logs a response object:
+ * Response (Object)
+ * {
+ *  message (string) - message that the C_S responds with
+ * }
+ * 
+ * Else it logs a runtime.lastError
+ *  
  * @param messageType (string) - The type of message you're sending to Tab, messageType will be referenced whenever an error occurs
  * @param message (object) - message to send to active tab
+ *
  */
 function sendMessageToActiveTab(messageType, message)
 {
