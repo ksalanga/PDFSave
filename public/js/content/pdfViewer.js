@@ -1,116 +1,151 @@
 // Content Script that will try to load popups in the PDF Viewer.
 
 /**
- * Listen for B_S messages (requests)
+ * Definitions:
+ * C_S: Content Script
+ * B_S: Service Worker
+ * message === request
  */
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
+
+requestHtmlTemplates()
+receiveUserInputs()
+
+/**
+ * Loads the listener for receiving B_S user input requests
+ */
+function receiveUserInputs()
 {
     /**
-     * Service Worker (B_S) Keyboard Command Messaging Pathway to Content Script (C_S):
+     * Listen for user input request messages from B_S:
+     * If we get a user input request,
+     * check through all of the valid request types and commands.
      * 
-     * B_S:
-     *  1. Listens for chrome keyboard commands
-     *  2. On a command event,
-     *  3. Send request that contains:
-     *      {
-     *          message (string): "command" (required),
-     *          command (string): name of command
-     *      }
+     * If the request is a valid type and command,
+     * - send a response object:
+     * {
+     *      message: "[input type] input: [input command] is successful"
+     * }
      * 
-     * C_S:
-     *  1. Listens for B_S messages / requests
-     *  2. If request.message is "command"
-     *  3. Do something depending on the request.command
+     * If the request is NOT a valid type and command,
+     * - send a response object:
+     * {
+     *      message: "Invalid input Type"
+     * }
+     * 
+     * @param request:
+     *  Message Object that B_S requests
+     *  Message Object:
+     *  {
+     *      message: "userInput" (required)
+     *      type (string): type of input the background script requests
+     *      command (string): command of the specific input type
+     *  }
      */
-    if (request.message === "command")
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
     {
-        // load savePagePrompt modal
-        if (request.command === "save-at-page")
+        if (request.message === "userInput")
         {
-            window.onbeforeunload = null
-            $("#savePagePrompt").modal('show')
-    
-            sendResponse({message: "popup added"})
-        }
-    }
+            var validInput = false
 
+            switch(request.type)
+            {
+                /**
+                 * C_S Keyboard Command Message Listener:
+                 *  1. Listens for B_S request
+                 *  2. If request.type is "keyboard"
+                 *  3. Do something depending on the request.command
+                 */
+                case "keyboard":
+                    // load savePagePrompt modal
+                    if (request.command === "save-at-page")
+                    {
+                        window.onbeforeunload = null
+                        $("#savePagePrompt").modal('show')
+                        
+                        validInput = true
+                    }
+                    break
+
+                /**
+                 * C_S Context Menu Message Listener:
+                 *  1. Listens for B_S request
+                 *  2. If request.type is "contextmenu"
+                 *  3. Do something depending on the request.command
+                 */
+                case "contextmenu":
+                    // load savePagePrompt modal
+                    if (request.command === "save-at-page")
+                    {
+                        window.onbeforeunload = null
+                        $("#savePagePrompt").modal('show')
+                
+                        validInput = true
+                    }
+                    break 
+            }
+
+            if (validInput)
+            {
+                sendResponse({message: `${request.type} input: ${request.command} successful`})
+            }
+
+            if (!validInput)
+            {
+                sendResponse({message: "Invalid input Type"})
+            }
+
+            return true
+        }
+    })
+}
+
+/**
+ * Loads HTML Templates into the DOM
+ * by sending requests for B_S to provide HTML Templates
+ */
+function requestHtmlTemplates()
+{
+    const loadHTMLRequest = 
+    {
+        message: "load",
+        type: "html",
+        url: location.href
+    }
     /**
-     * Load and send HTML templates (Web Accessible Resources aka WAR)
-     * https://developer.chrome.com/docs/extensions/mv3/manifest/web_accessible_resources/
+     * Request B_S for HTMLTemplates:
      * 
-     * Service Worker (B_S) and Content Script (C_S) WAR Messaging Pathway:
-     * B_S:
-     *  1. fetches HTML resource from the extension's directory via WAR url
-     *  2. sends HTML Resource as a message / request to C_S
-     *  3. Request contains:
+     * @param loadHTMLRequest: message object that is sent to the B_S to process
+     *      Request (Object):
      *      {
-     *          message (string): "load" (required)
-     *          resource (string): name of HTML element you want to load
-     *          data (string): HTML string that the C_S will add into DOM
-     *      }
-     *   4. listen for response
-     * 
-     * C_S:
-     *  1. Listens for B_S requests
-     *  2. Once a request is received
-     *  3. If request.message is "load"
-     *  4. Depending on the resource type, do something with the request.data (HTML string)
-     *      - can simply append resource to DOM, or do more with the elements with JS trickery
-     *  6. Respond with the type of resource you received
-     * 
-     */
-    if (request.message === "load")
-    {
-        if (request.resource === "modal")
-        {
-            $("body").prepend(request.data)
-
-            sendResponse({message: "Modal added"})
-        }
-
-        if (request.resource === "alert")
-        {
-            openSavePageAlert(request.data)
-
-            sendResponse({message: "Alert added"})
-        }
-    }
-
-    /**
-     * Context Menus:
-     * https://developer.chrome.com/docs/extensions/reference/contextMenus/
-     * 
-     * B_S and C_S Context Menu Messaging Pathway:
-     * 
-     * B_S:
-     *  1. Listens for context menu clicks
-     *  2. On a context menu click:
-     *  3. Sends a request that contains:
-     *      {
-     *          message (string): "contextmenu" (value required)
-     *          id: id of context menu item
+     *       message: "load" (required)
+     *       type: "html"
+     *       url: url of content_script
      *      }
      * 
-     * C_S:
-     *  1. Listens for requests:
-     *  2. If request.message is "contextmenu"
-     *  3. depending on the request.id of that context menu,
-     *      - do stuff with the DOM
+     * @param (htmlTemplates) => {}: callback where htmlTemplates is the Response Object
+     *      Response (list(HTML Template Objects)):
+     *      HTML Template Object:
+     *      {
+     *          name - name of template
+     *          data - html string of template
+     *      }
      */
-    if (request.message === "contextmenu")
+    chrome.runtime.sendMessage(loadHTMLRequest, (htmlTemplates) => 
     {
-        // load savePagePrompt modal
-        if (request.id === "save-at-page")
+        for (const htmlTemplate of htmlTemplates)
         {
-            window.onbeforeunload = null
-            $("#savePagePrompt").modal('show')
-    
-            sendResponse({message: "Context Menu Save at Page Clicked"})
+            if (htmlTemplate.name === "modal")
+            {
+                $("body").prepend(htmlTemplate.data)
+            }
+        
+            if (htmlTemplate.name === "alert")
+            {
+                openSavePageAlert(htmlTemplate.data)
+            }
         }
-    }
-
-    return true
-})
+    })
+}
 
 /**
  * Utility Functions:
