@@ -48,61 +48,44 @@ chrome.commands.onCommand.addListener((command) => {
     }
 });
 
-/**
- * Load and send HTML templates (Web Accessible Resources aka WAR)
- * https://developer.chrome.com/docs/extensions/mv3/manifest/web_accessible_resources/
- * NOTE: IF LOADING AN HTML WAR: ADD IT INTO THE MANIFEST UNDER "web_accessible_resources"
- * 
- * Service Worker (B_S) and Content Script (C_S) WAR Messaging Pathway:
- * 
- * B_S:
- *  1. fetches HTML resource from the extension's directory via WAR url
- *  2. sends HTML Resource as a message / request to C_S
- *  3. Request contains:
- *      {
- *          message (string): "load" (required)
- *          resource (string): name of HTML element you want to load
- *          data (string): HTML string that the C_S will add into DOM
- *      }
- *   4. listen for response
- * 
- * C_S:
- *  1. Listens for B_S requests
- *  2. Once a request is received
- *  3. If request.message is "load"
- *  4. Depending on the resource type, do something with the request.data (HTML string)
- *      - can simply append resource to DOM, or do more with the elements with JS trickery
- *  6. Respond with the type of resource you received
- * 
- */
+
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) =>
 {
-    if (changeInfo.status === "complete")
+    if (changeInfo.status === 'complete')
     {
-        // Send modal/dialog box template
-        const modalURL = chrome.runtime.getURL('/templates/modal.html')
-        loadHTML(modalURL, "modal")
-
-        // Send Alert with Command Shortcut as a custom string
-        chrome.commands.getAll((commands) =>
+        // TODO: Delete Later. Dummy Data
+        const saved_url = "http://aroma.vn/web/wp-content/uploads/2016/11/code-complete-2nd-edition-v413hav.pdf"
+        const saved_page = 100
+    
+        /**
+         * When opening a .pdf tab that has a saved page recorded,
+         * redirect the url to end with the #page=saved_page.
+         * This will jump the PDF to that saved page on the Chrome PDF Viewer.
+         * 
+         */
+    
+        /**
+         * Create a rule with declarative Net Request:
+         *  Conditions: 
+         *      - The url ends in .pdf
+         *      - The url is a saved url (in storage or memory)
+         *  Action: 
+         *      - redirect the url to #page=X
+         *      - where X is a saved page
+         */
+        // urls = ["*://*/*.pdf", "file:///*/*.pdf"]
+        if (tab.url.endsWith('.pdf')
+        && tab.url === saved_url)
         {
-            var saveCommandShortcut
-
-            for (let {name, shortcut} of commands)
-            {
-                if (name === 'save-at-page')
-                {
-                    if (shortcut === '') 
-                    {
-                        saveCommandShortcut = "Not Binded, Set a Shortcut in PDF Save Extension Settings"
-                    }
-                    else
-                    {
-                        saveCommandShortcut = shortcut
-                    }
-                    break
-                }
-            }
+            // Update and Reload Specific Tab ID rather than the active tab
+            // That way we can circumvent any fast tab switches
+            chrome.tabs.update(tabId, {url: tab.url + "#page=" + saved_page}, () => {
+                chrome.tabs.reload(tabId)
+            })
+            return
+        }
+    }
+})
 
             if (tab.url.startsWith("file"))
         {
