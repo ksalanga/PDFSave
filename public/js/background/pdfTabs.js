@@ -1,5 +1,7 @@
 /* eslint-disable no-undef */
 
+// TODO: Add bookmark Context Menu and Keyboard Command Inputs
+
 /**
  * Definitions:
  * C_S: Content Script

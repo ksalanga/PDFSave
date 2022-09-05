@@ -1,5 +1,7 @@
 // Content Script that will try to load popups in the PDF Viewer.
 
+// TODO: Add bookmark Context Menu and Keyboard Command HTML Element Renders based on outputs
+
 /**
  * Definitions:
  * C_S: Content Script
