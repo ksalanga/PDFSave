@@ -23,13 +23,23 @@ sendResources()
 sendUserInputs()
 
 /**
- * Loads the URL Redirect Listener:
+ * Loads the URL Redirect Listener
  * 
+ * 
+ * IMPORTANT NOTES:
+ * - Auto Open / Redirect only happens for urls with the base .pdf (url that is a .pdf extension)
+ * - If you add the query #page=X where X is a number after .pdf: the extension will not detect the reload / auto open for that url.
+ * - This is intended for two reason: 
+ *      1. If you have a bookmark or wanna jump to a page,
+ *      the extension doesn't want to auto open to a different page from the one that was intended.
+ *      2. More importantly, the extension itself reloads the base .pdf at #page=X
+ *          - If we also reload with the #page query, we end up in an infinite reload loop
+ * 
+ * 
+ * URL Redirect Condition:
  * ALL Conditions must be met for a URL Redirect Action:
  * 1. tab URL extension is .pdf
- * 2. tab URL exists in DB
- * 2. tab URL has a recorded saved page
- * 3. tab URL has auto open features on
+ * 2. tab base URL (url up to and ending in .pdf) has auto open features on
  * 
  * URL Redirect Action:
  * 1. redirect tab to <url>.pdf#page=X
@@ -39,32 +49,59 @@ function urlRedirect()
 {
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) =>
     {
-        if (changeInfo.status === 'complete')
-        {
-            // TODO: Delete Later. Dummy Data
-            const saved_url = "http://aroma.vn/web/wp-content/uploads/2016/11/code-complete-2nd-edition-v413hav.pdf"
-            const saved_page = 100
-            const auto_open_on = true
+        /**
+         * 1. Check if our tab url contains .pdf
+         * 2. If it does contian .pdf and the tab has completed loading,
+         *      3. Split the base url to:
+         *          - base url: .pdf url (url only up to and ending in .pdf)
+         *          - query: any string after the last .pdf in url
+         *      4. if query doesn't contain #page=X where X is a number,
+         *          5. Look up base url in storage:
+         *          6. grab base url's autoOpenOn and savedPage features
+         *          7. If Redirect Condition 2 is satisfied:
+         *              - update and reload the tab
+         */
+        const url = tab.url.toLowerCase()
 
-            // TODO: Make isPDFExtension Function
-            // endsWith.pdf is not sufficient because the url can be .pdf#?#?#? and that won't be detected
-            if (
-                tab.url.endsWith('.pdf')
-                && tab.url === saved_url
-                && auto_open_on
-            )
+        if (url.includes('.pdf') && changeInfo.status === 'complete')
+        {
+            const [baseURL, query] = split(url, url.lastIndexOf('.pdf') + 4)
+
+            const hasPageQuery = /#page=\d/.exec(query)
+            
+            if (!hasPageQuery)
             {
-                chrome.tabs.update(tabId, {url: tab.url + "#page=" + saved_page}, () => {
-                    chrome.tabs.reload(tabId)
-                })
-                return
+                const urlQuery = {
+                    autoOpenOn: false,
+                    savedPage: 0
+                }
+
+                for (const dbRecord of fakeDb)
+                {
+                    if (dbRecord.filePath.toLowerCase() === baseURL)
+                    {
+                        urlQuery.autoOpenOn = dbRecord.autoOpenOn
+                        urlQuery.savedPage = dbRecord.savedPage
+                        break
+                    }
+                }
+
+                if (urlQuery.autoOpenOn)
+                {
+                    const savedPage = urlQuery.savedPage
+
+                    chrome.tabs.update(tabId, {url: tab.url + "#page=" + savedPage}, () => {
+                        chrome.tabs.reload(tabId)
+                    })
+                    return
+                }
             }
         }
     })
 }
 
 /**
- * Listens for C_S load requests and sends corresponding resources for those requests.
+ * Listens for active tab content script's load requests and sends corresponding resources for those requests.
  */
 function sendResources()
 {
@@ -383,4 +420,35 @@ function checkCommandShortcuts() {
     }
   });
 }
+
+/**
+ * Split a string:
+ * 
+ * @param str (string)
+ * @param index (number)
+ * @returns two element array:
+ * 
+ * first element: the part of the string up to, but not including the provided index
+ * second element: the rest
+ */
+function split(str, index) {
+    const result = [str.slice(0, index), str.slice(index)];
+
+    return result;
+}
+
+// TODO: Delete Later. Dummy Database
+const fakeDb =
+[
+    {
+        filePath: "http://aroma.vn/web/wp-content/uploads/2016/11/code-complete-2nd-edition-v413hav.pdf",
+        autoOpenOn: true,
+        savedPage: 420
+    },
+    {
+        filePath: "http://triggs.djvu.org/djvu-editions.com/BIBLES/DRV/Download.pdf",
+        autoOpenOn: true,
+        savedPage: 69
+    }
+]
 /* eslint-disable no-undef */
