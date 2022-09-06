@@ -45,7 +45,29 @@ function receiveUserInputs()
      */
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
     {
+        /**
+         * 
+         * @param command (string) - command of request
+         * @returns true if the requested commands is in the list of possible commands.
+         * false otherwise.
+         */
+        function validCommand(command)
+        {
+            if (command === "save-at-page")
+            {
+                $("#savePagePrompt").modal('show')
+                
+                return true
+            }
+            if (command === "bookmark")
+            {
                 $("#bookmarkPrompt").modal('show')
+                
+                return true
+            }
+            return true
+        }
+
         if (request.message === "userInput")
         {
             var validInput = false
