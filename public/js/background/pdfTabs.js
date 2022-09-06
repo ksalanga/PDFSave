@@ -225,6 +225,25 @@ function sendUserInputs()
                 }
             }
         )
+
+        const bookmarkID = chrome.contextMenus.create(
+            {
+                id: "bookmark",
+                title: "Bookmark at Page",
+                contexts: ["all"],
+                documentUrlPatterns: [
+                    "*://*/*.pdf",
+                    "file:///*/*.pdf"
+                ]
+            },
+            () =>
+            {
+                if (chrome.runtime.lastError)
+                {
+                    console.log("Error creating Context Menu: ", chrome.runtime.lastError)
+                }
+            }
+        )
         
         /**
          * B_S Context Menu Requester:
@@ -248,6 +267,11 @@ function sendUserInputs()
             {
                 message.command = saveAtPageID
                 sendMessageToActiveTab("Save At Page Context Menu", message)
+            }
+            if (info.menuItemId === bookmarkID)
+            {
+                message.command = bookmarkID
+                sendMessageToActiveTab("Bookmark Context Menu", message)
             }
         })
     }
