@@ -55,7 +55,8 @@
     {
       "resources": [
         "logo192.png",
-        "/templates/modal.html",
+        "/templates/savePageModal.html",
+        "/templates/bookmarkModal.html",
         "/templates/alert.html",
         "/templates/alertOffline.html"
       ],

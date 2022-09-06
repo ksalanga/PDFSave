@@ -1,0 +1,32 @@
+<!-- Modal -->
+<div class="modal" id="bookmarkPrompt" tabindex="-1" role="dialog" aria-labelledby="savePagePromptTitle"
+    aria-hidden="true" style="font-family: 'Inter', sans-serif">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle"><b>Bookmark at page</b></h5>
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#EB3A3A" class="bi bi-bookmark-fill" viewBox="0 0 16 16">
+                    <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/>
+                </svg>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label" style="padding-right: 10px">Name:</label>
+                        <input type="text" class="form-control " id="recipient-name" placeholder="input bookmark name">
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label" style="padding-right: 10px">Page
+                            Number:</label>
+                        <input type="text" class="form-control " id="recipient-name" placeholder="input current or any page #">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary"
+                    style="background-color: #24a0ed; border-color: #24a0ed">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -45,6 +45,7 @@ function receiveUserInputs()
      */
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
     {
+                $("#bookmarkPrompt").modal('show')
         if (request.message === "userInput")
         {
             var validInput = false

@@ -266,10 +266,15 @@ async function getHTMLTemplates(url)
     {
         var htmlTemplates = []
     
-        // Send modal/dialog box template
-        const modalURL = chrome.runtime.getURL('/templates/modal.html')
-        const modalTemplate = await getHTMLTemplate(modalURL, "modal")
-        htmlTemplates.push(modalTemplate)
+        // Send save-at-page modal/dialog box template
+        const savePageModalURL = chrome.runtime.getURL('/templates/savePageModal.html')
+        const savePageModalTemplate = await getHTMLTemplate(savePageModalURL, "modal")
+        htmlTemplates.push(savePageModalTemplate)
+
+        // Send bookmark modal/dialog box template
+        const bookmarkModal = chrome.runtime.getURL('/templates/bookmarkModal.html')
+        const bookmarkModalTemplate = await getHTMLTemplate(bookmarkModal, "modal")
+        htmlTemplates.push(bookmarkModalTemplate)
     
         // Send Alert with Command Shortcut as a custom string
         const commands = await chrome.commands.getAll()
