@@ -20,18 +20,18 @@ function receiveUserInputs()
     /**
      * Listen for user input request messages from B_S:
      * If we get a user input request,
-     * check through all of the valid request types and commands.
+     * check through all of the valid commands.
      * 
-     * If the request is a valid type and command,
+     * If the request is a valid command,
      * - send a response object:
      * {
-     *      message: "[input type] input: [input command] is successful"
+     *      message (string): a success message
      * }
      * 
-     * If the request is NOT a valid type and command,
+     * If the request is NOT a valid command,
      * - send a response object:
      * {
-     *      message: "Invalid input Type"
+     *      message (string): an invalid message
      * }
      * 
      * @param request:
@@ -39,13 +39,13 @@ function receiveUserInputs()
      *  Message Object:
      *  {
      *      message: "userInput" (required)
-     *      type (string): type of input the background script requests
-     *      command (string): command of the specific input type
+     *      command (string): command to execute
      *  }
      */
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
     {
         /**
+         * Goes through a list of valid commands and manipulates the dom if it is a valid command.
          * 
          * @param command (string) - command of request
          * @returns true if the requested commands is in the list of possible commands.
@@ -70,40 +70,13 @@ function receiveUserInputs()
 
         if (request.message === "userInput")
         {
-            var validInput = false
-
-            switch(request.type)
+            if (validCommand(request.command))
             {
-                /**
-                 * C_S Keyboard Command Message Listener:
-                 *  1. Listens for B_S request
-                 *  2. If request.type is "keyboard"
-                 *  3. Do something depending on the request.command
-                 */
-                case "keyboard":
-                    validInput = validCommand(request.command)
-                    break
-
-                /**
-                 * C_S Context Menu Message Listener:
-                 *  1. Listens for B_S request
-                 *  2. If request.type is "contextmenu"
-                 *  3. Do something depending on the request.command
-                 */
-                case "contextmenu":
-                    // load savePagePrompt modal
-                    validInput = validCommand(request.command)
-                    break 
+                sendResponse({message: `${request.command} input is successful`})
             }
-
-            if (validInput)
+            else
             {
-                sendResponse({message: `${request.type} input: ${request.command} successful`})
-            }
-
-            if (!validInput)
-            {
-                sendResponse({message: "Invalid input Type"})
+                sendResponse({message: "Invalid input"})
             }
 
             return true

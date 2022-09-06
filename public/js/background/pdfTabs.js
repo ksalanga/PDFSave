@@ -157,11 +157,10 @@ function sendUserInputs()
          * B_S Keyboard Command Messages to C_S:
          *  1. Listens for chrome keyboard commands
          *  2. On a command event,
-         *  3. Send message that contains:
+         *  3. Send a request that contains:
          *      {
-         *          message (string): "userInput" (required),
-         *          type: "keyboard" (required),
-         *          command (string): name of command
+         *          message (string): "userInput" (required)
+         *          command (string): name of C_S command 
          *      }
          *  4. Logs the Response (Object):
          *      {
@@ -171,21 +170,20 @@ function sendUserInputs()
          * @param command - command event
          */
         chrome.commands.onCommand.addListener((command) => {
-            const message = 
+            const request = 
             {
-                message: "userInput",
-                type: "keyboard"
+                message: "userInput"
             }
         
             switch(command)
             {
                 case "save-at-page":
-                    message.command = command
-                    sendMessageToActiveTab("Save At Page Keyboard Command", message)
+                    request.command = command
+                    sendMessageToActiveTab("Save At Page Keyboard Command", request)
                     break
                 case "bookmark":
-                    message.command = command
-                    sendMessageToActiveTab("Bookmark Keyboard Command", message)
+                    request.command = command
+                    sendMessageToActiveTab("Bookmark Keyboard Command", request)
                     break
                 default:
                     console.log("Invalid Command")
@@ -197,13 +195,7 @@ function sendUserInputs()
      * Loads the listener for any Context Menus the B_S will consume and send to C_S as a message
      */
     function loadContextMenusListener()
-    {
-        const message =
-        {
-            message: "userInput",
-            type: "contextmenu"
-        }
-    
+    {    
         /**
          * Create Context Menus
          */
@@ -252,8 +244,7 @@ function sendUserInputs()
          *  3. Sends a request to C_S (active tab) that contains:
          *      {
          *          message (string): "userInput" (value required)
-         *          type (string): "contextmenu" (required)
-         *          command: id of context menu item
+         *          command: name of C_S command
          *      }
          * 
          *  4. Logs the Response (Object):
@@ -263,15 +254,20 @@ function sendUserInputs()
          */
         chrome.contextMenus.onClicked.addListener((info, tab) =>
         {
+            const request =
+            {
+                message: "userInput"
+            }
+
             if (info.menuItemId === saveAtPageID)
             {
-                message.command = saveAtPageID
-                sendMessageToActiveTab("Save At Page Context Menu", message)
+                request.command = saveAtPageID
+                sendMessageToActiveTab("Save At Page Context Menu", request)
             }
             if (info.menuItemId === bookmarkID)
             {
-                message.command = bookmarkID
-                sendMessageToActiveTab("Bookmark Context Menu", message)
+                request.command = bookmarkID
+                sendMessageToActiveTab("Bookmark Context Menu", request)
             }
         })
     }
@@ -428,7 +424,7 @@ function sendMessageToActiveTab(messageType, message)
                 return
             }
 
-            console.log(response.message);
+            console.log(`${messageType}:`, response.message);
         })
     })
 }
