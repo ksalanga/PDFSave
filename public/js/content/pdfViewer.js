@@ -59,14 +59,7 @@ function receiveUserInputs()
                  *  3. Do something depending on the request.command
                  */
                 case "keyboard":
-                    // load savePagePrompt modal
-                    if (request.command === "save-at-page")
-                    {
-                        window.onbeforeunload = null
-                        $("#savePagePrompt").modal('show')
-                        
-                        validInput = true
-                    }
+                    validInput = validCommand(request.command)
                     break
 
                 /**

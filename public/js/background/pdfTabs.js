@@ -183,6 +183,10 @@ function sendUserInputs()
                     message.command = command
                     sendMessageToActiveTab("Save At Page Keyboard Command", message)
                     break
+                case "bookmark":
+                    message.command = command
+                    sendMessageToActiveTab("Bookmark Keyboard Command", message)
+                    break
                 default:
                     console.log("Invalid Command")
             }
