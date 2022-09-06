@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-// TODO: Add bookmark Context Menu and Keyboard Command Inputs
+// TODO: Listen for form submit requests
 
 /**
  * Definitions:

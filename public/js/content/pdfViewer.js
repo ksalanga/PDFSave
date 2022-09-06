@@ -1,6 +1,7 @@
 // Content Script that will try to load popups in the PDF Viewer.
 
-// TODO: Add bookmark Context Menu and Keyboard Command HTML Element Renders based on outputs
+// TODO: Send form submit requests that DO NOT REDIRECT THE URL
+// TODO: Add form submit functions that modals attach to
 
 /**
  * Definitions:
