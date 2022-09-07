@@ -5,16 +5,15 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle"><b>Save at page</b></h5>
+                <h5 class="modal-title"><b>Save at page</b></h5>
             </div>
             <div class="modal-body d-flex justify-content-center">
-                <form class="form-inline">
+                <form id="savePageForm" class="form-inline">
                     <div class="form-group">
-                        <label for="recipient-name" class="col-form-label" style="padding-right: 1px">Page
-                            Number:</label>
+                        <label for="savePageInput" class="col-form-label" style="padding-right: 1px">Page Number:</label>
                         <div class="col-sm-4">
-                            <input type="number" min="0" class="form-control " id="recipient-name"
-                                placeholder="input current or any page #">
+                            <input type="number" name="page" min="0" class="form-control " id="savePageInput" placeholder="input current or any page #">
+                            <input type="submit" value="submit" style="display: none;"/>
                         </div>
                     </div>
                 </form>
@@ -30,8 +29,7 @@
                     <small><i>Saving will reopen the pdf at the input page number</i></small>
                 </div>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary"
-                    style="background-color: #4D9217; border-color: #4D9217">Save</button>
+                <button id="savePageButton" type="button" class="btn btn-primary" style="background-color: #4D9217; border-color: #4D9217">Save</button>
             </div>
         </div>
     </div>

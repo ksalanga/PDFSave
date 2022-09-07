@@ -23,6 +23,7 @@ chrome.runtime.onInstalled.addListener((reason) => {
 urlRedirect()
 sendResources()
 sendUserInputs()
+receiveFormSubmits()
 
 /**
  * Loads the URL Redirect Listener
@@ -273,6 +274,29 @@ function sendUserInputs()
     }
 }
 
+
+/**
+ * Receives any request with request.message === "form"
+ * Depending on the request.type of the form, do different things
+ */
+function receiveFormSubmits()
+{
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
+    {
+        if (request.message === "form")
+        {
+            if (request.type === "save-at-page")
+            {
+                console.log("Received save-at-page submit: ", request.data)
+            }
+            if (request.type === "bookmark")
+            {
+                console.log("Received bookmark submit: ", request.data)
+            }
+        }
+    })
+}
+
 /**
  * Utility Functions:
  */
@@ -292,12 +316,12 @@ async function getHTMLTemplates(url)
     
         // Send save-at-page modal/dialog box template
         const savePageModalURL = chrome.runtime.getURL('/templates/savePageModal.html')
-        const savePageModalTemplate = await getHTMLTemplate(savePageModalURL, "modal")
+        const savePageModalTemplate = await getHTMLTemplate(savePageModalURL, "savePageModal")
         htmlTemplates.push(savePageModalTemplate)
 
         // Send bookmark modal/dialog box template
         const bookmarkModal = chrome.runtime.getURL('/templates/bookmarkModal.html')
-        const bookmarkModalTemplate = await getHTMLTemplate(bookmarkModal, "modal")
+        const bookmarkModalTemplate = await getHTMLTemplate(bookmarkModal, "bookmarkModal")
         htmlTemplates.push(bookmarkModalTemplate)
     
         // Send Alert with Command Shortcut as a custom string

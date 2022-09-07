@@ -120,15 +120,98 @@ function requestHtmlTemplates()
     {
         for (const htmlTemplate of htmlTemplates)
         {
-            if (htmlTemplate.name === "modal")
+            if (htmlTemplate.name === "savePageModal")
             {
                 $("body").prepend(htmlTemplate.data)
+
+                $(document).ready(function()
+                {
+                    var savePageForm = $("#savePageForm")
+                    /**
+                     * Save Page Modal Form Submission Function:
+                     * 
+                     * Sends a request to B_S:
+                     * {
+                     *  message: "form",
+                     *  type: "save-at-page",
+                     *  data: List(Form Inputs)
+                     * }
+                     * which will further process the form
+                     */
+                    function submitSavePageForm(e)
+                    {
+                        e.preventDefault()
+        
+                        const request =
+                        {
+                            message: "form",
+                            type: "save-at-page",
+                        }
+                        request.data = savePageForm.serializeArray()
+
+                        chrome.runtime.sendMessage(request)
+
+                        $("#savePageInput").value = ""
+                        $("#savePagePrompt").modal('hide')
+                    }
+
+                    savePageForm.trigger("reset")
+                    $("#savePageButton").click(submitSavePageForm)
+
+            if (htmlTemplate.name === "modal")
+                })
+            }
+
+            if(htmlTemplate.name === "bookmarkModal")
+            {
+                $("body").prepend(htmlTemplate.data)
+
+                $(document).ready(function()
+                {
+                    var bookmarkForm = $("#bookmarkForm")
+                    /**
+                     * Bookmark Modal Form Submission Function:
+                     * 
+                     * Sends a request to B_S:
+                     * {
+                     *  message: "form",
+                     *  type: "bookmark",
+                     *  data: List(Form Inputs)
+                     * }
+                     * which will further process the form
+                     */
+                    function submitBookmarkForm(e)
+                    {
+                        e.preventDefault()
+
+                        const request =
+                        {
+                            message: "form",
+                            type: "bookmark",
+                        }
+                        request.data = bookmarkForm.serializeArray()
+
+                        chrome.runtime.sendMessage(request)
+
+                        bookmarkForm.trigger("reset")
+                        $("#bookmarkPrompt").modal('hide')
+                    }
+
+                    bookmarkForm.submit(submitBookmarkForm)
+                    $("#addBookmarkButton").click(submitBookmarkForm)
+                })
             }
         
             if (htmlTemplate.name === "alert")
             {
                 openSavePageAlert(htmlTemplate.data)
             }
+        }
+
+        if (chrome.runtime.lastError)
+        {
+            console.log(chrome.runtime.lastError)
+            return
         }
     })
 }
