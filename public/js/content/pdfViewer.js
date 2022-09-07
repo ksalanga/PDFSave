@@ -12,6 +12,7 @@
 
 requestHtmlTemplates()
 receiveUserInputs()
+receiveReloadRequests()
 
 /**
  * Loads the listener for receiving B_S user input requests
@@ -212,6 +213,21 @@ function requestHtmlTemplates()
         {
             console.log(chrome.runtime.lastError)
             return
+        }
+    })
+}
+
+/**
+ * Reloads window on reload request message from B_S.
+ */
+function receiveReloadRequests()
+{
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
+    {
+        if (request.message === "reload")
+        {
+            sendResponse({message: "C_S reload successful"})
+            window.location.reload()
         }
     })
 }
