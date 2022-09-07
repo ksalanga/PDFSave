@@ -158,7 +158,7 @@ function requestHtmlTemplates()
                     savePageForm.trigger("reset")
                     $("#savePageButton").click(submitSavePageForm)
 
-            if (htmlTemplate.name === "modal")
+                    // TODO: On modal add or save confirm: show form submitted toast or something (priority: low)
                 })
             }
 
