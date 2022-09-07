@@ -94,6 +94,8 @@ function urlRedirect()
                     const savedPage = urlQuery.savedPage
 
                     chrome.tabs.update(tabId, {url: tab.url + "#page=" + savedPage}, () => {
+                        // TODO: reload getting called multiple times: 
+                        // https://stackoverflow.com/questions/27708352/chrome-tabs-onupdated-addlistener-called-multiple-times#comment45699832_27708352
                         chrome.tabs.reload(tabId)
                     })
                     return
