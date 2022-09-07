@@ -63,10 +63,10 @@
     {
       "resources": [
         "logo192.png",
-        "/templates/savePageModal.html",
-        "/templates/bookmarkModal.html",
-        "/templates/alert.html",
-        "/templates/alertOffline.html"
+        "/templates/modal/savePage.html",
+        "/templates/modal/bookmark.html",
+        "/templates/alert/savePageLogo.html",
+        "/templates/alert/savePageNoLogo.html",
       ],
       "matches": [
         "<all_urls>",

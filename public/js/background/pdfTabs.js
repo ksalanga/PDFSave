@@ -341,12 +341,12 @@ async function getHTMLTemplates(url)
         var htmlTemplates = []
     
         // Send save-at-page modal/dialog box template
-        const savePageModalURL = chrome.runtime.getURL('/templates/savePageModal.html')
+        const savePageModalURL = chrome.runtime.getURL('/templates/modal/savePage.html')
         const savePageModalTemplate = await getHTMLTemplate(savePageModalURL, "savePageModal")
         htmlTemplates.push(savePageModalTemplate)
 
         // Send bookmark modal/dialog box template
-        const bookmarkModal = chrome.runtime.getURL('/templates/bookmarkModal.html')
+        const bookmarkModal = chrome.runtime.getURL('/templates/modal/bookmark.html')
         const bookmarkModalTemplate = await getHTMLTemplate(bookmarkModal, "bookmarkModal")
         htmlTemplates.push(bookmarkModalTemplate)
     
@@ -373,7 +373,7 @@ async function getHTMLTemplates(url)
     
         if (url.startsWith("file"))
         {
-            const alertOfflineURL = chrome.runtime.getURL('/templates/alertOffline.html')
+            const alertOfflineURL = chrome.runtime.getURL('/templates/alert/savePageNoLogo.html')
             const alertOfflineTemplate = await getHTMLTemplate(alertOfflineURL, "alert",
             (htmlString) =>
             {
@@ -384,7 +384,7 @@ async function getHTMLTemplates(url)
         }
         else
         {
-            const alertURL = chrome.runtime.getURL('/templates/alert.html')
+            const alertURL = chrome.runtime.getURL('/templates/alert/savePageLogo.html')
             const alertTemplate = await getHTMLTemplate(alertURL, "alert", 
             (htmlString) => 
             {

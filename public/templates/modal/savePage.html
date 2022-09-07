@@ -1,14 +1,12 @@
 <!-- Modal -->
-<!-- TODO: Attach OnSubmit Functions for Save Button and Form -->
-<div class="modal" id="savePagePrompt" tabindex="-1" role="dialog" aria-labelledby="savePagePromptTitle"
-    aria-hidden="true" style="font-family: 'Inter', sans-serif">
+<div class="modal" id="savePagePrompt" tabindex="-1" role="dialog" aria-labelledby="savePagePromptTitle" aria-hidden="true" style="font-family: 'Inter', sans-serif">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"><b>Save at page</b></h5>
             </div>
             <div class="modal-body d-flex justify-content-center">
-                <form id="savePageForm" class="form-inline">
+                <form id="savePageForm" class="form-inline" onsubmit="submitSavePageForm()">
                     <div class="form-group">
                         <label for="savePageInput" class="col-form-label" style="padding-right: 1px">Page Number:</label>
                         <div class="col-sm-4">
@@ -29,7 +27,7 @@
                     <small><i>Saving will reopen the pdf at the input page number</i></small>
                 </div>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button id="savePageButton" type="button" class="btn btn-primary" style="background-color: #4D9217; border-color: #4D9217">Save</button>
+                <button id="savePageButton" type="button" class="btn btn-primary" style="background-color: #4D9217; border-color: #4D9217" onclick="submitSavePageForm()">Save</button>
             </div>
         </div>
     </div>
