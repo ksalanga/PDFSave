@@ -14,7 +14,7 @@
  */
 chrome.runtime.onInstalled.addListener((reason) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    checkCommandShortcuts()
+    getMissingCommandShortcuts()
   }
 });
 
@@ -382,12 +382,12 @@ async function getHTMLTemplates(url)
     
         // Send save-at-page modal/dialog box template
         const savePageModalURL = chrome.runtime.getURL('/templates/modal/savePage.html')
-        const savePageModalTemplate = await getHTMLTemplate(savePageModalURL, "savePageModal")
+        const savePageModalTemplate = await createHTMLTemplate(savePageModalURL, "savePageModal")
         htmlTemplates.push(savePageModalTemplate)
 
         // Send bookmark modal/dialog box template
         const bookmarkModal = chrome.runtime.getURL('/templates/modal/bookmark.html')
-        const bookmarkModalTemplate = await getHTMLTemplate(bookmarkModal, "bookmarkModal")
+        const bookmarkModalTemplate = await createHTMLTemplate(bookmarkModal, "bookmarkModal")
         htmlTemplates.push(bookmarkModalTemplate)
     
         // Send Alert with Command Shortcut as a custom string
@@ -399,9 +399,9 @@ async function getHTMLTemplates(url)
         {
             if (name === 'save-at-page')
             {
-                if (shortcut === '') 
+                if (shortcut === '')
                 {
-                    saveCommandShortcut = "Not Binded, Set a Shortcut in PDF Save Extension Settings"
+                    saveCommandShortcut = 'Unbound'
                 }
                 else
                 {
@@ -414,7 +414,7 @@ async function getHTMLTemplates(url)
         if (url.startsWith("file"))
         {
             const alertOfflineURL = chrome.runtime.getURL('/templates/alert/savePageNoLogo.html')
-            const alertOfflineTemplate = await getHTMLTemplate(alertOfflineURL, "alert",
+            const alertOfflineTemplate = await createHTMLTemplate(alertOfflineURL, "alert",
             (htmlString) =>
             {
                 return htmlString.replace('INSERT COMMAND', saveCommandShortcut)
@@ -425,7 +425,7 @@ async function getHTMLTemplates(url)
         else
         {
             const alertURL = chrome.runtime.getURL('/templates/alert/savePageLogo.html')
-            const alertTemplate = await getHTMLTemplate(alertURL, "alert", 
+            const alertTemplate = await createHTMLTemplate(alertURL, "alert", 
             (htmlString) => 
             {
                 htmlString = htmlString.replace('src=""', `src="${chrome.runtime.getURL('logo192.png')}"`)
@@ -437,21 +437,53 @@ async function getHTMLTemplates(url)
 
         // Toasts:
         const confirmSavePageToastURL = chrome.runtime.getURL('/templates/toast/confirmedSavePage.html')
-        const confirmSavePageToastTemplate = await getHTMLTemplate(confirmSavePageToastURL, 'toast')
+        const confirmSavePageToastTemplate = await createHTMLTemplate(confirmSavePageToastURL, 'toast')
         htmlTemplates.push(confirmSavePageToastTemplate)
 
         const denySavePageToastURL = chrome.runtime.getURL('/templates/toast/deniedSavePage.html')
-        const denySavePageToastTemplate = await getHTMLTemplate(denySavePageToastURL, 'toast')
+        const denySavePageToastTemplate = await createHTMLTemplate(denySavePageToastURL, 'toast')
         htmlTemplates.push(denySavePageToastTemplate)
 
         const confirmAddBookmarkToastURL = chrome.runtime.getURL('/templates/toast/confirmedAddBookmark.html')
-        const confirmAddBookmarkToastTemplate = await getHTMLTemplate(confirmAddBookmarkToastURL, 'toast')
+        const confirmAddBookmarkToastTemplate = await createHTMLTemplate(confirmAddBookmarkToastURL, 'toast')
         htmlTemplates.push(confirmAddBookmarkToastTemplate)
 
         const denyAddBookmarkToastURL = chrome.runtime.getURL('/templates/toast/deniedAddBookmark.html')
-        const denyAddBookmarkToastTemplate = await getHTMLTemplate(denyAddBookmarkToastURL, 'toast')
+        const denyAddBookmarkToastTemplate = await createHTMLTemplate(denyAddBookmarkToastURL, 'toast')
         htmlTemplates.push(denyAddBookmarkToastTemplate)
 
+        // Get Missing Command Shortcuts
+        const missingShortcuts = await getMissingCommandShortcuts()
+
+        for (const shortcut of missingShortcuts)
+        {
+            const unboundCommandToastURL = chrome.runtime.getURL('/templates/toast/unboundCommand.html')
+            
+            var changeToastInfo = () => {}
+
+            if (shortcut === "save-at-page")
+            {
+                changeToastInfo = (htmlString) =>
+                {
+                    htmlString = htmlString.replace('INSERT ID', 'unboundSavePageCommand')
+                    return htmlString.replace('INSERT COMMAND', '<b>Save Page</b>')
+                }
+            }
+
+            if (shortcut === "bookmark")
+            {
+                changeToastInfo = (htmlString) =>
+                {
+                    htmlString = htmlString.replace('INSERT ID', 'unboundBookmarkCommand')
+                    return htmlString.replace('INSERT COMMAND', '<b>Bookmark</b>')
+                }
+            }
+
+            const unboundCommandToastTemplate = await createHTMLTemplate(unboundCommandToastURL, 'toast', changeToastInfo)
+
+            htmlTemplates.push(unboundCommandToastTemplate)
+        }
+        
         return htmlTemplates
     } catch (error)
     {
@@ -460,7 +492,7 @@ async function getHTMLTemplates(url)
 }
 
 /**
- * Get an HTML Template from our file directory, and convert it into a readable HTML String.
+ * Create an HTML Template from our file directory, and convert it into a readable HTML String.
  * 
  * @param url (string) - chrome runtime url of .html file (resource we wish to retrieve)
  * @param name (string) - the type of HTML resource you want to message over
@@ -476,7 +508,7 @@ async function getHTMLTemplates(url)
  *  data: "HTML string"
  * }
  */
-async function getHTMLTemplate(url, name, modifyHTMLString)
+async function createHTMLTemplate(url, name, modifyHTMLString)
 {
     try
     {
@@ -542,8 +574,8 @@ function sendMessageToActiveTab(messageType, message)
  */
 // Only use this function during the initial install phase. After
 // installation the user may have intentionally unassigned commands.
-function checkCommandShortcuts() {
-  chrome.commands.getAll((commands) => {
+async function getMissingCommandShortcuts() {
+    let commands = await chrome.commands.getAll()
     let missingShortcuts = [];
 
     for (let {name, shortcut} of commands) {
@@ -552,11 +584,7 @@ function checkCommandShortcuts() {
       }
     }
 
-    if (missingShortcuts.length > 0) {
-        // TODO: Update the extension UI to inform the user that one or more
-        // commands are currently unassigned.
-    }
-  });
+    return missingShortcuts
 }
 
 /**
