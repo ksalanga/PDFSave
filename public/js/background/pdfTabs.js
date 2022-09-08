@@ -63,7 +63,6 @@ function urlRedirect()
          *              - update and reload the tab
          */
 
-        // TODO: Refresh not re-injecting content script with #page=
         const url = tab.url.toLowerCase()
 
         if (url.includes('.pdf') && changeInfo.status === 'complete')

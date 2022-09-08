@@ -278,7 +278,6 @@ function requestHtmlTemplates()
     })
 }
 
-// TODO: Refresh not re-injecting content script with #page=
 /**
  * Reloads window on reload request message from B_S.
  */
