@@ -1,33 +1,25 @@
-<!-- Modal -->
-<div class="modal" id="savePagePrompt" tabindex="-1" role="dialog" aria-labelledby="savePagePromptTitle" aria-hidden="true" style="font-family: 'Inter', sans-serif">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal modal-centered" id="savePagePrompt" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" style="font-family: 'Inter', sans-serif">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><b>Save at page</b></h5>
+                <h5 class="modal-title" id="exampleModalLabel"><b>Save at Page</b></h5>
             </div>
-            <div class="modal-body d-flex justify-content-center">
-                <form id="savePageForm" class="form-inline" onsubmit="submitSavePageForm()">
-                    <div class="form-group">
+            <div class="modal-body">
+                <form id="savePageForm">
+                    <div class="mb-3">
                         <label for="savePageInput" class="col-form-label" style="padding-right: 1px">Page Number:</label>
-                        <div class="col-sm-4">
-                            <input type="number" name="page" min="0" class="form-control " id="savePageInput" placeholder="input current or any page #">
-                            <input type="submit" value="submit" style="display: none;"/>
-                        </div>
+                        <input type="number" name="page" min="0" class="form-control " id="savePageInput" placeholder="input current or any page #">
+                        <input type="submit" value="submit" style="display: none;" />
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-info-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                    <path
-                        d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                </svg>
-                <div>
-                    <small><i>Saving will reopen the pdf at the input page number</i></small>
-                </div>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button id="savePageButton" type="button" class="btn btn-primary" style="background-color: #4D9217; border-color: #4D9217" onclick="submitSavePageForm()">Save</button>
+                <small><i>Saving will reopen the pdf at the input page number</i></small>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
+                <button id="savePageButton" type="button" class="btn btn-primary"
+                    style="background-color: #4D9217; border-color: #4D9217"
+                    onclick="submitSavePageForm()">Save</button>
             </div>
         </div>
     </div>

@@ -58,13 +58,13 @@ function receiveUserInputs()
             if (command === "save-at-page")
             {
                 $("#savePagePrompt").modal('show')
-                
+                $("#bookmarkPrompt").modal('hide')
                 return true
             }
             if (command === "bookmark")
             {
                 $("#bookmarkPrompt").modal('show')
-                
+                $("#savePagePrompt").modal('hide')
                 return true
             }
             return true
