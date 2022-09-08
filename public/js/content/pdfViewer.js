@@ -308,18 +308,12 @@ function receiveReloadRequests()
  */
 function openSavePageAlert(saveNotification)
 {
-
     $("body").prepend(saveNotification)
 
-    function showAlert() {
-        $("#saveNotification").addClass("in");
-    }
-
-    window.setTimeout(function () {
-        showAlert();
-        
-        window.setTimeout(function () {
-            $('.alert').alert('close')
-        }, 50000)
-    }, 1000);
+    setTimeout(() =>
+    {
+        var myAlert = document.getElementById('saveNotification')
+        var bsAlert = new bootstrap.Alert(myAlert)
+        bsAlert.close()
+    }, 50000)
 }
