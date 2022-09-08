@@ -270,6 +270,18 @@ function requestHtmlTemplates()
             }
         }
 
+        showUnboundCommandToasts()
+        
+        function showUnboundCommandToasts()
+        {
+            var unboundCommandToastEls = document.getElementsByClassName('unbound')
+            for (const unboundCommandToastEl of unboundCommandToastEls)
+            {
+                var myToast = bootstrap.Toast.getOrCreateInstance(unboundCommandToastEl)
+                myToast.show()
+            }
+        }
+
         if (chrome.runtime.lastError)
         {
             console.log(chrome.runtime.lastError)

@@ -70,7 +70,8 @@
         "/templates/toast/confirmedSavePage.html",
         "/templates/toast/deniedSavePage.html",
         "/templates/toast/confirmedAddBookmark.html",
-        "/templates/toast/deniedAddBookmark.html"
+        "/templates/toast/deniedAddBookmark.html",
+        "/templates/toast/unboundCommand.html"
       ],
       "matches": [
         "<all_urls>",
