@@ -1,7 +1,5 @@
 /* eslint-disable no-undef */
 
-// TODO: Listen for form submit requests
-
 /**
  * Definitions:
  * C_S: Content Script
@@ -64,6 +62,8 @@ function urlRedirect()
          *          7. If Redirect Condition 2 is satisfied:
          *              - update and reload the tab
          */
+
+        // TODO: Refresh not re-injecting content script with #page=
         const url = tab.url.toLowerCase()
 
         if (url.includes('.pdf') && changeInfo.status === 'complete')

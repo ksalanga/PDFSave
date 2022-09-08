@@ -1,8 +1,5 @@
 // Content Script that will try to load popups in the PDF Viewer.
 
-// TODO: Send form submit requests that DO NOT REDIRECT THE URL
-// TODO: Add form submit functions that modals attach to
-
 /**
  * Definitions:
  * C_S: Content Script
@@ -194,8 +191,6 @@ function requestHtmlTemplates()
 
                     savePageForm.submit(submitSavePageForm)
                     $("#savePageButton").click(submitSavePageForm)
-
-                    // TODO: On modal add or save confirm: show form submitted toast or something (priority: low)
                 })
             }
 
@@ -283,6 +278,7 @@ function requestHtmlTemplates()
     })
 }
 
+// TODO: Refresh not re-injecting content script with #page=
 /**
  * Reloads window on reload request message from B_S.
  */
