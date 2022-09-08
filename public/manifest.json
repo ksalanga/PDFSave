@@ -22,7 +22,7 @@
         "default": "Ctrl+Shift+Period",
         "mac": "Command+Shift+Period"
       },
-      "description": "Prompts extension to ask user to save currently viewed PDF at a defined page."
+      "description": "Save PDF page and auto open at that page."
     },
     "bookmark":
     {
@@ -30,7 +30,7 @@
         "default": "Ctrl+Shift+Comma",
         "mac": "Command+Shift+Comma"
       },
-      "description": "Prompts extension to ask user to bookmark viewed PDF at a defined page."
+      "description": "Bookmark a PDF."
     }
   },
   "permissions": [
