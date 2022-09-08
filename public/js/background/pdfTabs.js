@@ -307,18 +307,59 @@ function sendUserInputs()
  */
 function receiveFormSubmits()
 {
+    /**
+     * Process Form Inputs
+     */
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
     {
+        function invalidNumber(num)
+        {
+            return num === undefined || num === "" || num < 0
+        }
+
         if (request.message === "form")
         {
             if (request.type === "save-at-page")
             {
-                console.log("Received save-at-page submit: ", request.data)
+                for (const data of request.data)
+                {
+                    if (data.name === "page")
+                    {
+                        if (invalidNumber(data.value))
+                        {
+                            sendResponse({message: "invalid"})
+                        }
+                    }
+                }
+                sendResponse({message: "valid"})
             }
+
             if (request.type === "bookmark")
             {
-                console.log("Received bookmark submit: ", request.data)
+                for (const data of request.data)
+                {
+                    if (data.name === "bookmarkName")
+                    {
+                        if (data.value == undefined || data.value === "")
+                        {
+                            sendResponse({message: "invalid"})
+                            return true
+                        }
+                    }
+
+                    if (data.name === "page")
+                    {
+                        if (invalidNumber(data.value))
+                        {
+                            sendResponse({message: "invalid"})
+                            return true
+                        }
+                    }
+                }
+                sendResponse({message:"valid"})
             }
+
+            return true
         }
     })
 }
@@ -394,7 +435,24 @@ async function getHTMLTemplates(url)
     
             htmlTemplates.push(alertTemplate)
         }
-    
+
+        // Toasts:
+        const confirmSavePageToastURL = chrome.runtime.getURL('/templates/toast/confirmedSavePage.html')
+        const confirmSavePageToastTemplate = await getHTMLTemplate(confirmSavePageToastURL, 'toast')
+        htmlTemplates.push(confirmSavePageToastTemplate)
+
+        const denySavePageToastURL = chrome.runtime.getURL('/templates/toast/deniedSavePage.html')
+        const denySavePageToastTemplate = await getHTMLTemplate(denySavePageToastURL, 'toast')
+        htmlTemplates.push(denySavePageToastTemplate)
+
+        const confirmAddBookmarkToastURL = chrome.runtime.getURL('/templates/toast/confirmedAddBookmark.html')
+        const confirmAddBookmarkToastTemplate = await getHTMLTemplate(confirmAddBookmarkToastURL, 'toast')
+        htmlTemplates.push(confirmAddBookmarkToastTemplate)
+
+        const denyAddBookmarkToastURL = chrome.runtime.getURL('/templates/toast/deniedAddBookmark.html')
+        const denyAddBookmarkToastTemplate = await getHTMLTemplate(denyAddBookmarkToastURL, 'toast')
+        htmlTemplates.push(denyAddBookmarkToastTemplate)
+
         return htmlTemplates
     } catch (error)
     {

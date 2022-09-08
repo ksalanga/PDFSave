@@ -119,6 +119,13 @@ function requestHtmlTemplates()
      */
     chrome.runtime.sendMessage(loadHTMLRequest, (htmlTemplates) => 
     {
+        var $notificationParent = $("<div>", {"aria-live": "polite", "aria-atomic": "true", "class": "fixed-top"});
+        $("body").prepend($notificationParent)
+
+        // Notification Container holds all of our Toast Elements
+        var $notificationContainer = $("<div>", {"class": "toast-container position-absolute top-0 end-0 p-3"})
+        $($notificationParent).prepend($notificationContainer)
+        
         for (const htmlTemplate of htmlTemplates)
         {
             if (htmlTemplate.name === "savePageModal")
@@ -150,13 +157,42 @@ function requestHtmlTemplates()
                         }
                         request.data = savePageForm.serializeArray()
 
-                        chrome.runtime.sendMessage(request)
+                        chrome.runtime.sendMessage(request, (response) =>
+                        {
+                            if (response.message === "valid")
+                            {
+                                const page = request.data[0].value
+                                showConfirmedSavePage(page)
+                            }
+                            else
+                            {
+                                showDeniedSavePage()
+                            }
 
-                        $("#savePageInput").value = ""
+                            function showConfirmedSavePage(page)
+                            {
+                                var confirmedSavePageEl = $("#confirmedSavePage")
+                                var confirmedSavePageText = "This pdf will reopen at pg. " + page
+                                $(confirmedSavePageEl).find(".toast-body").html(confirmedSavePageText)
+                                var confirmedSavePageToast = bootstrap.Toast.getOrCreateInstance(confirmedSavePageEl)
+                                confirmedSavePageToast.show()
+                            }
+                            
+                            function showDeniedSavePage()
+                            {
+                                var deniedSavePageEl = $("#deniedSavePage")
+                                var deniedSavePageToast = bootstrap.Toast.getOrCreateInstance(deniedSavePageEl)
+                                deniedSavePageToast.show()
+                            }
+
+                            return true
+                        })
+
+                        savePageForm.trigger("reset")
                         $("#savePagePrompt").modal('hide')
                     }
 
-                    savePageForm.trigger("reset")
+                    savePageForm.submit(submitSavePageForm)
                     $("#savePageButton").click(submitSavePageForm)
 
                     // TODO: On modal add or save confirm: show form submitted toast or something (priority: low)
@@ -192,7 +228,32 @@ function requestHtmlTemplates()
                         }
                         request.data = bookmarkForm.serializeArray()
 
-                        chrome.runtime.sendMessage(request)
+                        chrome.runtime.sendMessage(request, (response) =>
+                        {
+                            if (response.message === "valid")
+                            {
+                                showConfirmedAddBookmark()
+                            }
+                            else
+                            {
+                                showDeniedAddBookmark()
+                            }
+
+                            function showConfirmedAddBookmark()
+                            {
+                                var confirmedAddBookmarkEl = $("#confirmedAddBookmark")
+                                var confirmedAddBookmarkToast = bootstrap.Toast.getOrCreateInstance(confirmedAddBookmarkEl)
+                                confirmedAddBookmarkToast.show()
+                            }
+                            function showDeniedAddBookmark()
+                            {
+                                var deniedAddBookmarkEl = $("#deniedAddBookmark")
+                                var deniedAddBookmarkToast = bootstrap.Toast.getOrCreateInstance(deniedAddBookmarkEl)
+                                deniedAddBookmarkToast.show()
+                            }
+
+                            return true
+                        })
 
                         bookmarkForm.trigger("reset")
                         $("#bookmarkPrompt").modal('hide')
@@ -206,6 +267,11 @@ function requestHtmlTemplates()
             if (htmlTemplate.name === "alert")
             {
                 openSavePageAlert(htmlTemplate.data)
+            }
+
+            if (htmlTemplate.name === "toast")
+            {
+                $($notificationContainer).prepend(htmlTemplate.data)
             }
         }
 

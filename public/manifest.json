@@ -67,6 +67,10 @@
         "/templates/modal/bookmark.html",
         "/templates/alert/savePageLogo.html",
         "/templates/alert/savePageNoLogo.html",
+        "/templates/toast/confirmedSavePage.html",
+        "/templates/toast/deniedSavePage.html",
+        "/templates/toast/confirmedAddBookmark.html",
+        "/templates/toast/deniedAddBookmark.html"
       ],
       "matches": [
         "<all_urls>",
