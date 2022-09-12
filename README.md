@@ -6,7 +6,7 @@ Chrome extension with various features for the Chrome/Brave PDF viewer. Version 
 * Save page position 💾
 * Auto-open saved page position 📖
 * Bookmark pages 🔖
-* Get progress notifications 📱
+* Get progress notifications 📱 (Not Yet Implemented)
 
 ## Development
 *Requirements*
