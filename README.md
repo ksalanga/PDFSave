@@ -1,6 +1,6 @@
 # PDFSave
 
-Chrome extension with various features for the Chrome/Brave PDF viewer.
+Chrome extension with various features for the Chrome/Brave PDF viewer. Version 0.0.1 (WIP)
 
 ## Features
 * Save page position 💾
