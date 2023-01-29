@@ -10,7 +10,6 @@ Chrome extension with various features for the Chrome/Brave PDF viewer. Version 
 
 ## Development
 *Requirements*
-* Windows
 * node
 * yarn
 
