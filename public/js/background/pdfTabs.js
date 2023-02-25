@@ -78,15 +78,8 @@ function urlRedirect()
                     savedPage: 0
                 }
 
-                for (const dbRecord of fakeDb)
-                {
-                    if (dbRecord.filePath.toLowerCase() === baseURL)
-                    {
-                        urlQuery.autoOpenOn = dbRecord.autoOpenOn
-                        urlQuery.savedPage = dbRecord.savedPage
-                        break
-                    }
-                }
+                // TODO: make database call and request PDF table for specifidc url
+                // if that PDF url exists, grab that PDFs autoOpenOn and savedPage fields here
 
                 if (urlQuery.autoOpenOn)
                 {
