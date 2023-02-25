@@ -36,6 +36,7 @@ import {
     getAll as getAllDeletedFilePaths,
     remove as removeDeletedFilePath } from '../model/DeletedFiles';
 
+// BEFORE RUNNING DEVELOPMENT TESTS: Make sure to include a .env with REACT_APP_ENVIRONMENT = DEVELOPMENT for the indexedDB to generate random values
 // run new jest test: yarn run test
 // (or npm run test)
 // run (OLD) test: npx jest --detectOpenHandles --watch --verbose false
