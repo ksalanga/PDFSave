@@ -1,6 +1,6 @@
 {
   "name": "PDF Save Extension Scripts",
-  "description": "Browser script functionalities",
+  "description": "Save and AutoOpen PDF Pages on Chrome!",
   "version": "0.0.1",
   "manifest_version": 3,
   "action": {
@@ -16,16 +16,14 @@
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
   "commands": {
-    "save-at-page":
-    {
+    "save-at-page": {
       "suggested_key": {
         "default": "Ctrl+Shift+Period",
         "mac": "Command+Shift+Period"
       },
       "description": "Save PDF page and auto open at that page."
     },
-    "bookmark":
-    {
+    "bookmark": {
       "suggested_key": {
         "default": "Ctrl+Shift+Comma",
         "mac": "Command+Shift+Comma"
@@ -41,7 +39,7 @@
   "content_scripts": [
     {
       "matches": [
-        "*://*/*.pdf", 
+        "*://*/*.pdf",
         "file:///*/*.pdf"
       ],
       "js": [
