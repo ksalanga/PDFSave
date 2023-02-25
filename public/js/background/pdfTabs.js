@@ -94,23 +94,7 @@ function urlRedirect()
 
                     chrome.tabs.update(tabId, {url: tab.url + "#page=" + savedPage}, () => 
                     {
-                        /**
-                         * Once we update the url, we expect the url refresh to update the elements,
-                         * but the elements do not get updated for some reason,
-                         * (most likely has to do with the way the native chrome pdf viewer updates elements but we can't control that)
-                         * So we ask the C_S to reload the window for us with the new url.
-                         * 
-                         * Previously, we called chrome.tabs to reload for us, but that was very buggy.
-                         * It caused the tab to reload more than once if we were to "jump to a page" with a new url.
-                         * 
-                         * Probably because when chrome.tabs reloads, it asynchronously reloads the tab,
-                         * even though it's called "after the chrome.tabs.update url is called."
-                         * I put quotations because calling two asynchronous functions does not guarantee order
-                         * so the tab reload call might have happened when the url didn't change to the new #page url yet.
-                         * And that leads to weird behavior when we go back up to the onUpdated Listener. IT'S A MESS BASICALLY.
-                         * 
-                         * Instead, we guarantee just one reload execution to happen with a message to the C_S after the tab url gets updated.
-                         */
+                    
                         chrome.tabs.sendMessage(tabId, {message: "reload"}, (response) =>
                         {
                             if (chrome.runtime.lastError)
