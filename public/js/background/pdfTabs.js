@@ -586,19 +586,4 @@ function split(str, index) {
 
     return result;
 }
-
-// TODO: Delete Later. Dummy Database
-const fakeDb =
-[
-    {
-        filePath: "http://aroma.vn/web/wp-content/uploads/2016/11/code-complete-2nd-edition-v413hav.pdf",
-        autoOpenOn: true,
-        savedPage: 420
-    },
-    {
-        filePath: "http://triggs.djvu.org/djvu-editions.com/BIBLES/DRV/Download.pdf",
-        autoOpenOn: true,
-        savedPage: 69
-    }
-]
 /* eslint-disable no-undef */
