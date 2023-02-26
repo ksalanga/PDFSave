@@ -25,7 +25,7 @@ chrome.runtime.onInstalled.addListener((reason) => {
     }
 });
 
-urlRedirect()
+openSavedPdfUrlPage()
 sendResources()
 sendUserInputs()
 receiveFormSubmits()
@@ -53,7 +53,7 @@ receiveFormSubmits()
  * 1. redirect tab to <url>.pdf#page=X
  *      - where X is the recorded saved page in our conditions
  */
-function urlRedirect() {
+function openSavedPdfUrlPage() {
     chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         /**
          * 1. Check if our tab url contains .pdf
