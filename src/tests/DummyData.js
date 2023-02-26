@@ -2,7 +2,7 @@ import uniqid from 'uniqid'
 
 var id = uniqid()
 
-export const dummyUser = 
+export const dummyUser =
 {
     name: 'CoolPerson',
     phone_number: '+12345678912',
@@ -10,7 +10,7 @@ export const dummyUser =
     progress_notification_on: true
 }
 
-export var dummyPDF =  
+export var dummyPDF =
 {
     name: `pdf${id}`,
     file_path: `/pdf/pdf${id}.pdf`,
@@ -25,7 +25,7 @@ export var dummyPDF =
             page: 1
         },
     ],
-    auto_save_on: true,
+    auto_open_on: true,
     progress_notification_on: false,
 }
 

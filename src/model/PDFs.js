@@ -18,7 +18,7 @@ import { CodeError } from '../view/utils/Error'
  * - last_week_latest_page (int) [DEFAULT: 0] - the latest page that the user read last week for reading progress notification purposes.
  * - current_week_latest_page (int) [DEFAULT: 0] - the latest page that the user is currently reading this week for reading progress notification purposes.
  * - bookmarks (list(Bookmark)) - list of bookmark objects (see Bookmark Object keys below).
- * - auto_save_on (boolean) - indicates if this pdf has auto saving on or not.
+ * - auto_open_on (boolean) - indicates if this pdf has auto opening on or not.
  * - progress_notification_on (boolean) - turns on reading progress notification for this specific pdf.
  * 
  * !NOTE! Bookmark objects are not their own separate object store that has a many to one relationship with a pdf object store.
@@ -43,7 +43,7 @@ export const expectedPDFKeyTypes = {
     last_week_latest_page: 'number',
     current_week_latest_page: 'number',
     bookmarks: 'object', // specifically a LIST
-    auto_save_on: 'boolean',
+    auto_open_on: 'boolean',
     progress_notification_on: 'boolean'
 }
 
@@ -57,14 +57,14 @@ export const expectedBookmarkKeyTypes = {
 // pdf record keys that can be updated
 // where the key is a constant value that other modules trying to update a PDF's keys can access as an "enumeration"
 // and the value is the actual key value inside the record
-export const pdfUpdateKeysENUM = 
+export const pdfUpdateKeysENUM =
 {
     name: 'name',
     currentPage: 'current_page',
     lastWeekLatestPage: 'last_week_latest_page',
     currentWeekLatestPage: 'current_week_latest_page',
     bookmarks: 'bookmarks',
-    autoSaveOn: 'auto_save_on',
+    autoOpenOn: 'auto_open_on',
     progressNotificationOn: 'progress_notification_on'
 }
 
@@ -75,8 +75,8 @@ const expectedPDFUpdateKeys = Object.values(pdfUpdateKeysENUM)
 
 const checkIncorrectPageFormat = (pageNumber, length) => {
     if (notInteger(pageNumber)
-    || pageNumber < 0
-    || pageNumber > length) {
+        || pageNumber < 0
+        || pageNumber > length) {
         throw new CodeError('Error: page must be a number between 0 and length of pdf', 404)
     }
 }
@@ -93,14 +93,14 @@ const updatePage = async (primaryKey, updateKey, page) => {
         const pdf = await pdfStore.get(primaryKey)
 
         checkIncorrectPageFormat(page, pdf.length)
-        
+
         await updateDB(
             pdfStore,
             primaryKey,
             updateKey,
             page
         )
-    } catch(error) {
+    } catch (error) {
         console.log(`Something went wrong updating PDF ${primaryKey}'s ${updateKey} page`, error)
     }
 }
@@ -115,9 +115,9 @@ const updateBoolean = async (primaryKey, updateKey, b) => {
         if (notBoolean(b)) {
             throw new CodeError('updating value must be a boolean', 404)
         }
-    
+
         const db = await openDB()
-    
+
         await updateDB(
             db.transaction(ClientDB.pdfStoreName, 'readwrite').store,
             primaryKey,
@@ -145,14 +145,14 @@ export async function updateName(key, name) {
             pdfUpdateKeysENUM.name,
             name
         )
-    } catch(error) {
+    } catch (error) {
         console.log(`Something went wrong updating PDF ${key} name`, error)
     }
 }
 export async function updateCurrentPage(key, currentPage) { await updatePage(key, pdfUpdateKeysENUM.currentPage, currentPage) }
 export async function updateLastWeekLatestPage(key, lastWeekLatestPage) { await updatePage(key, pdfUpdateKeysENUM.lastWeekLatestPage, lastWeekLatestPage) }
 export async function updateCurrentWeekLatestPage(key, currentWeekLatestPage) { await updatePage(key, pdfUpdateKeysENUM.currentWeekLatestPage, currentWeekLatestPage) }
-export async function updateAutoSaveOn(key, on) { updateBoolean(key, pdfUpdateKeysENUM.autoSaveOn, on) }
+export async function updateAutoOpenOn(key, on) { updateBoolean(key, pdfUpdateKeysENUM.autoOpenOn, on) }
 export async function updateProgressNotificationOn(key, on) { updateBoolean(key, pdfUpdateKeysENUM.progressNotificationOn, on) }
 
 // creates new bookmark to pdf with primaryKey: key
@@ -200,7 +200,7 @@ export async function updateBookmark(key, id, name, page) {
         if (incorrectStringFormat(id)) {
             throw new CodeError('Bookmark id ought to be a nonempty string', 404)
         }
-        
+
         if (incorrectStringFormat(name)) {
             throw new CodeError('Name ought to be a string', 404)
         }
@@ -257,7 +257,7 @@ export async function deleteBookmark(key, id) {
 export async function getUsingPrimaryKey(key) {
     try {
         const db = await openDB()
-        return await db.get(ClientDB.pdfStoreName, key)    
+        return await db.get(ClientDB.pdfStoreName, key)
     } catch (error) {
         console.log(`Something went wrong getting PDF ${key}`)
     }
@@ -294,7 +294,7 @@ export async function add(
             throw new CodeError('Error creating PDF: file path must be a non empty string', 404)
         }
         if (notInteger(length)
-        || length < 1) {
+            || length < 1) {
             throw new CodeError('Error creating PDF: length of pdf must be a number > 0', 404)
         }
 
@@ -309,12 +309,12 @@ export async function add(
             last_week_latest_page: 0,
             current_week_latest_page: 0,
             bookmarks: [],
-            auto_save_on: true,
+            auto_open_on: true,
             progress_notification_on: false
         }
 
         const pdfStore = db.transaction(ClientDB.pdfStoreName, 'readwrite').store
-        
+
         const addedPDFKey = await pdfStore.add(pdf)
 
         return addedPDFKey
@@ -334,7 +334,7 @@ export async function getAllWithPrimaryKey() {
         let cursor = await db.transaction(ClientDB.pdfStoreName).store.openCursor()
 
         while (cursor) {
-            pdfs.push({key: cursor.key, ...cursor.value})
+            pdfs.push({ key: cursor.key, ...cursor.value })
             cursor = await cursor.continue()
         }
 
@@ -387,9 +387,9 @@ export async function update(key, values) {
         const pdfStore = db.transaction(ClientDB.pdfStoreName, 'readwrite').store
 
         await batchUpdate(
-            pdfStore, 
-            key, 
-            values, 
+            pdfStore,
+            key,
+            values,
             expectedPDFUpdateKeys
         )
 
