@@ -45,7 +45,7 @@
       "js": [
         "./js/utils/jquery-3.2.1.js",
         "./js/utils/bootstrap.min.js",
-        "./js/content/pdfViewer.js"
+        "./static/js/content.js"
       ],
       "css": [
         "./css/bootstrap.min.css",
@@ -54,7 +54,7 @@
     }
   ],
   "background": {
-    "service_worker": "./js/background/pdfTabs.js",
+    "service_worker": "./static/js/serviceWorker.js",
     "type": "module"
   },
   "web_accessible_resources": [

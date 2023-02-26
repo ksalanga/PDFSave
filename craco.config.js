@@ -5,12 +5,14 @@
 
 module.exports = {
     webpack: {
-        configure: (webpackConfig, {env, paths}) => {
+        configure: (webpackConfig, { env, paths }) => {
             return {
                 ...webpackConfig,
                 entry: {
                     main: [env === 'development' &&
-                    require.resolve('react-dev-utils/webpackHotDevClient'),paths.appIndexJs].filter(Boolean),
+                        require.resolve('react-dev-utils/webpackHotDevClient'), paths.appIndexJs].filter(Boolean),
+                    content: './src/chrome/pdfViewer.js',
+                    serviceWorker: './src/chrome/pdfTabs.js'
                 },
                 output: {
                     ...webpackConfig.output,
