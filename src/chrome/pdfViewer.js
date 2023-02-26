@@ -139,6 +139,7 @@ function requestHtmlTemplates() {
                         {
                             message: "form",
                             type: "save-at-page",
+                            url: location.href // eslint-disable-line
                         }
                         request.data = savePageForm.serializeArray()
 
@@ -200,6 +201,7 @@ function requestHtmlTemplates() {
                         {
                             message: "form",
                             type: "bookmark",
+                            url: location.href // eslint-disable-line
                         }
                         request.data = bookmarkForm.serializeArray()
 
