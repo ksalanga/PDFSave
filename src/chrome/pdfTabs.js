@@ -4,7 +4,7 @@
 
 import {
     add as addPDF,
-    getUsingFilePath as getPDFUsingFilePath
+    getUsingPrimaryKey as getPDF
 } from "../model/PDFs";
 
 /**
@@ -78,7 +78,7 @@ function openSavedPdfUrlPage() {
             if (!hasPageQuery) {
                 // TODO: make database call and request PDF table for specifidc url
                 // if that PDF url exists, grab that PDFs autoOpenOn and savedPage fields here
-                const pdf = await getPDFUsingFilePath(baseURL)
+                const pdf = await getPDF(baseURL)
 
                 if (pdf === undefined) {
                     await addPDF(baseURL, baseURL, 100)

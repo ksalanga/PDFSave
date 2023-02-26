@@ -251,6 +251,7 @@ export async function deleteBookmark(key, id) {
 }
 
 // gets pdf using primary key
+// where primary key = file_path
 // returns:
 // PDF Object if one exists
 // undefined if PDF doesn't exist
