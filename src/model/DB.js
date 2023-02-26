@@ -33,10 +33,8 @@ export const ClientDB = {
 export async function openDB() {
     return await openIDB(ClientDB.name, ClientDB.version, {
         upgrade(db) {
-            db.createObjectStore(ClientDB.userStoreName, { autoIncrement: true })
-            const pdfStore = db.createObjectStore(ClientDB.pdfStoreName, { autoIncrement: true })
-
-            pdfStore.createIndex('file_path', 'file_path', { unique: true })
+            db.createObjectStore(ClientDB.userStoreName, { keyPath: 'name' })
+            db.createObjectStore(ClientDB.pdfStoreName, { keyPath: 'file_path' })
 
             db.createObjectStore(ClientDB.deletedFileStoreName, { keyPath: 'file_path' })
         }
@@ -64,7 +62,7 @@ export async function initDB() {
 
         const pdfStore = db.transaction('pdfs', 'readwrite').store
         const pdfs = await pdfStore.getAll()
-        
+
         const pdfsExist = pdfs.length > 0
         if (devEnvironment && !pdfsExist) {
             dummyPDFs.forEach(async (pdf) => {
@@ -86,8 +84,8 @@ export async function update(store, primaryKey, key, value) {
     try {
         const record = await store.get(primaryKey)
         record[key] = value
-    
-        await store.put(record, primaryKey)
+
+        await store.put(record)
     } catch (error) {
         console.log('Something went wrong updating a store', error)
         throw new CodeError('Something went wrong updating record', 404)
@@ -119,12 +117,12 @@ export async function batchUpdate(store, key, values, expectedKeys) {
         })
 
         const record = await store.get(key)
-    
+
         updateKeys.forEach((key) => {
             record[key] = values[key]
         })
-    
-        await store.put(record, key)
+
+        await store.put(record)
     } catch (error) {
         console.log('Something went wrong batch updating values in store', error)
         throw new CodeError('Something went wrong batch updating values in record', 404)

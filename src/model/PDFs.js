@@ -184,7 +184,7 @@ export async function createBookmark(key, id, name, page) {
             }
         )
 
-        await pdfStore.put(pdf, key)
+        await pdfStore.put(pdf)
     } catch (error) {
         console.log(`Something went wrong creating PDF ${key}'s new bookmark`, error)
     }
@@ -222,7 +222,7 @@ export async function updateBookmark(key, id, name, page) {
             return bookmark
         })
 
-        await pdfStore.put(pdf, key)
+        await pdfStore.put(pdf)
     } catch (error) {
         console.log(`Something went wrong updating PDF ${key}'s Bookmark: ${id}`, error)
     }
@@ -244,7 +244,7 @@ export async function deleteBookmark(key, id) {
 
         pdf.bookmarks = pdf.bookmarks.filter(bookmark => bookmark.id !== id)
 
-        await pdfStore.put(pdf, key)
+        await pdfStore.put(pdf)
     } catch (error) {
         console.log(`Something went wrong deleting PDF ${key}'s Bookmark: ${id}`, error)
     }
@@ -260,19 +260,6 @@ export async function getUsingPrimaryKey(key) {
         return await db.get(ClientDB.pdfStoreName, key)
     } catch (error) {
         console.log(`Something went wrong getting PDF ${key}`)
-    }
-}
-
-// gets pdf using file name index
-// returns: 
-// PDF Object if one exists
-// undefined if PDF doesn't exist
-export async function getUsingFilePath(file_path) {
-    try {
-        const db = await openDB()
-        return await db.getFromIndex(ClientDB.pdfStoreName, 'file_path', file_path)
-    } catch (error) {
-        console.log(`Something went wrong getting PDF in ${file_path}`)
     }
 }
 
@@ -320,27 +307,6 @@ export async function add(
         return addedPDFKey
     } catch (error) {
         console.log("Something went wrong adding a PDF", error)
-    }
-}
-
-// returns:
-// if elements exist: a list of all PDF Objects including the primary key as key: key.
-// if no elements exist: empty list
-export async function getAllWithPrimaryKey() {
-    try {
-        const db = await openDB()
-        const pdfs = []
-
-        let cursor = await db.transaction(ClientDB.pdfStoreName).store.openCursor()
-
-        while (cursor) {
-            pdfs.push({ key: cursor.key, ...cursor.value })
-            cursor = await cursor.continue()
-        }
-
-        return pdfs
-    } catch (error) {
-        console.log("Something went wrong reading PDFs", error)
     }
 }
 
@@ -401,9 +367,6 @@ export async function update(key, values) {
 // removes pdf of key: key
 export async function remove(key) {
     try {
-        if (notInteger(key)) {
-            throw new CodeError('key ought to be an integer', 404)
-        }
         const db = await openDB()
         const tx = db.transaction([ClientDB.pdfStoreName, ClientDB.deletedFileStoreName], 'readwrite')
 

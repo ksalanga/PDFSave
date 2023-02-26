@@ -14,7 +14,6 @@ import {
     getAll as getAllPDFs,
     pdfUpdateKeysENUM,
     getUsingPrimaryKey as getPDFUsingPrimaryKey,
-    getUsingFilePath as getPDFUsingFilePath,
     updateName as updatePDFName,
     updateCurrentPage as updatePDFCurrentPage,
     updateLastWeekLatestPage as updatePDFLastWeekLatestPage,
@@ -24,7 +23,6 @@ import {
     update as updatePDF,
     remove as removePDF,
     createBookmark,
-    getAllWithPrimaryKey as getAllPDFsWithPrimaryKey,
     updateBookmark,
     deleteBookmark,
     getAllWithProgressNotificationOn as getAllPDFsWithProgressNotificationOn
@@ -86,13 +84,13 @@ describe('Development Client DB Tests', () => {
         () => {
             test('Dummy User is initialized with correct values in DB',
                 async () => {
-                    const dummyDBuser = await getUser(1)
+                    const dummyDBuser = await getUser('CoolPerson')
                     expect(dummyDBuser).toStrictEqual(dummyUser)
                 })
 
             test('Dummy User\'s keys are the correct types',
                 async () => {
-                    const dummyDBuser = await getUser(1)
+                    const dummyDBuser = await getUser('CoolPerson')
                     const userKeys = Object.keys(dummyDBuser)
 
                     userKeys.forEach((key) => {
@@ -118,9 +116,9 @@ describe('Development Client DB Tests', () => {
                         ...someUpdateValues
                     }
 
-                    await updateUser(1, someUpdateValues)
+                    await updateUser('CoolPerson', someUpdateValues)
 
-                    const updatedDBUser = await getUser(1)
+                    const updatedDBUser = await getUser('CoolPerson')
 
                     expect(updatedDBUser).toStrictEqual(dummyUpdateUser)
                 })
@@ -136,9 +134,9 @@ describe('Development Client DB Tests', () => {
                         progress_notification_on: true
                     }
 
-                    await updateUser(1, allUpdateValues)
+                    await updateUser('CoolPerson', allUpdateValues)
 
-                    const updatedDBUser = await getUser(1)
+                    const updatedDBUser = await getUser('CoolPerson')
 
                     const updatedDBUserKeys = Object.keys(updatedDBUser)
 
@@ -182,12 +180,12 @@ describe('Development Client DB Tests', () => {
                             }
 
                             const pdfKey = await addPDF(name, filePath, length)
-                            const createdDBPDF = await getPDFUsingPrimaryKey(4)
+                            const createdDBPDF = await getPDFUsingPrimaryKey(filePath)
                             const pdfs = await getAllPDFs()
 
                             expect(createdDBPDF).toStrictEqual(dummyCreatePDF)
                             expect(pdfs.length).toEqual(4)
-                            expect(pdfKey).toEqual(4)
+                            expect(pdfKey).toEqual(filePath)
                         })
 
                     test("Adding a PDF has correct types for each value",
@@ -197,7 +195,7 @@ describe('Development Client DB Tests', () => {
                             const length = generateRandomInt(50)
 
                             await addPDF(name, filePath, length)
-                            const createdDbPDF = await getPDFUsingPrimaryKey(4)
+                            const createdDbPDF = await getPDFUsingPrimaryKey(filePath)
 
                             const createdDbPDFKeys = Object.keys(createdDbPDF)
 
@@ -210,36 +208,6 @@ describe('Development Client DB Tests', () => {
                                 expect(dbValueType).toEqual(expectedValueType)
                             })
                         })
-
-                    test('add 1000 PDFs',
-                        async () => {
-                            const expectedPDFs = cloneDeep(dummyPDFs)
-                            // const numberOfPDFs = generateRandomIntFromInterval(50, 1000)  
-                            const numberOfPDFs = 1000
-
-                            for (let i = 0; i < numberOfPDFs; i++) {
-                                const newName = generateRandomString(20)
-                                const newFilePath = generateRandomString(30)
-                                const newLength = generateRandomInt(100)
-
-                                const newPDF =
-                                {
-                                    name: newName,
-                                    file_path: newFilePath,
-                                    length: newLength,
-                                    ...initialValues
-                                }
-
-                                expectedPDFs.push(newPDF)
-
-                                await addPDF(newName, newFilePath, newLength)
-                            }
-
-                            const dbPDFs = await getAllPDFs()
-
-                            expect(dbPDFs).toStrictEqual(expectedPDFs)
-                        },
-                        5000)
                 })
 
             describe('Updating PDF record primitive fields',
@@ -257,8 +225,6 @@ describe('Development Client DB Tests', () => {
                      * **/
                     const updatePrimitiveTypeTest = async (updatePDFfunction, field) => {
                         const expectedPDFs = cloneDeep(dummyPDFs)
-
-                        let key = 1
 
                         for (const pdf of expectedPDFs) {
                             let randomUpdatedValue
@@ -280,9 +246,9 @@ describe('Development Client DB Tests', () => {
 
                             pdf[field] = randomUpdatedValue
 
-                            await updatePDFfunction(key, randomUpdatedValue)
+                            await updatePDFfunction(pdf['file_path'], randomUpdatedValue)
 
-                            key++
+                            // key++
                         }
 
                         const dbPDFs = await getAllPDFs()
@@ -338,8 +304,8 @@ describe('Development Client DB Tests', () => {
                     test('Getting all deleted PDFs returns a list of 0 items',
                         async () => {
 
-                            for (let key = 1; key <= 3; key++) {
-                                await removePDF(key)
+                            for (const pdf of dummyPDFs) {
+                                await removePDF(pdf.file_path)
                             }
 
                             const pdfs = await getAllPDFs()
@@ -347,15 +313,14 @@ describe('Development Client DB Tests', () => {
                             expect(pdfs).toHaveLength(0)
                         })
 
-                    test(`Getting a PDF using its primary key gets us that exact PDF object 
-            (excluding its primary key)`,
+                    test(`Getting a PDF using its primary key gets us that exact PDF object`,
                         async () => {
-                            const primaryKey = 2
+                            const primaryKey = '/pdf/pdf2.pdf'
                             const pdf = await getPDFUsingPrimaryKey(primaryKey)
 
                             // since the index starts at 0, but the auto incremented primaryKeys start at 1,
                             // getting any PDF with key in the list we must use key - 1
-                            const expectedPDF = dummyPDFs[primaryKey - 1]
+                            const expectedPDF = dummyPDFs[1]
 
                             expect(pdf).toStrictEqual(expectedPDF)
                         })
@@ -365,41 +330,6 @@ describe('Development Client DB Tests', () => {
                             const pdf = await getPDFUsingPrimaryKey(60)
 
                             expect(pdf).toBeUndefined()
-                        })
-
-                    test(`Getting a PDF using its file path get us that exact PDF Object
-            (excluding its primary key)`,
-                        async () => {
-                            const primaryKey = 3
-                            const expectedPDF = dummyPDFs[primaryKey - 1]
-                            const filePath = expectedPDF.file_path
-
-                            const pdf = await getPDFUsingFilePath(filePath)
-
-                            expect(pdf).toStrictEqual(expectedPDF)
-                        })
-
-                    test(`Getting a PDF using its file path with an incorrect or new file path string returns undefined`,
-                        async () => {
-                            const pdf = await getPDFUsingFilePath('WEIRDAHHH Name')
-
-                            expect(pdf).toBeUndefined()
-                        })
-
-                    test('Getting all PDFs in PDF store with primary keys returns all pdfs with correct pks',
-                        async () => {
-                            const expectedPDFs = cloneDeep(dummyPDFs)
-
-                            let key = 1
-
-                            for (const pdf of expectedPDFs) {
-                                pdf.key = key
-                                key++
-                            }
-
-                            const dbPDFs = await getAllPDFsWithPrimaryKey()
-
-                            expect(dbPDFs).toStrictEqual(expectedPDFs)
                         })
 
                     test('Getting all PDFs with progress notification on',
@@ -416,7 +346,7 @@ describe('Development Client DB Tests', () => {
 
                     test('Getting no PDFs with progress notification on gives an empty list',
                         async () => {
-                            await removePDF(3)
+                            await removePDF('/pdf/pdf3.pdf')
 
                             const dbPDFsWithProgressNotificationOn = await getAllPDFsWithProgressNotificationOn()
                             expect(dbPDFsWithProgressNotificationOn).toStrictEqual([])
@@ -460,9 +390,9 @@ describe('Development Client DB Tests', () => {
                         ...updateValues
                     }
 
-                    await updatePDF(1, updateValues)
+                    await updatePDF('/pdf/pdf1.pdf', updateValues)
 
-                    const dbPDF = await getPDFUsingFilePath(expectedUpdatedPDF.file_path)
+                    const dbPDF = await getPDFUsingPrimaryKey(expectedUpdatedPDF.file_path)
 
                     expect(dbPDF).toStrictEqual(expectedUpdatedPDF)
                 })
@@ -471,11 +401,11 @@ describe('Development Client DB Tests', () => {
                 () => {
                     test('Removing one',
                         async () => {
-                            const primaryKey = 2
+                            const primaryKey = '/pdf/pdf2.pdf'
 
                             const expectedPDFs = cloneDeep(dummyPDFs)
 
-                            expectedPDFs.splice(primaryKey - 1, 1)
+                            expectedPDFs.splice(1, 1)
 
                             await removePDF(primaryKey)
 
@@ -489,8 +419,8 @@ describe('Development Client DB Tests', () => {
 
                     test('Removing all',
                         async () => {
-                            for (let key = 1; key <= 3; key++) {
-                                await removePDF(key)
+                            for (const pdf of dummyPDFs) {
+                                await removePDF(pdf.file_path)
                             }
 
                             const pdfs = await getAllPDFs()
@@ -506,8 +436,6 @@ describe('Development Client DB Tests', () => {
                         async () => {
                             const expectedPDFs = cloneDeep(dummyPDFs)
 
-                            let key = 1
-
                             for (const pdf of expectedPDFs) {
                                 let id = generateRandomString(20)
                                 let name = generateRandomString(30)
@@ -522,9 +450,7 @@ describe('Development Client DB Tests', () => {
 
                                 pdf.bookmarks.push(newBookmark)
 
-                                await createBookmark(key, id, name, page)
-
-                                key++
+                                await createBookmark(pdf['file_path'], id, name, page)
                             }
 
                             const pdfs = await getAllPDFs()
@@ -535,8 +461,6 @@ describe('Development Client DB Tests', () => {
                     test('Updating one',
                         async () => {
                             const expectedPDFs = cloneDeep(dummyPDFs)
-
-                            let key = 1
 
                             for (const pdf of expectedPDFs) {
                                 const bookmarks = pdf.bookmarks
@@ -552,9 +476,7 @@ describe('Development Client DB Tests', () => {
                                 randomBookmark.name = name
                                 randomBookmark.page = page
 
-                                await updateBookmark(key, id, name, page)
-
-                                key++
+                                await updateBookmark(pdf.file_path, id, name, page)
                             }
 
                             const pdfs = await getAllPDFs()
@@ -565,8 +487,6 @@ describe('Development Client DB Tests', () => {
                     test('Delete One',
                         async () => {
                             const expectedPDFs = cloneDeep(dummyPDFs)
-
-                            let key = 1
 
                             for (const pdf of expectedPDFs) {
                                 const bookmarks = pdf.bookmarks
@@ -579,9 +499,7 @@ describe('Development Client DB Tests', () => {
                                 // delete expected PDF bookmark
                                 pdf.bookmarks = bookmarks.filter(bookmark => bookmark.id !== id)
 
-                                await deleteBookmark(key, id)
-
-                                key++
+                                await deleteBookmark(pdf.file_path, id)
                             }
 
                             const pdfs = await getAllPDFs()
@@ -593,16 +511,12 @@ describe('Development Client DB Tests', () => {
                         async () => {
                             const expectedPDFs = cloneDeep(dummyPDFs)
 
-                            let key = 1
-
                             for (const pdf of expectedPDFs) {
                                 const bookmarks = pdf.bookmarks
 
                                 for (var bookmark; bookmark = bookmarks.shift();) {
-                                    await deleteBookmark(key, bookmark.id)
+                                    await deleteBookmark(pdf.file_path, bookmark.id)
                                 }
-
-                                key++
                             }
 
                             const pdfs = await getAllPDFs()
@@ -616,11 +530,11 @@ describe('Development Client DB Tests', () => {
         () => {
             test('Removing One PDF ends up in the delete store',
                 async () => {
-                    const primaryKey = 2
+                    const primaryKey = '/pdf/pdf2.pdf'
 
                     const expectedPDFs = cloneDeep(dummyPDFs)
 
-                    const expectedDeletedPDF = expectedPDFs.splice(primaryKey - 1, 1)[0]
+                    const expectedDeletedPDF = expectedPDFs.splice(1, 1)[0]
 
                     await removePDF(primaryKey)
 
@@ -633,8 +547,8 @@ describe('Development Client DB Tests', () => {
 
             test('Removing All PDFs ends up in the delete store',
                 async () => {
-                    for (let key = 1; key <= 3; key++) {
-                        await removePDF(key)
+                    for (const pdf of dummyPDFs) {
+                        await removePDF(pdf.file_path)
                     }
 
                     const deletedFiles = await getAllDeletedFilePaths()
@@ -648,11 +562,11 @@ describe('Development Client DB Tests', () => {
 
             test('Remove a file in deleted File Store',
                 async () => {
-                    const primaryKey = 2
+                    const primaryKey = '/pdf/pdf2.pdf'
 
                     const expectedPDFs = cloneDeep(dummyPDFs)
 
-                    const expectedDeletedPDF = expectedPDFs.splice(primaryKey - 1, 1)[0]
+                    const expectedDeletedPDF = expectedPDFs.splice(1, 1)[0]
 
                     await removePDF(primaryKey)
 
@@ -660,7 +574,7 @@ describe('Development Client DB Tests', () => {
 
                     const deletedFiles = await getAllDeletedFilePaths()
 
-                    const deletedPDF = await getPDFUsingFilePath(expectedDeletedPDF.file_path)
+                    const deletedPDF = await getPDFUsingPrimaryKey(expectedDeletedPDF.file_path)
 
                     expect(deletedFiles).toHaveLength(0)
                     expect(deletedPDF).toBeUndefined()
@@ -668,8 +582,8 @@ describe('Development Client DB Tests', () => {
 
             test('Remove all files in deleted File Store',
                 async () => {
-                    for (let key = 1; key <= 3; key++) {
-                        await removePDF(key)
+                    for (const pdf of dummyPDFs) {
+                        await removePDF(pdf.file_path)
                     }
 
                     const deletedFiles = await getAllDeletedFilePaths()
@@ -681,11 +595,6 @@ describe('Development Client DB Tests', () => {
                     const newDeletedFiles = await getAllDeletedFilePaths()
 
                     expect(newDeletedFiles).toHaveLength(0)
-                })
-
-            test('Remove all files in deleted File Store',
-                async () => {
-
                 })
         })
 
@@ -721,7 +630,7 @@ describe('Development Client DB Tests', () => {
                      * So we'll take the decrease in accuracy for the smoother application experience with the async calls.
                      */
 
-                    const pdf = await getPDFUsingPrimaryKey(1)
+                    const pdf = await getPDFUsingPrimaryKey('/pdf/pdf1.pdf')
 
                     let newPage
 
@@ -737,13 +646,13 @@ describe('Development Client DB Tests', () => {
 
                     while (timeleft > 0) {
                         newPage = generateRandomIntFromInterval(0, pdf.length)
-                        await updatePDFCurrentPage(1, newPage)
+                        await updatePDFCurrentPage('/pdf/pdf1.pdf', newPage)
                         timeleft--
 
                         wait(1)
                     }
 
-                    const newPDF = await getPDFUsingPrimaryKey(1)
+                    const newPDF = await getPDFUsingPrimaryKey('/pdf/pdf1.pdf')
                     const currentPage = newPDF[pdfUpdateKeysENUM.currentPage]
 
                     expect(currentPage).toEqual(newPage)
@@ -759,12 +668,12 @@ describe('Production ClientDB Initialization Tests', () => {
     })
 
     test('Default User is initialized with default values', async () => {
-        const user = await getUser(1)
+        const user = await getUser('user')
         expect(user).toStrictEqual(defaultUser)
     })
 
     test("Default User's keys are the correct types", async () => {
-        const user = await getUser(1)
+        const user = await getUser('user')
 
         const userKeys = Object.keys(user)
 

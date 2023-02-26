@@ -38,7 +38,7 @@ export const expectedUserKeyTypes =
 // const values for user record keys that can be updated in the object store
 // where the key is our "enumeration"/ access to all possible update keys
 // and the value is the actual key value inside the record
-export const userUpdateKeys = 
+export const userUpdateKeys =
 {
     name: 'name',
     phoneNumber: 'phone_number',
@@ -54,7 +54,7 @@ const expectedUserUpdateKeys = Object.values(userUpdateKeys)
 export async function get(key) {
     try {
         const db = await openDB()
-        return await db.get(ClientDB.userStoreName, key)    
+        return await db.get(ClientDB.userStoreName, key)
     } catch (error) {
         console.log(`Something went wrong getting User ${key}`)
     }
@@ -66,7 +66,7 @@ export async function update(key, values) {
         const db = await openDB()
         const userStore = db.transaction(ClientDB.userStoreName, 'readwrite').store
 
-        await batchUpdate (
+        await batchUpdate(
             userStore,
             key,
             values,
