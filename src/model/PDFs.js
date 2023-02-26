@@ -75,9 +75,8 @@ const expectedPDFUpdateKeys = Object.values(pdfUpdateKeysENUM)
 
 const checkIncorrectPageFormat = (pageNumber, length) => {
     if (notInteger(pageNumber)
-        || pageNumber < 0
-        || pageNumber > length) {
-        throw new CodeError('Error: page must be a number between 0 and length of pdf', 404)
+        || pageNumber < 0) {
+        throw new CodeError('Error: page must be a non negative integer', 404)
     }
 }
 

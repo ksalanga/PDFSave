@@ -4,7 +4,8 @@
 
 import {
     add as addPDF,
-    getUsingPrimaryKey as getPDF
+    getUsingPrimaryKey as getPDF,
+    updateCurrentPage
 } from "../model/PDFs";
 
 /**
@@ -90,7 +91,7 @@ function openSavedPdfUrlPage() {
                     savedPage: pdf.current_page,
                 }
 
-                if (urlQuery.autoOpenOn && page !== 0) {
+                if (urlQuery.autoOpenOn && urlQuery.savedPage !== 0) {
                     const savedPage = urlQuery.savedPage
 
                     chrome.tabs.update(tabId, { url: tab.url + "#page=" + savedPage }, () => {
@@ -274,21 +275,27 @@ function receiveFormSubmits() {
     /**
      * Process Form Inputs
      */
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
         function invalidNumber(num) {
             return num === undefined || num === "" || num < 0
         }
 
         if (request.message === "form") {
             if (request.type === "save-at-page") {
-                for (const data of request.data) {
-                    if (data.name === "page") {
-                        if (invalidNumber(data.value)) {
-                            sendResponse({ message: "invalid" })
-                        }
-                    }
+                const pageString = request.data[0].value;
+                if (invalidNumber(pageString)) {
+                    sendResponse({ message: "invalid" })
+                    return true
+                } else {
+                    sendResponse({ message: "valid" })
+
+                    var page = parseInt((' ' + pageString).slice(1));
+                    var url = (' ' + request.url).slice(1);
+
+                    const [baseURL, _] = split(url, url.lastIndexOf('.pdf') + 4)
+
+                    await updateCurrentPage(baseURL, page)
                 }
-                sendResponse({ message: "valid" })
             }
 
             if (request.type === "bookmark") {
