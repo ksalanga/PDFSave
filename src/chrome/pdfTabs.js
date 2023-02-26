@@ -1,5 +1,12 @@
 /* eslint-disable no-undef */
 
+// Service Worker that redirects any PDF tabs with a saved page in the Database
+
+import {
+    add as addPDF,
+    getUsingFilePath as getPDFUsingFilePath
+} from "../model/PDFs";
+
 /**
  * Definitions:
  * C_S: Content Script
@@ -13,107 +20,22 @@
  *  1. Check if any commands have collided with other extension commands
  */
 chrome.runtime.onInstalled.addListener((reason) => {
-  if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    getMissingCommandShortcuts()
-  }
+    if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
+        getMissingCommandShortcuts()
+    }
 });
 
-urlRedirect()
 sendResources()
 sendUserInputs()
 receiveFormSubmits()
 
-/**
- * Loads the URL Redirect Listener
- * 
- * 
- * IMPORTANT NOTES:
- * - Auto Open / Redirect only happens for urls with the base .pdf (url that is a .pdf extension)
- * - If you add the query #page=X where X is a number after .pdf: the extension will not detect the reload / auto open for that url.
- * - This is intended for two reason: 
- *      1. If you have a bookmark or wanna jump to a page,
- *      the extension doesn't want to auto open to a different page from the one that was intended.
- *      2. More importantly, the extension itself reloads the base .pdf at #page=X
- *          - If we also reload with the #page query, we end up in an infinite reload loop
- * 
- * 
- * URL Redirect Condition:
- * ALL Conditions must be met for a URL Redirect Action:
- * 1. tab URL extension is .pdf
- * 2. tab base URL (url up to and ending in .pdf) has auto open features on
- * 
- * URL Redirect Action:
- * 1. redirect tab to <url>.pdf#page=X
- *      - where X is the recorded saved page in our conditions
- */
-function urlRedirect()
-{
-    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) =>
-    {
-        /**
-         * 1. Check if our tab url contains .pdf
-         * 2. If it does contian .pdf and the tab has completed loading,
-         *      3. Split the base url to:
-         *          - base url: .pdf url (url only up to and ending in .pdf)
-         *          - query: any string after the last .pdf in url
-         *      4. if query doesn't contain #page=X where X is a number,
-         *          5. Look up base url in storage:
-         *          6. grab base url's autoOpenOn and savedPage features
-         *          7. If Redirect Condition 2 is satisfied:
-         *              - update and reload the tab
-         */
-
-        const url = tab.url.toLowerCase()
-
-        if (url.includes('.pdf') && changeInfo.status === 'complete')
-        {
-            const [baseURL, query] = split(url, url.lastIndexOf('.pdf') + 4)
-
-            const hasPageQuery = /#page=\d/.exec(query)
-            
-            if (!hasPageQuery)
-            {
-                const urlQuery = {
-                    autoOpenOn: false,
-                    savedPage: 0
-                }
-
-                // TODO: make database call and request PDF table for specifidc url
-                // if that PDF url exists, grab that PDFs autoOpenOn and savedPage fields here
-
-                if (urlQuery.autoOpenOn)
-                {
-                    const savedPage = urlQuery.savedPage
-
-                    chrome.tabs.update(tabId, {url: tab.url + "#page=" + savedPage}, () => 
-                    {
-                    
-                        chrome.tabs.sendMessage(tabId, {message: "reload"}, (response) =>
-                        {
-                            if (chrome.runtime.lastError)
-                            {
-                                console.log("Error updating URL", chrome.runtime.lastError)
-                            }
-                            console.log("Jumping to page", savedPage)
-                            console.log(response.message)
-                        })
-                    })
-                    return
-                }
-            }
-        }
-    })
-}
 
 /**
  * Listens for active tab content script's load requests and sends corresponding resources for those requests.
  */
-function sendResources()
-{
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
-    {
-        if (request.message === "load")
-        {
+function sendResources() {
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.message === "load") {
             /**
              * On an HTML Load Request,
              * get a list of HTML Templates:
@@ -127,15 +49,13 @@ function sendResources()
              * and send that list as a response
              * to the C_S
              */
-            if (request.type === "html")
-            {
+            if (request.type === "html") {
                 getHTMLTemplates(request.url)
-                .then((htmlTemplates) => sendResponse(htmlTemplates))
-                .catch((error) =>
-                {
-                    console.log("B_S Load HTML Template Message Error: ", error)
-                })
-                
+                    .then((htmlTemplates) => sendResponse(htmlTemplates))
+                    .catch((error) => {
+                        console.log("B_S Load HTML Template Message Error: ", error)
+                    })
+
                 return true
             }
         }
@@ -146,16 +66,14 @@ function sendResources()
  * Listens for user inputs (ex: keyboard commands or context menus)
  * and sends those inputs to the active tab's content script.
  */
-function sendUserInputs()
-{
+function sendUserInputs() {
     loadKeyboardCommandsListener()
     loadContextMenusListener()
 
     /**
      * Loads the Listener for any Keyboard Commands that the B_S will consume and send to C_S as a message
      */
-    function loadKeyboardCommandsListener()
-    {
+    function loadKeyboardCommandsListener() {
         /**
          * B_S Keyboard Command Messages to C_S:
          *  1. Listens for chrome keyboard commands
@@ -173,13 +91,12 @@ function sendUserInputs()
          * @param command - command event
          */
         chrome.commands.onCommand.addListener((command) => {
-            const request = 
+            const request =
             {
                 message: "userInput"
             }
-        
-            switch(command)
-            {
+
+            switch (command) {
                 case "save-at-page":
                     request.command = command
                     sendMessageToActiveTab("Save At Page Keyboard Command", request)
@@ -193,12 +110,11 @@ function sendUserInputs()
             }
         });
     }
-    
+
     /**
      * Loads the listener for any Context Menus the B_S will consume and send to C_S as a message
      */
-    function loadContextMenusListener()
-    {    
+    function loadContextMenusListener() {
         /**
          * Create Context Menus
          */
@@ -212,10 +128,8 @@ function sendUserInputs()
                     "file:///*/*.pdf"
                 ]
             },
-            () =>
-            {
-                if (chrome.runtime.lastError)
-                {
+            () => {
+                if (chrome.runtime.lastError) {
                     console.log("Error creating Context Menu: ", chrome.runtime.lastError)
                 }
             }
@@ -231,15 +145,13 @@ function sendUserInputs()
                     "file:///*/*.pdf"
                 ]
             },
-            () =>
-            {
-                if (chrome.runtime.lastError)
-                {
+            () => {
+                if (chrome.runtime.lastError) {
                     console.log("Error creating Context Menu: ", chrome.runtime.lastError)
                 }
             }
         )
-        
+
         /**
          * B_S Context Menu Requester:
          *  1. Listens for context menu clicks
@@ -255,20 +167,17 @@ function sendUserInputs()
          *          message (string) - message that the C_S responds with
          *      }
          */
-        chrome.contextMenus.onClicked.addListener((info, tab) =>
-        {
+        chrome.contextMenus.onClicked.addListener((info, tab) => {
             const request =
             {
                 message: "userInput"
             }
 
-            if (info.menuItemId === saveAtPageID)
-            {
+            if (info.menuItemId === saveAtPageID) {
                 request.command = saveAtPageID
                 sendMessageToActiveTab("Save At Page Context Menu", request)
             }
-            if (info.menuItemId === bookmarkID)
-            {
+            if (info.menuItemId === bookmarkID) {
                 request.command = bookmarkID
                 sendMessageToActiveTab("Bookmark Context Menu", request)
             }
@@ -281,58 +190,44 @@ function sendUserInputs()
  * Receives any request with request.message === "form"
  * Depending on the request.type of the form, do different things
  */
-function receiveFormSubmits()
-{
+function receiveFormSubmits() {
     /**
      * Process Form Inputs
      */
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
-    {
-        function invalidNumber(num)
-        {
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        function invalidNumber(num) {
             return num === undefined || num === "" || num < 0
         }
 
-        if (request.message === "form")
-        {
-            if (request.type === "save-at-page")
-            {
-                for (const data of request.data)
-                {
-                    if (data.name === "page")
-                    {
-                        if (invalidNumber(data.value))
-                        {
-                            sendResponse({message: "invalid"})
+        if (request.message === "form") {
+            if (request.type === "save-at-page") {
+                for (const data of request.data) {
+                    if (data.name === "page") {
+                        if (invalidNumber(data.value)) {
+                            sendResponse({ message: "invalid" })
                         }
                     }
                 }
-                sendResponse({message: "valid"})
+                sendResponse({ message: "valid" })
             }
 
-            if (request.type === "bookmark")
-            {
-                for (const data of request.data)
-                {
-                    if (data.name === "bookmarkName")
-                    {
-                        if (data.value == undefined || data.value === "")
-                        {
-                            sendResponse({message: "invalid"})
+            if (request.type === "bookmark") {
+                for (const data of request.data) {
+                    if (data.name === "bookmarkName") {
+                        if (data.value == undefined || data.value === "") {
+                            sendResponse({ message: "invalid" })
                             return true
                         }
                     }
 
-                    if (data.name === "page")
-                    {
-                        if (invalidNumber(data.value))
-                        {
-                            sendResponse({message: "invalid"})
+                    if (data.name === "page") {
+                        if (invalidNumber(data.value)) {
+                            sendResponse({ message: "invalid" })
                             return true
                         }
                     }
                 }
-                sendResponse({message:"valid"})
+                sendResponse({ message: "valid" })
             }
 
             return true
@@ -351,12 +246,10 @@ function receiveFormSubmits()
  * - Important to distinguish because a file scheme will send different HTML resources than a https scheme
  * - cause of WAR B.S.
  */
-async function getHTMLTemplates(url)
-{
-    try
-    {
+async function getHTMLTemplates(url) {
+    try {
         var htmlTemplates = []
-    
+
         // Send save-at-page modal/dialog box template
         const savePageModalURL = chrome.runtime.getURL('/templates/modal/savePage.html')
         const savePageModalTemplate = await createHTMLTemplate(savePageModalURL, "savePageModal")
@@ -366,49 +259,41 @@ async function getHTMLTemplates(url)
         const bookmarkModal = chrome.runtime.getURL('/templates/modal/bookmark.html')
         const bookmarkModalTemplate = await createHTMLTemplate(bookmarkModal, "bookmarkModal")
         htmlTemplates.push(bookmarkModalTemplate)
-    
+
         // Send Alert with Command Shortcut as a custom string
         const commands = await chrome.commands.getAll()
-    
+
         var saveCommandShortcut
-    
-        for (let {name, shortcut} of commands)
-        {
-            if (name === 'save-at-page')
-            {
-                if (shortcut === '')
-                {
+
+        for (let { name, shortcut } of commands) {
+            if (name === 'save-at-page') {
+                if (shortcut === '') {
                     saveCommandShortcut = 'Unbound'
                 }
-                else
-                {
+                else {
                     saveCommandShortcut = shortcut
                 }
                 break
             }
         }
-    
-        if (url.startsWith("file"))
-        {
+
+        if (url.startsWith("file")) {
             const alertOfflineURL = chrome.runtime.getURL('/templates/alert/savePageNoLogo.html')
             const alertOfflineTemplate = await createHTMLTemplate(alertOfflineURL, "alert",
-            (htmlString) =>
-            {
-                return htmlString.replace('INSERT COMMAND', saveCommandShortcut)
-            })
-    
+                (htmlString) => {
+                    return htmlString.replace('INSERT COMMAND', saveCommandShortcut)
+                })
+
             htmlTemplates.push(alertOfflineTemplate)
         }
-        else
-        {
+        else {
             const alertURL = chrome.runtime.getURL('/templates/alert/savePageLogo.html')
-            const alertTemplate = await createHTMLTemplate(alertURL, "alert", 
-            (htmlString) => 
-            {
-                htmlString = htmlString.replace('src=""', `src="${chrome.runtime.getURL('logo192.png')}"`)
-                return htmlString.replace('INSERT COMMAND', saveCommandShortcut)
-            })
-    
+            const alertTemplate = await createHTMLTemplate(alertURL, "alert",
+                (htmlString) => {
+                    htmlString = htmlString.replace('src=""', `src="${chrome.runtime.getURL('logo192.png')}"`)
+                    return htmlString.replace('INSERT COMMAND', saveCommandShortcut)
+                })
+
             htmlTemplates.push(alertTemplate)
         }
 
@@ -432,25 +317,20 @@ async function getHTMLTemplates(url)
         // Get Missing Command Shortcuts
         const missingShortcuts = await getMissingCommandShortcuts()
 
-        for (const shortcut of missingShortcuts)
-        {
+        for (const shortcut of missingShortcuts) {
             const unboundCommandToastURL = chrome.runtime.getURL('/templates/toast/unboundCommand.html')
-            
-            var changeToastInfo = () => {}
 
-            if (shortcut === "save-at-page")
-            {
-                changeToastInfo = (htmlString) =>
-                {
+            var changeToastInfo = () => { }
+
+            if (shortcut === "save-at-page") {
+                changeToastInfo = (htmlString) => {
                     htmlString = htmlString.replace('INSERT ID', 'unboundSavePageCommand')
                     return htmlString.replace('INSERT COMMAND', '<b>Save Page</b>')
                 }
             }
 
-            if (shortcut === "bookmark")
-            {
-                changeToastInfo = (htmlString) =>
-                {
+            if (shortcut === "bookmark") {
+                changeToastInfo = (htmlString) => {
                     htmlString = htmlString.replace('INSERT ID', 'unboundBookmarkCommand')
                     return htmlString.replace('INSERT COMMAND', '<b>Bookmark</b>')
                 }
@@ -460,10 +340,9 @@ async function getHTMLTemplates(url)
 
             htmlTemplates.push(unboundCommandToastTemplate)
         }
-        
+
         return htmlTemplates
-    } catch (error)
-    {
+    } catch (error) {
         console.log("Error Loading Resources from loadResources Function: ", error)
     }
 }
@@ -485,27 +364,23 @@ async function getHTMLTemplates(url)
  *  data: "HTML string"
  * }
  */
-async function createHTMLTemplate(url, name, modifyHTMLString)
-{
-    try
-    {
+async function createHTMLTemplate(url, name, modifyHTMLString) {
+    try {
         const response = await fetch(url)
         var html = await response.text()
-    
-        if (modifyHTMLString)
-        {
+
+        if (modifyHTMLString) {
             html = modifyHTMLString(html)
         }
-    
+
         const template =
         {
             name: name,
             data: html
         }
-    
+
         return template
-    } catch (error)
-    {
+    } catch (error) {
         console.log("Error Loading HTML Resource: ", error)
     }
 }
@@ -525,16 +400,11 @@ async function createHTMLTemplate(url, name, modifyHTMLString)
  * @param message (object) - message to send to active tab
  *
  */
-function sendMessageToActiveTab(messageType, message)
-{
-    chrome.tabs.query( {active: true, currentWindow: true}, (tabs) =>
-    {
-        chrome.tabs.sendMessage(tabs[0].id, message, (response) =>
-        {
-            if (chrome.runtime.lastError)
-            {
-                if (tabs[0].url.includes('.pdf'))
-                {
+function sendMessageToActiveTab(messageType, message) {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
+            if (chrome.runtime.lastError) {
+                if (tabs[0].url.includes('.pdf')) {
                     console.log(`${messageType} Message Error: `, chrome.runtime.lastError)
                 }
                 return
@@ -555,10 +425,10 @@ async function getMissingCommandShortcuts() {
     let commands = await chrome.commands.getAll()
     let missingShortcuts = [];
 
-    for (let {name, shortcut} of commands) {
-      if (shortcut === '') {
-        missingShortcuts.push(name);
-      }
+    for (let { name, shortcut } of commands) {
+        if (shortcut === '') {
+            missingShortcuts.push(name);
+        }
     }
 
     return missingShortcuts
@@ -579,4 +449,3 @@ function split(str, index) {
 
     return result;
 }
-/* eslint-disable no-undef */
