@@ -26,7 +26,7 @@ chrome.runtime.onInstalled.addListener((reason) => {
     }
 });
 
-openSavedPdfUrlPage()
+pdfUrlListener()
 sendResources()
 sendUserInputs()
 receiveFormSubmits()
@@ -54,7 +54,7 @@ receiveFormSubmits()
  * 1. redirect tab to <url>.pdf#page=X
  *      - where X is the recorded saved page in our conditions
  */
-function openSavedPdfUrlPage() {
+function pdfUrlListener() {
     chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         /**
          * 1. Check if our tab url contains .pdf
@@ -72,43 +72,43 @@ function openSavedPdfUrlPage() {
         const url = tab.url
 
         if (url.includes('.pdf') && changeInfo.status === 'complete') {
-            const [baseURL, query] = split(url, url.lastIndexOf('.pdf') + 4)
+            const [pdfURL, query] = split(url, url.lastIndexOf('.pdf') + 4)
 
-            const hasPageQuery = /#page=\d/.exec(query)
+            const urlHasPageQuery = /#page=\d/.exec(query)
 
-            if (!hasPageQuery) {
-                // TODO: make database call and request PDF table for specifidc url
-                // if that PDF url exists, grab that PDFs autoOpenOn and savedPage fields here
-                const pdf = await getPDF(baseURL)
-
-                if (pdf === undefined) {
-                    await addPDF(baseURL, baseURL, 100)
-                    return
-                }
-
-                const urlQuery = {
-                    autoOpenOn: pdf.auto_open_on,
-                    savedPage: pdf.current_page,
-                }
-
-                if (urlQuery.autoOpenOn && urlQuery.savedPage !== 0) {
-                    const savedPage = urlQuery.savedPage
-
-                    chrome.tabs.update(tabId, { url: tab.url + "#page=" + savedPage }, () => {
-
-                        chrome.tabs.sendMessage(tabId, { message: "reload" }, (response) => {
-                            if (chrome.runtime.lastError) {
-                                console.log("Error updating URL", chrome.runtime.lastError)
-                            }
-                            console.log("Jumping to page", savedPage)
-                            console.log(response.message)
-                        })
-                    })
-                    return
-                }
+            if (!urlHasPageQuery) {
+                await redirectPdfURLtoSavedPage(pdfURL, tabId, tab)
             }
         }
     })
+
+    async function redirectPdfURLtoSavedPage(pdfURL, tabId, tab) {
+        const pdf = await getPDF(pdfURL)
+
+        if (pdf === undefined) {
+            await addPDF(pdfURL, pdfURL, 100)
+            return
+        }
+
+        if (!pdf.auto_open_on || pdf.current_page === 0) {
+            return
+        }
+
+        const savedPage = pdf.current_page
+
+        // update this PDF Url Tab by appending #page=savdPage query to the URL
+        chrome.tabs.update(tabId, { url: tab.url + "#page=" + savedPage }, () => {
+            chrome.tabs.sendMessage(tabId, { message: "reload" }, 
+            (response) => {
+                if (chrome.runtime.lastError) {
+                    console.log("Error updating URL", chrome.runtime.lastError)
+                    return
+                }
+            })
+        })
+
+        return
+    }
 }
 
 /**
