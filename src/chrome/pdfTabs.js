@@ -69,7 +69,7 @@ function openSavedPdfUrlPage() {
          *              - update and reload the tab
          */
 
-        const url = tab.url.toLowerCase()
+        const url = tab.url
 
         if (url.includes('.pdf') && changeInfo.status === 'complete') {
             const [baseURL, query] = split(url, url.lastIndexOf('.pdf') + 4)
