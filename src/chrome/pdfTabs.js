@@ -199,6 +199,9 @@ function sendUserInputs() {
         /**
          * Create Context Menus
          */
+
+        const duplicateErrorMessage = 'Cannot create item with duplicate id'
+
         const saveAtPageID = chrome.contextMenus.create(
             {
                 id: "save-at-page",
@@ -210,7 +213,7 @@ function sendUserInputs() {
                 ]
             },
             () => {
-                if (chrome.runtime.lastError) {
+                if (chrome.runtime.lastError && !chrome.runtime.lastError.message.includes(duplicateErrorMessage)) {
                     console.log("Error creating Context Menu: ", chrome.runtime.lastError)
                 }
             }
@@ -227,7 +230,7 @@ function sendUserInputs() {
                 ]
             },
             () => {
-                if (chrome.runtime.lastError) {
+                if (chrome.runtime.lastError && !chrome.runtime.lastError.message.includes(duplicateErrorMessage)) {
                     console.log("Error creating Context Menu: ", chrome.runtime.lastError)
                 }
             }
@@ -496,8 +499,6 @@ function sendMessageToActiveTab(messageType, message) {
                 }
                 return
             }
-
-            console.log(`${messageType}:`, response.message);
         })
     })
 }
