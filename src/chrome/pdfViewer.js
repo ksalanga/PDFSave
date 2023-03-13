@@ -286,9 +286,11 @@ function openSavePageAlert(saveNotification) {
     $("body").prepend(saveNotification)
 
     setTimeout(() => {
-        var myAlert = document.getElementById('saveNotification')
-        var bsAlert = new bootstrap.Alert(myAlert)
-        bsAlert.close()
+        var saveNotification = document.getElementById('saveNotification')
+        if (saveNotification) {
+            var bsAlert = new bootstrap.Alert(saveNotification)
+            bsAlert.close()
+        }
     }, 50000)
 }
 
