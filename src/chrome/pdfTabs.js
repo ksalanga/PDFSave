@@ -5,8 +5,11 @@
 import {
     add as addPDF,
     getUsingPrimaryKey as getPDF,
-    updateCurrentPage
+    updateCurrentPage,
+    createBookmark
 } from "../model/PDFs";
+
+import uniqid from 'uniqid'
 
 /**
  * Definitions:
@@ -302,12 +305,18 @@ function receiveFormSubmits() {
             }
 
             if (request.type === "bookmark") {
+                var bookmark = {
+                    name: '',
+                    page: 0
+                }
+
                 for (const data of request.data) {
                     if (data.name === "bookmarkName") {
                         if (data.value == undefined || data.value === "") {
                             sendResponse({ message: "invalid" })
                             return true
                         }
+                        bookmark.name = data.value;
                     }
 
                     if (data.name === "page") {
@@ -315,9 +324,16 @@ function receiveFormSubmits() {
                             sendResponse({ message: "invalid" })
                             return true
                         }
+                        bookmark.page = parseInt((' ' + data.value).slice(1));
                     }
                 }
                 sendResponse({ message: "valid" })
+
+                var url = (' ' + request.url).slice(1);
+
+                const [baseURL, _] = split(url, url.lastIndexOf('.pdf') + 4)
+
+                await createBookmark(baseURL, uniqid(), bookmark.name, bookmark.page)
             }
 
             return true
