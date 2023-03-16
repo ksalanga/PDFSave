@@ -1,79 +1,9 @@
 import ListView from "./ListView";
 import { ChangeTypes, ViewTypes } from "../utils/Types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EditView from "./EditView";
 import uniqid from "uniqid";
-
-// TODO (Kenny): Delete dummy PDF array later
-var dummyPDFs = [
-    {
-        id: 1,
-        name: 'PDF 1',
-        file: '/pdf/pdf1.pdf',
-        bookmarks: [
-            {
-                id: 1,
-                name: 'Bookmark 1',
-                page: 1
-            },
-            {
-                id: 2,
-                name: 'Bookmark 2',
-                page: 2
-            },
-            {
-                id: 3,
-                name: 'Bookmark 3',
-                page: 3
-            },
-            {
-                id: 4,
-                name: 'Bookmark 4',
-                page: 4
-            },
-            {
-                id: 5,
-                name: 'Bookmark 5',
-                page: 5
-            },
-        ],
-        progressNotification: false,
-        autoSavePage: true
-    },
-    {
-        id: 2,
-        name: 'PDF 2',
-        file: '/pdf/pdf2.pdf',
-        bookmarks: [
-            {
-                id: 1,
-                name: 'Bookmark 1',
-                page: 1
-            },
-            {
-                id: 2,
-                name: 'Bookmark 2',
-                page: 2
-            }
-        ],
-        progressNotification: false,
-        autoSavePage: true
-    },
-    {
-        id: 3,
-        name: 'PDF 3',
-        file: '/pdf/pdf3.pdf',
-        bookmarks: [
-            {
-                id: 1,
-                name: 'Bookmark 1',
-                page: 1
-            },
-        ],
-        progressNotification: false,
-        autoSavePage: true
-    }
-]
+import { getAll as getAllPDFs} from "../../model/PDFs";
 
 // TODO(Kenny): work onMount and onUnmount for PDFView component (Priority: High)
 function PDFView() {
@@ -83,8 +13,39 @@ function PDFView() {
             open: false,
             id: null
         },
-        items: dummyPDFs
+        items: []
     })
+
+    // Load PDFs in DB
+    useEffect(() => {
+        (async () => {
+            var pdfs = await getAllPDFs();
+
+            // For all PDFS:
+            // translate PDF Database Object To Application PDF (snake case => camelCase)
+            // PDF DB Object => PDF App Object:
+            // - auto_open_on => autoSavePage
+            // - bookmarks
+            // - current_page => currentPage
+            // - current_week_latest_page => currentWeekLatestPage
+            // - file_path => file
+            // - last_week_latest_page => lastWeekLatestPage
+            // - length
+            // - name
+            // - progress_notification_on => progressNotification
+            
+            for (const [index, pdf] of pdfs.entries()) {
+                renameKeys(pdf)
+                pdf['id'] = index
+            }
+
+            setListViewState({...listViewState, items: pdfs});
+        })();
+
+        return () => {
+            // this now gets called when the component unmounts
+        };
+    }, []);
 
     const borderStyle = currentView === ViewTypes.List ? {"borderStyle": "solid"} : {}
 
@@ -254,6 +215,26 @@ function PDFView() {
             </>
         </div>
     )
+}
+
+function renameKeys(dbPdfObj) {
+    const keyMap = {
+        'auto_open_on': 'autoSavePage',
+        'file_path': 'file',
+        'progress_notification_on': 'progressNotification',
+        'current_page': 'currentPage',
+        'current_week_latest_page': 'currentWeekLatestPage',
+        'last_week_latest_page': 'lastWeekLatestPage'
+    };
+
+    Object.keys(dbPdfObj).forEach(key => {
+        if (keyMap[key]) {
+        dbPdfObj[keyMap[key]] = dbPdfObj[key];
+        delete dbPdfObj[key];
+        }
+    });
+
+    return dbPdfObj;
 }
 
 export default PDFView;
