@@ -191,7 +191,7 @@ function PDFItem(props) {
     }
 
     const handleDelete = () => {
-        props.onPDFChange(ChangeTypes.Delete, {id: props.id})
+        props.onPDFChange(ChangeTypes.Delete, {id: props.id, file: props.file})
     }
 
     const duplicateBookmarkExists = (name, page) => {

@@ -3,7 +3,7 @@ import { ChangeTypes, ViewTypes } from "../utils/Types";
 import { useEffect, useState } from "react";
 import EditView from "./EditView";
 import uniqid from "uniqid";
-import { getAll as getAllPDFs} from "../../model/PDFs";
+import { getAll as getAllPDFs, remove as deletePDF, add as addPDF } from "../../model/PDFs";
 
 // TODO(Kenny): work onMount and onUnmount for PDFView component (Priority: High)
 function PDFView() {
@@ -88,6 +88,8 @@ function PDFView() {
     const handlePDFChange = (changeType, changeValues) => {
         let id = changeValues.id
         delete changeValues.id
+        let file = changeValues.file
+        delete changeValues.file
         let keys = Object.keys(changeValues)
         
         if (changeType === ChangeTypes.Create
@@ -164,6 +166,8 @@ function PDFView() {
 
         // delete pdf from list if pdf is not null
         if (changeType === ChangeTypes.Delete && isEmpty) {
+            deletePDF(file)
+
             setListViewState({
                 selection: {
                     open: false,
