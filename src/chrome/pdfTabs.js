@@ -89,7 +89,11 @@ function pdfUrlListener() {
         const pdf = await getPDF(pdfURL)
 
         if (pdf === undefined) {
-            await addPDF(pdfURL, pdfURL, 100)
+            const pdfFile = getFileNameFromUrl(pdfURL)
+            var pdfName = getFileStringWithoutExtension(pdfFile)
+            pdfName = replacePercentEncoding(pdfName)
+
+            await addPDF(pdfName, pdfURL, 100)
             return
         }
 
@@ -552,4 +556,24 @@ function split(str, index) {
     const result = [str.slice(0, index), str.slice(index)];
 
     return result;
+}
+
+function getFileNameFromUrl(url) {
+  const urlObj = new URL(url);
+  const path = urlObj.pathname;
+  const parts = path.split('/');
+  return parts[parts.length - 1];
+}
+
+function getFileStringWithoutExtension(fileName) {
+  const lastIndex = fileName.lastIndexOf('.');
+  if (lastIndex === -1) {
+    return fileName;
+  } else {
+    return fileName.slice(0, lastIndex);
+  }
+}
+
+function replacePercentEncoding(str) {
+  return str.replace(/%20/g, ' ');
 }
