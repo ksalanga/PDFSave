@@ -71,6 +71,8 @@ function PDFView() {
     }
 
     const handleSelect = (id, open) => {
+        // TODO: on deselect, try to go back to the position of the selected PDF id in the listview
+        
         // If a PDF has been opened in our listview state, pass down the only opened PDF item to the ListView items key.
 
         setListViewState({
