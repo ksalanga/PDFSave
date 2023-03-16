@@ -299,10 +299,13 @@ export async function add(
             auto_open_on: true,
             progress_notification_on: false
         }
+        
+        const tx = db.transaction([ClientDB.pdfStoreName, ClientDB.deletedFileStoreName], 'readwrite')
 
-        const pdfStore = db.transaction(ClientDB.pdfStoreName, 'readwrite').store
+        const pdfStore = tx.objectStore(ClientDB.pdfStoreName)
+        const deleteStore = tx.objectStore(ClientDB.deletedFileStoreName)
 
-        const pdfInDeleteStore = await getDeletedPDF
+        const pdfInDeleteStore = await getDeletedPDF(filePath, deleteStore)
         
         if (pdfInDeleteStore) {
             return
@@ -310,9 +313,13 @@ export async function add(
 
         const addedPDFKey = await pdfStore.add(pdf)
 
+        db.close()
+        
         return addedPDFKey
     } catch (error) {
-        console.log("Something went wrong adding a PDF", error)
+        if (!error.message.includes('Key already exists in the object store')) {
+            console.log("Something went wrong adding a PDF", error)
+        }
     }
 }
 

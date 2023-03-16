@@ -38,7 +38,7 @@ export async function remove(file_path) {
 // add a file_path to deleteStore delete Object Store. Only used as a helper function to our PDFStore.
 export async function get(file_path, deleteStore) {
     try {
-        await deleteStore.get({file_path: file_path})
+        return await deleteStore.get(file_path)
     } catch (error) {
         console.log("Something went wrong adding PDF to delete store", error)
         throw("Something went wrong adding PDF to delete store")
