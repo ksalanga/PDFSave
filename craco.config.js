@@ -3,6 +3,9 @@
 // refer to #6 Overriding Create React App configuration in this tutorial: 
 // https://medium.com/litslink/how-to-create-google-chrome-extension-using-react-js-5c9e343323ff
 var HtmlWebpackSkipAssetsPlugin = require('html-webpack-skip-assets-plugin').HtmlWebpackSkipAssetsPlugin;
+require('dotenv').config()
+
+process.env.REACT_APP_ENVIRONMENT = 'CHROME_EXTENSION'
 
 module.exports = {
     webpack: {
