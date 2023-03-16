@@ -81,6 +81,10 @@ export function Icon(props) {
     )
 }
 
+// TODO:
+// - open bookmark to new Tab
+// - edit bookmark to DB
+// - delete bookmark to DB
 export function BookmarkItem(props) {
     const [editName, setEditName] = useState(props.name)
     const [editPage, setEditPage] = useState(props.page)
