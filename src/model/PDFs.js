@@ -1,5 +1,5 @@
 import { openDB, ClientDB, update as updateDB, batchUpdate } from './DB'
-import { add as addToDeleteStore } from './DeletedFiles'
+import { add as addToDeleteStore, get as getDeletedPDF } from './DeletedFiles'
 import { incorrectStringFormat, notBoolean, notInteger } from '../utils/Formatting'
 import { CodeError } from '../view/utils/Error'
 
@@ -301,6 +301,12 @@ export async function add(
         }
 
         const pdfStore = db.transaction(ClientDB.pdfStoreName, 'readwrite').store
+
+        const pdfInDeleteStore = await getDeletedPDF
+        
+        if (pdfInDeleteStore) {
+            return
+        }
 
         const addedPDFKey = await pdfStore.add(pdf)
 
