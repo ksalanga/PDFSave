@@ -2,6 +2,9 @@ import { ItemBarTypes, ChangeTypes, IconTypes } from "../utils/Types";
 import { useState } from "react";
 import uniqid from 'uniqid';
 
+// TODO:
+// - cut off and preview overflowing names
+// - cut off and preview overflowing pages
 export function ItemBar(props){
     let isPDF = props.type === ItemBarTypes.PDF
     let isBookmark = props.type === ItemBarTypes.Bookmark
