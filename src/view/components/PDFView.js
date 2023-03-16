@@ -3,9 +3,9 @@ import { ChangeTypes, ViewTypes } from "../utils/Types";
 import { useEffect, useState } from "react";
 import EditView from "./EditView";
 import uniqid from "uniqid";
-import { getAll as getAllPDFs, remove as deletePDF, add as addPDF } from "../../model/PDFs";
+import { getAll as getAllPDFs, remove as deletePDF} from "../../model/PDFs";
+import { initializeDummyDbPDFs } from "../../tests/DummyData";
 
-// TODO(Kenny): work onMount and onUnmount for PDFView component (Priority: High)
 function PDFView() {
     const [currentView, setCurrentView] = useState(ViewTypes.List)
     const [listViewState, setListViewState] = useState({
@@ -19,6 +19,11 @@ function PDFView() {
     // Load PDFs in DB
     useEffect(() => {
         (async () => {
+            if (process.env.REACT_APP_ENVIRONMENT === 'DEVELOPMENT') {
+                console.log("Development started")
+                await initializeDummyDbPDFs();
+            }
+
             var pdfs = await getAllPDFs();
 
             // For all PDFS:

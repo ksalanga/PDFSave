@@ -1,4 +1,5 @@
 import uniqid from 'uniqid'
+import { add as addPDF } from '../model/PDFs'
 
 var id = uniqid()
 
@@ -108,3 +109,37 @@ export var dummyPDFs = [
         progress_notification_on: true
     }
 ]
+
+export const initializeDummyDbPDFs = async () => {
+    const dummyDbPDFs = [
+        {
+            name: 'Discrete Structures',
+            file: 'file:///C:/Users/Kenneth/Desktop/Books/Discrete%20Structures%20I%20Textbook.pdf',
+            length: 200,
+        },
+        {
+            name: 'Elementary Linear Algebra',
+            file: "file:///C:/Users/Kenneth/Desktop/Books/Elementary%20Linear%20Algebra%20(2nd%20Edition)%20by%20Lawrence%20E.%20Spence,%20Arnold%20J.%20Insel,%20Stephen%20H.%20Friedberg%20(z-lib.org).pdf",
+            length: 300,
+        },
+        {
+            name: 'Paper 09',
+            file: "https://ceur-ws.org/Vol-838/paper_09.pdf",
+            length: 400,
+        },
+        {
+            name: 'Code Complete',
+            file: "file:///C:/Users/Kenneth/Desktop/Books/Code%20Complete%20-%20A%20Practical%20Handbook%20of%20Software%20Construction%20(Steve%20McConnell)%20(z-lib.org).pdf",
+            length: 500,
+        },
+        {
+            name: 'Node.JS Development',
+            file: "file:///C:/Users/Kenneth/Desktop/Books/Node.js%20Web%20Development%20Server-side%20web%20development%20made%20easy%20with%20Node%2014%20using%20practical%20examples%20by%20David%20Herron%20(z-lib.org).pdf",
+            length: 500,
+        },
+    ]
+
+    for (const dummyPDF of dummyDbPDFs) {
+        await addPDF(dummyPDF.name, dummyPDF.file, dummyPDF.length)
+    }
+}
