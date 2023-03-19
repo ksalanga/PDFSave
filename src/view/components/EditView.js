@@ -18,7 +18,7 @@ function EditView(props) {
             return
         }
 
-        props.onEdit(ChangeTypes.Update, {id: id, name: editName, progressNotification: editProgressNotification, autoSavePage: editAutoSavePage})
+        props.onEdit(ChangeTypes.Update, {id: id, file: file, name: editName, progressNotification: editProgressNotification, autoSavePage: editAutoSavePage})
     }
 
     const cancelEdit = () => {
@@ -29,7 +29,7 @@ function EditView(props) {
         <div className="edit-view">
             <div className="edit-view-header">
                 <h2>Edit {props.pdf.name}</h2>
-                <h4>File: <em>{file}</em></h4>
+                <h4>PDF URL: <em>{file}</em></h4>
             </div>
             <div className="edit-view-body">
                 <form>
@@ -38,14 +38,15 @@ function EditView(props) {
                     </div>
 
                     <div className="edit-view-input-container">
+                        <input type="checkbox" checked={editAutoSavePage} onChange={(e) => setAutoSavePage(e.target.checked)} />
+                        <label>Auto Open PDF To Saved Page</label>
+                    </div>
+                    
+                    <div className="edit-view-input-container">
                         <input type="checkbox" checked={editProgressNotification} onChange={(e) => setProgressNotification(e.target.checked)} />
                         <label>Progress Notification</label>
                     </div>
 
-                    <div className="edit-view-input-container">
-                        <input type="checkbox" checked={editAutoSavePage} onChange={(e) => setAutoSavePage(e.target.checked)} />
-                        <label>Auto Save Page</label>
-                    </div>
 
                     <br></br>
                     <button onClick={confirmEdit}>confirm</button>

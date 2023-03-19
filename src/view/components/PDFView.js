@@ -3,7 +3,7 @@ import { ChangeTypes, ViewTypes } from "../utils/Types";
 import { useEffect, useState } from "react";
 import EditView from "./EditView";
 import uniqid from "uniqid";
-import { getAll as getAllPDFs, remove as deletePDF} from "../../model/PDFs";
+import { getAll as getAllPDFs, remove as deletePDF, updateAutoOpenOn, updateName, updateProgressNotificationOn} from "../../model/PDFs";
 import { initializeDummyDbPDFs } from "../../tests/DummyData";
 
 function PDFView() {
@@ -20,7 +20,6 @@ function PDFView() {
     useEffect(() => {
         (async () => {
             if (process.env.REACT_APP_ENVIRONMENT === 'DEVELOPMENT') {
-                console.log("Development started")
                 await initializeDummyDbPDFs();
             }
 
@@ -56,8 +55,14 @@ function PDFView() {
 
     const handleEdit = (changeType, changeValues) => {
         let id = changeValues.id
+        let file = changeValues.file
+        delete changeValues.file
         
         if (changeType === ChangeTypes.Update) {
+            updateName(file, changeValues.name)
+            updateProgressNotificationOn(file, changeValues.progressNotification)
+            updateAutoOpenOn(file, changeValues.autoSavePage)
+
             setListViewState({
                 ...listViewState,
                 items: listViewState.items.map(item => {

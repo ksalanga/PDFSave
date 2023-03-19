@@ -4,7 +4,6 @@ function ListView(props) {
 
     // TODO:
     // - open pdf with new tab
-    // - edit pdf to DB
     
     return (
         <div className="list-view">
