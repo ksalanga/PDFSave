@@ -1,10 +1,6 @@
 import PDFItem from "./PDFItem";
 
 function ListView(props) {
-
-    // TODO:
-    // - open pdf with new tab
-    
     return (
         <div className="list-view">
             {

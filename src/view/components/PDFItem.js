@@ -186,6 +186,10 @@ export function AddBookmarkItem(props) {
 }
 
 function PDFItem(props) {
+    const handleOpen = () => {
+        window.open(props.file)
+    }
+
     const handleEdit = () => {
         props.onPDFChange(ChangeTypes.Update, {id: props.id, name: props.name})
     }
@@ -213,7 +217,7 @@ function PDFItem(props) {
         <>
             <div className="pdf-item">
                 <ItemBar type={ItemBarTypes.PDF} id={props.id} name={props.name} open={props.open} onSelect={props.onSelect}/>
-                <Icon imgFilename={IconTypes.Read}/>
+                <Icon imgFilename={IconTypes.Read} onClick={handleOpen}/>
                 <Icon imgFilename={IconTypes.Edit} height="20px" width="20px" onClick={handleEdit}/>
                 <Icon imgFilename={IconTypes.Delete} height="20px" width="20px" onClick={handleDelete}/>
             </div>
