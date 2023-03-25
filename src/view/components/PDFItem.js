@@ -1,7 +1,7 @@
 import { ItemBarTypes, ChangeTypes, IconTypes } from "../utils/Types";
 import { useState } from "react";
 import uniqid from 'uniqid';
-import { createBookmark, updateBookmark as editBookmark } from "../../model/PDFs";
+import { createBookmark, updateBookmark as editBookmark, deleteBookmark as removeBookmark } from "../../model/PDFs";
 
 // TODO:
 // - cut off and preview overflowing names
@@ -118,6 +118,7 @@ export function BookmarkItem(props) {
     }
 
     const deleteBookmark = () => {
+        removeBookmark(props.file, props.id)
         props.onBookmarkChange(ChangeTypes.Delete, {bookmark: {id: props.id}})
     }
 
