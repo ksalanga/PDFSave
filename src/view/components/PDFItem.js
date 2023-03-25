@@ -1,6 +1,7 @@
 import { ItemBarTypes, ChangeTypes, IconTypes } from "../utils/Types";
 import { useState } from "react";
 import uniqid from 'uniqid';
+import { createBookmark } from "../../model/PDFs";
 
 // TODO:
 // - cut off and preview overflowing names
@@ -169,6 +170,7 @@ export function AddBookmarkItem(props) {
             return
         }
 
+        createBookmark(props.file, uniqid(), name, parseInt(page))
         props.onBookmarkChange(ChangeTypes.Create, {bookmark: {id: uniqid(), name: name, page: page}})
     }
 
@@ -229,6 +231,7 @@ function PDFItem(props) {
             <AddBookmarkItem 
                 duplicateBookmarkExists={duplicateBookmarkExists}
                 onBookmarkChange={handleBookmarkChange}
+                file={props.file}
             />
 
             {/* TODO (Kenny): when Bookmarks exceed element size, add scrollbar ONLY to the list of bookmark elements; not the PDFItem or the AddBookmarkItem
