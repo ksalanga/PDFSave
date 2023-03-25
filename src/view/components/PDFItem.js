@@ -1,7 +1,7 @@
 import { ItemBarTypes, ChangeTypes, IconTypes } from "../utils/Types";
 import { useState } from "react";
 import uniqid from 'uniqid';
-import { createBookmark } from "../../model/PDFs";
+import { createBookmark, updateBookmark as editBookmark } from "../../model/PDFs";
 
 // TODO:
 // - cut off and preview overflowing names
@@ -84,7 +84,6 @@ export function Icon(props) {
 
 // TODO:
 // - open bookmark to new Tab
-// - edit bookmark to DB
 // - delete bookmark to DB
 export function BookmarkItem(props) {
     const [editName, setEditName] = useState(props.name)
@@ -111,6 +110,8 @@ export function BookmarkItem(props) {
             handleEdit()
             return
         }
+
+        editBookmark(props.file, props.id, editName, parseInt(editPage))
 
         props.onBookmarkChange(ChangeTypes.Update, {bookmark: {id: props.id, name: editName, page: editPage}})
         handleEdit()
@@ -239,6 +240,7 @@ function PDFItem(props) {
             {props.bookmarks.map(bookmark => {
                 return <BookmarkItem 
                     key={bookmark.id}
+                    file={props.file}
                     id={bookmark.id}
                     name={bookmark.name}
                     page={bookmark.page}
