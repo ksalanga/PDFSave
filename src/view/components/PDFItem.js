@@ -82,8 +82,6 @@ export function Icon(props) {
     )
 }
 
-// TODO:
-// - open bookmark to new Tab
 export function BookmarkItem(props) {
     const [editName, setEditName] = useState(props.name)
     const [editPage, setEditPage] = useState(props.page)
@@ -99,6 +97,10 @@ export function BookmarkItem(props) {
 
     const handleEdit = () => {
         setEditing((prev) => !prev)
+    }
+
+    const handleOpen = () => {
+        window.open(props.file + "#page=" + props.page)
     }
 
     const updateBookmark = () => {
@@ -127,7 +129,7 @@ export function BookmarkItem(props) {
                 !editing &&
                 <div className="bookmark-item">
                     <ItemBar type={ItemBarTypes.Bookmark} name={props.name} page={props.page}/>
-                    <Icon imgFilename={IconTypes.Read}/>
+                    <Icon imgFilename={IconTypes.Read} onClick={handleOpen}/>
                     <Icon imgFilename={IconTypes.Edit} height="20px" width="20px" onClick={handleEdit}/>
                     <Icon imgFilename={IconTypes.Delete} height="20px" width="20px" onClick={deleteBookmark}/>
                 </div>
